@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://aq-studio.dev/schemas/ui/v2.0.0",
+  "title": "AQ UI Blueprint Schema v2",
+  "type": "object",
+  "required": ["$id", "title", "version", "root"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "$id":     { "type": "string" },
+    "title":   { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "description": { "type": "string" },
+    "root":    { "$ref": "#/$defs/node" },
+    "behaviors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/behavior" },
+      "default": []
+    },
+    "anchors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/anchor" },
+      "default": []
+    },
+    "dataContract": { "$ref": "#/$defs/dataContract" }
+  },
+  "$defs": {
+    "node": {
+      "type": "object",
+      "required": ["type", "id"],
+      "properties": {
+        "type": { "type": "string", "enum": ["Column","Row","Card","TextInput","Dropdown","Checkbox","ToggleSwitch","Text","Badge","Icon","Image","ProgressBar","Button","Divider"] },
+        "id":   { "type": "string", "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$", "minLength": 4 },
+        "props": { "type": "object" },
+        "base": {
+          "type": "object",
+          "properties": {
+            "visible": { "type": "boolean", "default": true },
+            "enabled": { "type": "boolean", "default": true },
+            "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+            "margin":  { "type": "string" }
+          }
+        },
+        "binding": { "$ref": "#/$defs/binding" },
+        "action":  { "$ref": "#/$defs/action" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/node" }
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "required": ["path"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9._]*$" },
+        "mode": { "type": "string", "enum": ["in", "out", "twoWay"], "default": "twoWay" }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string", "enum": ["submit","triggerNode","navigate","updateState","refresh"] },
+        "confirmRequired": { "type": "boolean", "default": false }
+      }
+    },
+    "behavior": {
+      "type": "object",
+      "required": ["id", "name", "condition", "effect"],
+      "properties": {
+        "id":       { "type": "string" },
+        "name":     { "type": "string" },
+        "type":     { "type": "string", "enum": ["ui", "engine"], "default": "ui" },
+        "priority": { "type": "integer", "default": 0 },
+        "condition": { "$ref": "#/$defs/behaviorCondition" },
+        "effect":    { "$ref": "#/$defs/behaviorEffect" }
+      }
+    },
+    "behaviorCondition": {
+      "type": "object",
+      "required": ["sourceProperty", "operator"],
+      "properties": {
+        "sourceId":          { "type": "string" },
+        "sourceAnchor":      { "type": "string" },
+        "sourceProperty":    { "type": "string" },
+        "operator":          { "type": "string", "enum": ["equals","notEquals","contains","startsWith","endsWith","isEmpty","isNotEmpty","isNull","isNotNull","isTrue","isFalse","greaterThan","lessThan","greaterOrEqual","lessOrEqual","hasRecord","countEquals","countGreaterThan","deviceIs","platformIs","flagIsSet"] },
+        "compareValue":      {},
+        "compareValueAnchor": { "type": "string" }
+      }
+    },
+    "behaviorEffect": {
+      "type": "object",
+      "required": ["targetId", "targetProperty", "trueValue"],
+      "properties": {
+        "targetId":       { "type": "string" },
+        "targetProperty": { "type": "string", "enum": ["value","isVisible","isEnabled","isRequired","errorText"] },
+        "trueValue":      {},
+        "falseValue":     {}
+      }
+    },
+    "anchor": {
+      "type": "object",
+      "required": ["id", "key", "direction", "dataType"],
+      "properties": {
+        "id":         { "type": "string" },
+        "key":        { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9._]*$" },
+        "direction":  { "type": "string", "enum": ["in", "out", "inout", "trigger"] },
+        "dataType":   { "type": "string", "enum": ["string","number","boolean","object","list","enum","any"] },
+        "enumValues": { "type": "array", "items": { "type": "string" } },
+        "required":   { "type": "boolean", "default": false },
+        "fallback":   {},
+        "description": { "type": "string" },
+        "boundTo":    { "type": "string" }
+      }
+    },
+    "dataContract": {
+      "type": "object",
+      "properties": {
+        "required": { "type": "array", "items": { "$ref": "#/$defs/contractEntry" } },
+        "optional": { "type": "array", "items": { "$ref": "#/$defs/contractEntry" } }
+      }
+    },
+    "contractEntry": {
+      "type": "object",
+      "required": ["anchor", "dataType"],
+      "properties": {
+        "anchor":   { "type": "string" },
+        "dataType": { "type": "string" },
+        "fallback": {},
+        "reason":   { "type": "string" }
+      }
+    }
+  }
+}
