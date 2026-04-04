@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:queue:job_status",
+  "title": "Queue Job Status",
+  "description": "Current status of a job in Redis — used for polling via get_job_status tool",
+  "type": "object",
+  "required": ["job_id", "status"],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "running", "done", "failed", "timeout"],
+      "description": "pending=in queue, running=being processed, done/failed/timeout=terminal states"
+    },
+    "worker_id": {
+      "type": "string",
+      "description": "Set when a worker picks up the job"
+    },
+    "result": {
+      "$ref": "../worker/schemas/worker_result.json",
+      "description": "Present when status is done, failed, or timeout"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) when job was created"
+    },
+    "started_at": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) when worker started processing"
+    },
+    "completed_at": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) when job reached terminal state"
+    }
+  },
+  "additionalProperties": false
+}

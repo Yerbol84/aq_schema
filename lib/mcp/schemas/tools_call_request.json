@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:mcp:tools_call_request",
+  "title": "MCP Tools Call Request",
+  "description": "Request to invoke a specific tool by name with arguments",
+  "type": "object",
+  "required": ["jsonrpc", "method", "params"],
+  "properties": {
+    "jsonrpc": {
+      "type": "string",
+      "const": "2.0"
+    },
+    "id": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "integer" }
+      ]
+    },
+    "method": {
+      "type": "string",
+      "const": "tools/call"
+    },
+    "params": {
+      "type": "object",
+      "required": ["name", "arguments"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tool name from tools/list"
+        },
+        "arguments": {
+          "type": "object",
+          "description": "Tool input arguments matching tool inputSchema"
+        },
+        "_aq_auth": {
+          "description": "AQ EXTENSION: authorization token for tools that require auth. Standard clients without auth simply omit this field.",
+          "$ref": "../auth/schemas/auth_token_payload.json"
+        },
+        "_aq_mode": {
+          "description": "AQ EXTENSION: execution mode. sync=wait for result, async=return job_id immediately",
+          "type": "string",
+          "enum": ["sync", "async"],
+          "default": "sync"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

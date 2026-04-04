@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Dart Ecosystem — Sprint Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Unbounded:wght@300;600;800;900&display=swap');
+
+  :root {
+    --bg: #080a0e;
+    --surface: #0d1018;
+    --surface2: #131720;
+    --surface3: #191e2b;
+    --border: #1a2035;
+    --border2: #222840;
+    --accent: #00d4ff;
+    --accent-dim: rgba(0,212,255,0.08);
+    --accent2: #7c3aed;
+    --accent2-dim: rgba(124,58,237,0.1);
+    --accent3: #10b981;
+    --accent3-dim: rgba(16,185,129,0.08);
+    --accent4: #f59e0b;
+    --accent4-dim: rgba(245,158,11,0.08);
+    --accent5: #f43f5e;
+    --accent5-dim: rgba(244,63,94,0.08);
+    --text: #dde4f0;
+    --text2: #8899b8;
+    --muted: #4a5878;
+    --white: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN ─────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  }
+
+  /* ── GRID BG ─────────────────────────────── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .wrap { max-width: 1300px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 1; }
+
+  /* ── HEADER ─────────────────────────────── */
+  header {
+    padding: 56px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  .header-meta {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  }
+
+  .chip {
+    font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+    font-weight: 700; padding: 3px 10px; border-radius: 2px;
+    border: 1px solid;
+  }
+
+  .chip-cyan { color: var(--accent); border-color: rgba(0,212,255,0.35); background: var(--accent-dim); }
+  .chip-purple { color: #a78bfa; border-color: rgba(124,58,237,0.35); background: var(--accent2-dim); }
+  .chip-green { color: var(--accent3); border-color: rgba(16,185,129,0.35); background: var(--accent3-dim); }
+  .chip-amber { color: var(--accent4); border-color: rgba(245,158,11,0.35); background: var(--accent4-dim); }
+  .chip-red { color: var(--accent5); border-color: rgba(244,63,94,0.35); background: var(--accent5-dim); }
+
+  h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(28px, 4.5vw, 52px);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1.0;
+    margin-bottom: 14px;
+  }
+
+  h1 em { color: var(--accent); font-style: normal; }
+  h1 .dim { color: var(--muted); }
+
+  .header-sub {
+    color: var(--text2); font-size: 13px; max-width: 640px; line-height: 1.6;
+  }
+
+  .header-stats {
+    display: flex; gap: 32px; margin-top: 28px;
+    padding-top: 24px; border-top: 1px solid var(--border);
+  }
+
+  .stat-item { }
+  .stat-value {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 22px; font-weight: 800;
+    color: var(--accent); letter-spacing: -0.03em;
+  }
+  .stat-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+
+  /* ── NAV ─────────────────────────────── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,10,14,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+  }
+
+  .nav-inner {
+    display: flex; align-items: center; gap: 2px;
+    overflow-x: auto; padding: 0 28px;
+    max-width: 1300px; margin: 0 auto;
+    scrollbar-width: none;
+  }
+
+  .nav-inner::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    padding: 14px 16px; cursor: pointer;
+    color: var(--muted); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    border: none; background: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.18s;
+    position: relative;
+  }
+
+  .nav-btn:hover { color: var(--text2); }
+  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .nav-btn .sprint-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 8px; font-weight: 800;
+    margin-right: 6px; opacity: 0.6;
+  }
+
+  /* ── MAIN LAYOUT ─────────────────────────────── */
+  main { padding: 40px 0 80px; }
+
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.2s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ── SPRINT HEADER ─────────────────────────────── */
+  .sprint-hero {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 24px; align-items: start;
+    margin-bottom: 32px;
+    padding: 28px 32px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    position: relative; overflow: hidden;
+  }
+
+  .sprint-hero::before {
+    content: '';
+    position: absolute; right: -40px; top: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .sprint-label {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .sprint-label::before {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1px;
+    background: var(--accent);
+  }
+
+  .sprint-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(18px, 2.5vw, 28px);
+    font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1.15; margin-bottom: 10px;
+  }
+
+  .sprint-title em { color: var(--accent); font-style: normal; }
+
+  .sprint-desc { font-size: 12.5px; color: var(--text2); max-width: 600px; line-height: 1.65; }
+
+  .sprint-meta {
+    display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+    text-align: right;
+  }
+
+  .sprint-time {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 28px; font-weight: 900;
+    color: var(--accent4); letter-spacing: -0.03em;
+  }
+
+  .sprint-time-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+
+  .sprint-pkg {
+    display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end;
+  }
+
+  /* ── SECTION GRID ─────────────────────────────── */
+  .section-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .section-grid.thirds {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .section-grid.wide-left {
+    grid-template-columns: 3fr 2fr;
+  }
+
+  @media (max-width: 900px) {
+    .section-grid, .section-grid.thirds, .section-grid.wide-left {
+      grid-template-columns: 1fr;
+    }
+    .sprint-hero { grid-template-columns: 1fr; }
+    .sprint-meta { align-items: flex-start; text-align: left; }
+    .sprint-pkg { justify-content: flex-start; }
+  }
+
+  /* ── CARD ─────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+
+  .card.full { margin-bottom: 16px; }
+  .card:last-child { margin-bottom: 0; }
+
+  .card-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .card-title .icon {
+    width: 6px; height: 6px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .card-title .icon-cyan { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .card-title .icon-purple { background: #a78bfa; box-shadow: 0 0 6px #a78bfa; }
+  .card-title .icon-green { background: var(--accent3); box-shadow: 0 0 6px var(--accent3); }
+  .card-title .icon-amber { background: var(--accent4); box-shadow: 0 0 6px var(--accent4); }
+  .card-title .icon-red { background: var(--accent5); box-shadow: 0 0 6px var(--accent5); }
+
+  /* ── CHECKLIST ─────────────────────────────── */
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 6px 10px;
+    border-radius: 3px;
+    font-size: 12px; color: var(--text2);
+    transition: background 0.15s;
+  }
+
+  .checklist li:hover { background: var(--surface2); }
+
+  .checklist li .marker {
+    flex-shrink: 0; margin-top: 2px;
+    width: 14px; height: 14px;
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .checklist li.done .marker {
+    background: var(--accent3); border-color: var(--accent3);
+  }
+
+  .checklist li.done .marker::after {
+    content: '✓'; font-size: 9px; color: var(--bg); font-weight: 700;
+  }
+
+  .checklist li strong { color: var(--text); font-weight: 600; }
+
+  .checklist.compact li { padding: 4px 8px; }
+
+  /* ── FLOW ─────────────────────────────── */
+  .flow { display: flex; flex-direction: column; gap: 3px; }
+
+  .flow-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+  }
+
+  .flow-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 9px; font-weight: 900;
+    color: var(--accent2); min-width: 24px;
+    margin-top: 1px;
+  }
+
+  .flow-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .flow-text strong { color: var(--text); }
+
+  .flow-connector { width: 1px; height: 8px; background: var(--border); margin-left: 21px; }
+
+  /* ── CODE ─────────────────────────────── */
+  pre {
+    background: #080a0f;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #8899b8;
+    margin: 10px 0;
+  }
+
+  pre:first-child { margin-top: 0; }
+  pre:last-child { margin-bottom: 0; }
+
+  .kw { color: #c792ea; }
+  .str { color: #c3e88d; }
+  .cm { color: #3e5070; font-style: italic; }
+  .fn { color: #82aaff; }
+  .ty { color: #ffcb6b; }
+  .num { color: #f78c6c; }
+  .op { color: var(--accent); }
+  .ok { color: var(--accent3); }
+  .warn { color: var(--accent4); }
+  .err { color: var(--accent5); }
+
+  /* ── TABLE ─────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+
+  th {
+    text-align: left; font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--muted);
+    padding: 8px 12px; border-bottom: 1px solid var(--border2);
+    font-weight: 700;
+  }
+
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(26,32,53,0.5);
+    vertical-align: top; color: var(--text2);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+
+  /* ── HIGHLIGHT BOX ─────────────────────────────── */
+  .callout {
+    padding: 14px 16px;
+    border-radius: 0 5px 5px 0;
+    margin: 12px 0;
+    font-size: 12px; line-height: 1.6;
+  }
+
+  .callout-cyan {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-dim);
+    color: var(--text2);
+  }
+
+  .callout-green {
+    border-left: 3px solid var(--accent3);
+    background: var(--accent3-dim);
+    color: var(--text2);
+  }
+
+  .callout-amber {
+    border-left: 3px solid var(--accent4);
+    background: var(--accent4-dim);
+    color: var(--text2);
+  }
+
+  .callout-red {
+    border-left: 3px solid var(--accent5);
+    background: var(--accent5-dim);
+    color: var(--text2);
+  }
+
+  .callout strong { color: var(--text); }
+
+  /* ── DELIVERABLES BOX ─────────────────────────────── */
+  .deliverables {
+    background: linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(0,212,255,0.04) 100%);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 6px;
+    padding: 20px 22px;
+  }
+
+  .deliverables-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent3); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .deliverables-title::before {
+    content: '✦'; font-size: 10px;
+  }
+
+  .deliverables ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+
+  .deliverables li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 12px; color: var(--text2);
+  }
+
+  .deliverables li::before {
+    content: '→'; color: var(--accent3); flex-shrink: 0; margin-top: 1px;
+  }
+
+  .deliverables li strong { color: var(--text); }
+
+  /* ── CHECK COMMAND ─────────────────────────────── */
+  .check-cmd {
+    background: #060810;
+    border: 1px solid rgba(16,185,129,0.25);
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 11px;
+    color: var(--accent3);
+    margin: 8px 0;
+    position: relative;
+  }
+
+  .check-cmd::before {
+    content: '$ ';
+    color: var(--muted);
+  }
+
+  /* ── OVERVIEW GRID ─────────────────────────────── */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .sprint-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 18px;
+    cursor: pointer;
+    transition: border-color 0.18s, transform 0.18s;
+    position: relative; overflow: hidden;
+  }
+
+  .sprint-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .sprint-card-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 38px; font-weight: 900;
+    letter-spacing: -0.05em;
+    color: var(--border2);
+    position: absolute; right: 14px; bottom: 8px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .sprint-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+
+  .sprint-card-name {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .sprint-card-pkg { font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+
+  .sprint-card-desc { font-size: 11.5px; color: var(--text2); line-height: 1.5; }
+
+  .sprint-card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 12px; padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .sprint-card-time {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px; font-weight: 800;
+    color: var(--accent4);
+  }
+
+  .sprint-card-tasks { font-size: 10px; color: var(--muted); }
+
+  /* ── TOTAL BAR ─────────────────────────────── */
+  .total-bar {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-top: 24px;
+    display: flex; align-items: center; gap: 32px;
+  }
+
+  .total-bar-label {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 9px; font-weight: 800;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted);
+    min-width: 100px;
+  }
+
+  .timeline-bar {
+    flex: 1; display: flex; gap: 3px; align-items: center;
+  }
+
+  .tl-segment {
+    height: 24px; border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; cursor: pointer;
+    transition: filter 0.15s;
+    overflow: hidden; white-space: nowrap;
+  }
+
+  .tl-segment:hover { filter: brightness(1.3); }
+
+  .total-time {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 24px; font-weight: 900;
+    color: var(--accent); letter-spacing: -0.03em;
+    white-space: nowrap;
+  }
+
+  /* ── DIVIDER ─────────────────────────────── */
+  .section-sep {
+    height: 1px; background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* ── FILE TREE ─────────────────────────────── */
+  .filetree {
+    background: #060810;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 16px;
+    font-size: 11px;
+    line-height: 1.9;
+    color: var(--text2);
+  }
+
+  .filetree .dir { color: var(--accent); }
+  .filetree .file { color: var(--text2); }
+  .filetree .new { color: var(--accent3); }
+  .filetree .cm { color: #3e5070; }
+
+  /* ── SCROLLBAR ─────────────────────────────── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  /* ── INLINE CODE ─────────────────────────────── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid rgba(0,212,255,0.15);
+    padding: 1px 5px;
+    border-radius: 2px;
+  }
+
+  /* ── QUESTION CARD ─────────────────────────────── */
+  .question-card {
+    background: linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(0,212,255,0.04) 100%);
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+
+  .question-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: #a78bfa; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .question-title::before { content: '?'; }
+
+  .question-text { font-size: 13px; color: var(--text); line-height: 1.6; font-weight: 600; }
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="header-meta">
+      <span class="chip chip-cyan">Production Ready</span>
+      <span class="chip chip-purple">Dart Ecosystem</span>
+      <span class="chip chip-green">Sprint Plan v1.0</span>
+    </div>
+    <h1>MCP Dart <em>Sprint</em><br><span class="dim">Roadmap</span></h1>
+    <p class="header-sub">
+      Пошаговый план реализации экосистемы MCP серверов на Dart — от пустого репо до полностью работающего продакшен-совместимого стека. Каждый спринт — атомарная единица работы с чёткими входными условиями, задачами и проверяемым результатом.
+    </p>
+    <div class="header-stats">
+      <div class="stat-item">
+        <div class="stat-value">8</div>
+        <div class="stat-label">Спринтов</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">~30ч</div>
+        <div class="stat-label">Общее время</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">6</div>
+        <div class="stat-label">Dart пакетов</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">1</div>
+        <div class="stat-label">Python пакет</div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="show('overview')">
+      Обзор
+    </button>
+    <button class="nav-btn" onclick="show('s0')">
+      <span class="sprint-num">S0</span> aq_schema
+    </button>
+    <button class="nav-btn" onclick="show('s1')">
+      <span class="sprint-num">S1</span> aq_queue + auth
+    </button>
+    <button class="nav-btn" onclick="show('s2')">
+      <span class="sprint-num">S2</span> aq_mcp_core
+    </button>
+    <button class="nav-btn" onclick="show('s3')">
+      <span class="sprint-num">S3</span> aq_adapter
+    </button>
+    <button class="nav-btn" onclick="show('s4')">
+      <span class="sprint-num">S4</span> Python Worker
+    </button>
+    <button class="nav-btn" onclick="show('s5')">
+      <span class="sprint-num">S5</span> Dart Worker
+    </button>
+    <button class="nav-btn" onclick="show('s6')">
+      <span class="sprint-num">S6</span> Docker + E2E
+    </button>
+    <button class="nav-btn" onclick="show('s7')">
+      <span class="sprint-num">S7</span> Docs
+    </button>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+<!-- ══════════════════════════════════════════════ OVERVIEW -->
+<div id="overview" class="panel active">
+
+  <div class="overview-grid">
+
+    <div class="sprint-card" onclick="show('s0'); setActive(1)">
+      <div class="sprint-card-header">
+        <span class="chip chip-cyan">S0</span>
+        <span class="chip chip-amber">Критический</span>
+      </div>
+      <div class="sprint-card-name">aq_schema — Ядро</div>
+      <div class="sprint-card-pkg">packages/aq_schema</div>
+      <div class="sprint-card-desc">Монорепо. JSON схемы для всех доменов. Dart интерфейсы. Валидаторы. Фундамент всей системы — без него ничего не строится.</div>
+      <div class="sprint-card-footer">
+        <span class="sprint-card-time">~5ч</span>
+        <span class="sprint-card-tasks">14 задач</span>
+      </div>
+      <div class="sprint-card-num">0</div>
+    </div>
+
+    <div class="sprint-card" onclick="show('s1'); setActive(2)">
+      <div class="sprint-card-header">
+        <span class="chip chip-cyan">S1</span>
+        <span class="chip chip-amber">Критический</span>
+      </div>
+      <div class="sprint-card-name">aq_queue + aq_auth</div>
+      <div class="sprint-card-pkg">packages/aq_queue &nbsp;·&nbsp; packages/aq_auth</div>
+      <div class="sprint-card-desc">Redis абстракция: enqueue/dequeue/result store/worker registry. MockAuthProvider — полный интерфейс авторизации, готовый к замене.</div>
+      <div class="sprint-card-footer">
+        <span class="sprint-card-time">~4ч</span>
+        <span class="sprint-card-tasks">12 задач</span>
+      </div>
+      <div class="sprint-card-num">1</div>
+    </div>
+
+    <div class="sprint-card" onclick="show('s2'); setActive(3)">
+      <div class="sprint-card-header">
+        <span class="chip chip-cyan">S2</span>
+        <span class="chip chip-amber">Критический</span>
+      </div>
+      <div class="sprint-card-name">aq_mcp_core</div>
+      <div class="sprint-card-pkg">packages/aq_mcp_core</div>
+      <div class="sprint-card-desc">JSON-RPC codec. STDIO transport (Content-Length framing). HTTP transport. MCP lifecycle (initialize). Полный protocol layer.</div>
+      <div class="sprint-card-footer">
+        <span class="sprint-card-time">~4ч</span>
+        <span class="sprint-card-tasks">11 задач</span>
+      </div>
+      <div class="sprint-card-num">2</div>
+    </div>
+
+    <div class="sprint-card" onclick="show('s3'); setActive(4)">
+      <div class="sprint-card-header">
+        <span class="chip chip-cyan">S3</span>
+        <span class="chip chip-amber">Критический</span>
+      </div>
+      <div class="sprint-card-name">aq_mcp_adapter</div>
+      <div class="sprint-card-pkg">packages/aq_mcp_adapter</div>
+      <div class="sprint-card-desc">Главный компонент. Worker Registry, capability aggregation, Queue Dispatcher, sync/async режимы, get_job_status, registration endpoint, health eviction.</div>
+      <div class="sprint-card-footer">
+        <span class="sprint-card-time">~6ч</span>
+        <span class="sprint-card-tasks">15 задач</span>
+      </div>
+      <div class="sprint-card-num">3</div>
+    </div>
+
+    <div class="sprint-card" onclick="show('s4'); setActive(5)">
+      <div class="sprint-card-header">
+        <span class="chip chip-cyan">S4</span>
+        <span class="chip chip-green">Высокий</span>
+      </div>
+      <div class="sprint-card-name">Python Worker</div>
+      <div class="sprint-card-pkg">workers/python_wrapper &nbsp;·&nbsp; aq_py_wrapper (pip)</div>
+      <div class="sprint-card-desc">Python pip-пакет: регистрация, Redis BRPOP loop, health check. SubprocessWorkerWrapper для STDIO MCP серверов. Два примера воркеров.</div>
+      <div class="sprint-card-footer">
+        <span class="sprint-card-time">~4ч</span>
+        <span class="sprint-card-tasks">10 задач</span>
+      </div>
+      <div class="sprint-card-num">4</div>
+    </div>
+
+    <div class="sprint-card" onclick="show('s5'); setActive(6)">
+      <div class="sprint-card-header">
+        <span class="chip chip-cyan">S5</span>
+        <span class="chip chip-purple">Средний</span>
+      </div>
+      <div class="sprint-card-name">Dart Worker</div>
+      <div class="sprint-card-pkg">packages/aq_worker &nbsp;·&nbsp; workers/dart_example</div>
+      <div class="sprint-card-desc">BaseWorker: авто-регистрация, schema validation, health loop, timeout, error normalization, graceful shutdown. Пример воркера с реальным tool.</div>
+      <div class="sprint-card-footer">
+        <span class="sprint-card-time">~3ч</span>
+        <span class="sprint-card-tasks">9 задач</span>
+      </div>
+      <div class="sprint-card-num">5</div>
+    </div>
+
+    <div class="sprint-card" onclick="show('s6'); setActive(7)">
+      <div class="sprint-card-header">
+        <span class="chip chip-cyan">S6</span>
+        <span class="chip chip-amber">Критический</span>
+      </div>
+      <div class="sprint-card-name">Docker + E2E</div>
+      <div class="sprint-card-pkg">deploy/ &nbsp;·&nbsp; Локальные тесты</div>
+      <div class="sprint-card-desc">Docker Compose стек (nginx + adapter + redis). Все compose файлы для воркеров. Deploy скрипты. Полный E2E тест: client → tools/call → результат.</div>
+      <div class="sprint-card-footer">
+        <span class="sprint-card-time">~2ч</span>
+        <span class="sprint-card-tasks">8 задач</span>
+      </div>
+      <div class="sprint-card-num">6</div>
+    </div>
+
+    <div class="sprint-card" onclick="show('s7'); setActive(8)">
+      <div class="sprint-card-header">
+        <span class="chip chip-cyan">S7</span>
+        <span class="chip chip-purple">Финал</span>
+      </div>
+      <div class="sprint-card-name">Документация</div>
+      <div class="sprint-card-pkg">docs/ &nbsp;·&nbsp; README &nbsp;·&nbsp; Guides</div>
+      <div class="sprint-card-desc">Полная документация: как создать Dart воркер, Python воркер, подключить готовый MCP сервер, развернуть стек локально и на удалённом сервере.</div>
+      <div class="sprint-card-footer">
+        <span class="sprint-card-time">~2ч</span>
+        <span class="sprint-card-tasks">7 задач</span>
+      </div>
+      <div class="sprint-card-num">7</div>
+    </div>
+
+  </div>
+
+  <div class="total-bar">
+    <div class="total-bar-label">Общий<br>таймлайн</div>
+    <div class="timeline-bar">
+      <div class="tl-segment" style="flex:5;background:rgba(0,212,255,0.18);color:var(--accent)" onclick="show('s0');setActive(1)">S0 · Schema</div>
+      <div class="tl-segment" style="flex:4;background:rgba(124,58,237,0.18);color:#a78bfa" onclick="show('s1');setActive(2)">S1 · Queue</div>
+      <div class="tl-segment" style="flex:4;background:rgba(0,212,255,0.12);color:var(--accent)" onclick="show('s2');setActive(3)">S2 · Core</div>
+      <div class="tl-segment" style="flex:6;background:rgba(245,158,11,0.18);color:var(--accent4)" onclick="show('s3');setActive(4)">S3 · Adapter</div>
+      <div class="tl-segment" style="flex:4;background:rgba(16,185,129,0.18);color:var(--accent3)" onclick="show('s4');setActive(5)">S4 · Python</div>
+      <div class="tl-segment" style="flex:3;background:rgba(124,58,237,0.12);color:#a78bfa" onclick="show('s5');setActive(6)">S5 · Dart</div>
+      <div class="tl-segment" style="flex:2;background:rgba(244,63,94,0.18);color:var(--accent5)" onclick="show('s6');setActive(7)">S6 · E2E</div>
+      <div class="tl-segment" style="flex:2;background:rgba(0,212,255,0.08);color:var(--muted)" onclick="show('s7');setActive(8)">S7 · Docs</div>
+    </div>
+    <div class="total-time">~30ч</div>
+  </div>
+
+  <div class="card full" style="margin-top:24px">
+    <div class="card-title"><div class="icon icon-amber"></div>Правила работы со спринтами</div>
+    <div class="section-grid thirds">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Перед спринтом</div>
+        <ul class="checklist compact">
+          <li><div class="marker"></div>Прочитать раздел «Подготовка» полностью</li>
+          <li><div class="marker"></div>Убедиться, что все зависимости спринта выполнены</li>
+          <li><div class="marker"></div>Запросить спринт одним сообщением согласно шаблону запроса</li>
+          <li><div class="marker"></div>Не начинать следующий спринт пока текущий не зачекирован</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Во время спринта</div>
+        <ul class="checklist compact">
+          <li><div class="marker"></div>Один спринт = один запрос к AI (не дробить)</li>
+          <li><div class="marker"></div>Все файлы пишутся сразу с тестами</li>
+          <li><div class="marker"></div>Код проверяется командой <code>dart test</code> в конце</li>
+          <li><div class="marker"></div>Сохранять структуру монорепо строго по плану</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">После спринта</div>
+        <ul class="checklist compact">
+          <li><div class="marker"></div>Запустить все команды из раздела «Проверка»</li>
+          <li><div class="marker"></div>Убедиться что все тесты зелёные</li>
+          <li><div class="marker"></div>Зафиксировать git commit с тегом спринта</li>
+          <li><div class="marker"></div>Только после этого — переход к следующему</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════ SPRINT 0 -->
+<div id="s0" class="panel">
+
+  <div class="sprint-hero">
+    <div>
+      <div class="sprint-label">Sprint 0 · Фундамент</div>
+      <div class="sprint-title">aq_schema — <em>Источник правды</em></div>
+      <div class="sprint-desc">Инициализация монорепо, полная схемная база: JSON Schema файлы для всех доменов (MCP, Worker, Queue, Auth), Dart-интерфейсы, валидаторы, тесты. Всё остальное строится поверх этого пакета.</div>
+      <div class="sprint-pkg" style="margin-top:14px">
+        <span class="chip chip-cyan">aq_schema</span>
+        <span class="chip chip-purple">melos</span>
+        <span class="chip chip-green">Только dart:core</span>
+      </div>
+    </div>
+    <div class="sprint-meta">
+      <div>
+        <div class="sprint-time">~5ч</div>
+        <div class="sprint-time-label">Расчётное время</div>
+      </div>
+      <div>
+        <span class="chip chip-amber">Критический путь</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-grid wide-left">
+    <div>
+
+      <div class="question-card">
+        <div class="question-title">Подготовка к спринту</div>
+        <div class="question-text">Убедись что установлены: <code>Dart SDK 3.x</code>, <code>dart pub global activate melos</code>, <code>git</code>. Репо пустое или инициализированное. Никаких зависимостей от предыдущих спринтов.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-cyan"></div>Задачи спринта</div>
+        <ul class="checklist">
+          <li><div class="marker"></div><div><strong>Монорепо</strong> — создать структуру директорий, <code>melos.yaml</code>, корневой <code>pubspec.yaml</code></div></li>
+          <li><div class="marker"></div><div><strong>mcp/schemas/</strong> — написать JSON Schema: <code>initialize.json</code>, <code>initialize_response.json</code>, <code>tools_list_response.json</code>, <code>mcp_tool.json</code>, <code>tools_call_request.json</code>, <code>tools_call_response.json</code>, <code>mcp_error.json</code></div></li>
+          <li><div class="marker"></div><div><strong>worker/schemas/</strong> — JSON Schema: <code>worker_registration.json</code>, <code>worker_job.json</code>, <code>worker_result.json</code>, <code>worker_health.json</code></div></li>
+          <li><div class="marker"></div><div><strong>queue/schemas/</strong> — <code>queue_job_status.json</code></div></li>
+          <li><div class="marker"></div><div><strong>auth/schemas/</strong> — <code>auth_token_payload.json</code>, <code>auth_context.json</code>, <code>auth_result.json</code></div></li>
+          <li><div class="marker"></div><div><strong>Dart модели</strong> — сгенерировать/написать: <code>McpTool</code>, <code>McpRequest</code>, <code>McpResponse</code>, <code>McpError</code>, <code>WorkerJob</code>, <code>WorkerResult</code>, <code>WorkerRegistration</code>, <code>WorkerHealth</code>, <code>AuthContext</code>, <code>AuthResult</code>, <code>QueueJobStatus</code></div></li>
+          <li><div class="marker"></div><div><strong>Абстрактные интерфейсы</strong> — <code>AuthProvider</code>, <code>JobQueue</code>, <code>WorkerRegistry</code> (только abstract, без реализации)</div></li>
+          <li><div class="marker"></div><div><strong>Валидаторы</strong> — <code>McpValidator</code> и <code>WorkerValidator</code> с методами <code>validate()</code></div></li>
+          <li><div class="marker"></div><div><strong>Barrel export</strong> — <code>lib/aq_schema.dart</code> экспортирует всё</div></li>
+          <li><div class="marker"></div><div><strong>Тесты</strong> — валидация валидных объектов, валидация невалидных, проверка обязательных полей</div></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-purple"></div>Структура файлов</div>
+        <div class="filetree">
+<span class="dir">mcp_dart_ecosystem/</span>
+├── melos.yaml                     <span class="cm">← монорепо конфиг</span>
+├── pubspec.yaml                   <span class="cm">← корневой (workspace)</span>
+└── <span class="dir">packages/</span>
+    └── <span class="dir">aq_schema/</span>
+        ├── pubspec.yaml
+        └── <span class="dir">lib/</span>
+            ├── aq_schema.dart     <span class="cm">← barrel</span>
+            ├── <span class="dir">mcp/</span>
+            │   ├── <span class="dir">schemas/</span>    <span class="new">← 7 JSON файлов</span>
+            │   ├── <span class="dir">models/</span>     <span class="new">← 5 Dart классов</span>
+            │   └── <span class="dir">validators/</span> <span class="new">← McpValidator</span>
+            ├── <span class="dir">worker/</span>
+            │   ├── <span class="dir">schemas/</span>    <span class="new">← 4 JSON файла</span>
+            │   ├── <span class="dir">models/</span>     <span class="new">← 4 Dart класса</span>
+            │   └── <span class="dir">validators/</span> <span class="new">← WorkerValidator</span>
+            ├── <span class="dir">queue/</span>
+            │   ├── <span class="dir">schemas/</span>    <span class="new">← 1 JSON файл</span>
+            │   └── <span class="dir">models/</span>     <span class="new">← QueueJobStatus</span>
+            └── <span class="dir">auth/</span>
+                ├── <span class="dir">schemas/</span>    <span class="new">← 3 JSON файла</span>
+                └── <span class="dir">models/</span>     <span class="new">← AuthContext, AuthResult, AuthProvider(abstract)</span>
+        </div>
+      </div>
+
+    </div>
+    <div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-amber"></div>Шаблон запроса к AI</div>
+        <pre>
+Реализуй Sprint 0: aq_schema.
+
+Монорепо: mcp_dart_ecosystem/
+Инструменты: Dart 3.x, melos
+
+<span class="ok">Задача:</span>
+1. Создать структуру монорепо 
+   (melos.yaml + packages/aq_schema)
+2. Написать все JSON Schema файлы:
+   - mcp/ (7 схем по архитектурному плану)
+   - worker/ (4 схемы)
+   - queue/ (1 схема)
+   - auth/ (3 схемы)
+3. Dart модели с fromJson/toJson
+4. Abstract интерфейсы:
+   AuthProvider, JobQueue, WorkerRegistry
+5. McpValidator + WorkerValidator
+6. Barrel export lib/aq_schema.dart
+7. Тесты в test/
+
+<span class="warn">Требования:</span>
+- Строгое соответствие MCP spec
+- _aq_* префикс для расширений
+- Все обязательные поля через required
+- Следовать структуре из архитектурного плана</pre>
+      </div>
+
+      <div class="deliverables">
+        <div class="deliverables-title">Результат спринта — что проверяем</div>
+        <ul>
+          <li><strong>dart pub get</strong> — без ошибок</li>
+          <li><strong>dart test</strong> — все тесты зелёные</li>
+          <li><strong>dart analyze</strong> — 0 ошибок, 0 warnings</li>
+          <li>Можно сделать <code>import 'package:aq_schema/aq_schema.dart'</code></li>
+          <li>McpTool.fromJson(json) парсит корректный объект</li>
+          <li>WorkerJob.fromJson(json) сериализуется обратно</li>
+          <li>Валидатор отклоняет невалидный MCP запрос</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-title"><div class="icon icon-green"></div>Команды проверки</div>
+        <div class="check-cmd">cd packages/aq_schema && dart pub get</div>
+        <div class="check-cmd">cd packages/aq_schema && dart test</div>
+        <div class="check-cmd">cd packages/aq_schema && dart analyze</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════ SPRINT 1 -->
+<div id="s1" class="panel">
+
+  <div class="sprint-hero">
+    <div>
+      <div class="sprint-label">Sprint 1 · Инфраструктура</div>
+      <div class="sprint-title">aq_queue + <em>aq_auth</em></div>
+      <div class="sprint-desc">Redis-абстракция: очередь задач, хранилище результатов, реестр воркеров. Mock-авторизация с полным интерфейсом, готовым к замене на реальный auth-сервис без изменения вышестоящих пакетов.</div>
+      <div class="sprint-pkg" style="margin-top:14px">
+        <span class="chip chip-cyan">aq_queue</span>
+        <span class="chip chip-cyan">aq_auth</span>
+        <span class="chip chip-green">depends: aq_schema</span>
+        <span class="chip chip-purple">redis (pub.dev)</span>
+      </div>
+    </div>
+    <div class="sprint-meta">
+      <div>
+        <div class="sprint-time">~4ч</div>
+        <div class="sprint-time-label">Расчётное время</div>
+      </div>
+      <div><span class="chip chip-amber">Критический путь</span></div>
+    </div>
+  </div>
+
+  <div class="section-grid wide-left">
+    <div>
+
+      <div class="question-card">
+        <div class="question-title">Подготовка</div>
+        <div class="question-text">Sprint 0 завершён и проверен. Запущен Docker с Redis: <code>docker run -d -p 6379:6379 redis:7-alpine</code>. Redis доступен на <code>localhost:6379</code>.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-cyan"></div>Задачи — aq_queue</div>
+        <ul class="checklist">
+          <li><div class="marker"></div><div><strong>JobQueue абстракция</strong> — interface: <code>enqueue</code>, <code>dequeue</code>, <code>setResult</code>, <code>getResult</code>, <code>getStatus</code>, <code>setStatus</code></div></li>
+          <li><div class="marker"></div><div><strong>WorkerRegistry абстракция</strong> — interface: <code>register</code>, <code>updateHealth</code>, <code>activeWorkers</code>, <code>findWorker</code>, <code>evict</code></div></li>
+          <li><div class="marker"></div><div><strong>RedisJobQueue</strong> — LPUSH для enqueue, BRPOP для dequeue, SET/GET для result (TTL 1h), HSET для status (TTL 24h)</div></li>
+          <li><div class="marker"></div><div><strong>RedisWorkerRegistry</strong> — HSET/HGET/HDEL, health key с TTL 90s, автоматический <code>evict</code> при отсутствии health</div></li>
+          <li><div class="marker"></div><div><strong>Redis ключи</strong> — строго по соглашению: <code>aq:queue:jobs</code>, <code>aq:queue:jobs:{worker_id}</code>, <code>aq:result:{job_id}</code>, <code>aq:status:{job_id}</code>, <code>aq:worker:registry</code>, <code>aq:worker:health:{worker_id}</code></div></li>
+          <li><div class="marker"></div><div><strong>Connection pool</strong> — переиспользование соединений, reconnect при обрыве</div></li>
+          <li><div class="marker"></div><div><strong>Интеграционные тесты</strong> — enqueue/dequeue round-trip, result TTL, registry eviction</div></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-purple"></div>Задачи — aq_auth</div>
+        <ul class="checklist">
+          <li><div class="marker"></div><div><strong>AuthMiddleware interface</strong> — <code>authenticate(payload)</code> → AuthResult, <code>authorize(ctx, tool)</code> → bool</div></li>
+          <li><div class="marker"></div><div><strong>MockAuthProvider</strong> — всегда <code>success: true</code>, <code>subject: 'mock-user'</code>, <code>scopes: ['*']</code>, <code>_mock: true</code></div></li>
+          <li><div class="marker"></div><div><strong>AuthConfig</strong> — читает из .env: <code>AUTH_ENABLED</code>, <code>AUTH_TYPE</code>, <code>AUTH_SERVICE_URL</code></div></li>
+          <li><div class="marker"></div><div><strong>MockAuthMiddleware</strong> — реализует AuthMiddleware через MockAuthProvider, логирует вызовы</div></li>
+          <li><div class="marker"></div><div><strong>Unit тесты</strong> — mock всегда пропускает, интерфейс соответствует контракту</div></li>
+        </ul>
+      </div>
+
+    </div>
+    <div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-amber"></div>Шаблон запроса к AI</div>
+        <pre>
+Реализуй Sprint 1: aq_queue + aq_auth.
+
+Контекст: aq_schema уже реализован.
+Redis доступен на localhost:6379.
+
+<span class="ok">aq_queue:</span>
+- JobQueue abstract interface
+- WorkerRegistry abstract interface
+- RedisJobQueue (LPUSH/BRPOP/SET/GET)
+- RedisWorkerRegistry (HASH + TTL)
+- Соглашение о ключах из архплана
+- Connection pool, reconnect
+- Интеграционные тесты с реальным Redis
+
+<span class="ok">aq_auth:</span>
+- AuthMiddleware interface
+- MockAuthProvider (always OK)
+- MockAuthMiddleware
+- AuthConfig из .env
+- Unit тесты
+
+<span class="warn">Требования:</span>
+- depends only on aq_schema
+- BRPOP timeout настраиваемый
+- TTL строго по архплану
+- MockAuth логирует все вызовы</pre>
+      </div>
+
+      <div class="deliverables">
+        <div class="deliverables-title">Результат спринта — что проверяем</div>
+        <ul>
+          <li>Enqueue job → dequeue тот же job (round-trip)</li>
+          <li>setResult → getResult возвращает результат</li>
+          <li>Worker register → findWorker находит по tool name</li>
+          <li>Health miss x3 → воркер evicted из registry</li>
+          <li>MockAuth всегда возвращает success=true</li>
+          <li>Все тесты зелёные с реальным Redis</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-title"><div class="icon icon-green"></div>Команды проверки</div>
+        <div class="check-cmd">docker run -d -p 6379:6379 redis:7-alpine</div>
+        <div class="check-cmd">cd packages/aq_queue && dart test</div>
+        <div class="check-cmd">cd packages/aq_auth && dart test</div>
+        <div class="check-cmd">melos bootstrap && melos analyze</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════ SPRINT 2 -->
+<div id="s2" class="panel">
+
+  <div class="sprint-hero">
+    <div>
+      <div class="sprint-label">Sprint 2 · Протокол</div>
+      <div class="sprint-title">aq_mcp_core — <em>Protocol Layer</em></div>
+      <div class="sprint-desc">Полная реализация MCP протокола: JSON-RPC codec, STDIO transport с Content-Length framing, HTTP transport, MCP lifecycle (initialize handshake). Никакой бизнес-логики — только protocol.</div>
+      <div class="sprint-pkg" style="margin-top:14px">
+        <span class="chip chip-cyan">aq_mcp_core</span>
+        <span class="chip chip-green">depends: aq_schema</span>
+        <span class="chip chip-purple">shelf</span>
+      </div>
+    </div>
+    <div class="sprint-meta">
+      <div>
+        <div class="sprint-time">~4ч</div>
+        <div class="sprint-time-label">Расчётное время</div>
+      </div>
+      <div><span class="chip chip-amber">Критический путь</span></div>
+    </div>
+  </div>
+
+  <div class="section-grid wide-left">
+    <div>
+
+      <div class="question-card">
+        <div class="question-title">Подготовка</div>
+        <div class="question-text">Sprint 0 и Sprint 1 завершены. Все тесты зелёные. <code>melos bootstrap</code> выполнен успешно. Понимание MCP spec: JSON-RPC 2.0 over STDIO.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-cyan"></div>Задачи спринта</div>
+        <ul class="checklist">
+          <li><div class="marker"></div><div><strong>McpCodec</strong> — <code>decode(String raw)</code> → McpRequest, <code>encode(McpResponse)</code> → String, <code>encodeError(McpError)</code> → String. Обработка всех JSON-RPC edge cases.</div></li>
+          <li><div class="marker"></div><div><strong>StdioTransport</strong> — строгий Content-Length framing: <code>Content-Length: N\r\n\r\n{json}</code>. Stream&lt;McpRequest&gt; на входе, send() на выходе. stdout = только JSON, stderr = логи.</div></li>
+          <li><div class="marker"></div><div><strong>HttpTransport</strong> — shelf-based, <code>POST /mcp</code> → JSON-RPC, <code>GET /health</code> → 200 OK. Keep-alive соединения.</div></li>
+          <li><div class="marker"></div><div><strong>McpLifecycle</strong> — <code>handleInitialize(request)</code> → McpInitializeResponse с capabilities + <code>_aq_extensions</code>. Флаг <code>initialized</code>. Reject любых запросов до initialize.</div></li>
+          <li><div class="marker"></div><div><strong>Error mapping</strong> — таблица кодов: -32700 parse, -32600 invalid, -32601 not found, -32602 params, -32603 internal, -32000..-32004 AQ extensions</div></li>
+          <li><div class="marker"></div><div><strong>McpRequestRouter</strong> — базовый router: dispatch по method, возвращает Future&lt;McpResponse&gt;. Без конкретных handlers (они в adapter).</div></li>
+          <li><div class="marker"></div><div><strong>Тесты</strong> — codec round-trip (encode→decode→encode == исходный), STDIO framing корректность, initialize handshake</div></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-red"></div>Критически важно</div>
+        <div class="callout callout-amber">
+          <strong>STDIO framing</strong> — строго соблюдать: каждый JSON-RPC message предваряется заголовком <code>Content-Length: N\r\n\r\n</code>. Никаких partial writes. Никакого non-JSON в stdout.
+        </div>
+        <div class="callout callout-cyan">
+          <strong>McpLifecycle</strong> — любой запрос до <code>initialize</code> должен возвращать ошибку -32600 (Invalid Request), кроме самого initialize.
+        </div>
+      </div>
+
+    </div>
+    <div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-amber"></div>Шаблон запроса к AI</div>
+        <pre>
+Реализуй Sprint 2: aq_mcp_core.
+
+Контекст: aq_schema готов.
+
+<span class="ok">Задача:</span>
+1. McpCodec — encode/decode JSON-RPC
+2. StdioTransport — Content-Length framing
+   stdout=JSON only, stderr=logs
+3. HttpTransport — shelf, POST /mcp + GET /health
+4. McpLifecycle — initialize handshake
+   capabilities + _aq_extensions в ответе
+5. McpRequestRouter — dispatch по method
+6. Error codes table (-32700..-32004)
+7. Тесты: codec roundtrip, framing, lifecycle
+
+<span class="warn">Критично:</span>
+- StdioTransport: строгий CRLF framing
+- Lifecycle: reject до initialize = -32600
+- HttpTransport: keep-alive connections
+- depends only on aq_schema</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-green"></div>STDIO Framing пример</div>
+        <pre>
+<span class="cm">// Правильный формат каждого сообщения:</span>
+<span class="str">"Content-Length: 78\r\n\r\n"</span>
+<span class="str">'{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}'</span>
+
+<span class="cm">// StdioTransport читает:</span>
+<span class="kw">1.</span> Headers до \r\n\r\n
+<span class="kw">2.</span> Парсит Content-Length: N
+<span class="kw">3.</span> Читает ровно N байт JSON
+<span class="kw">4.</span> Emit McpRequest в Stream</pre>
+      </div>
+
+      <div class="deliverables">
+        <div class="deliverables-title">Результат спринта — что проверяем</div>
+        <ul>
+          <li>McpCodec: encode(decode(raw)) == raw</li>
+          <li>STDIO: корректный Content-Length в каждом сообщении</li>
+          <li>HTTP: <code>POST /mcp</code> с initialize → корректный ответ</li>
+          <li>Lifecycle: запрос до initialize → error -32600</li>
+          <li>Initialize ответ содержит <code>_aq_extensions</code></li>
+          <li>Все тесты зелёные</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-title"><div class="icon icon-green"></div>Команды проверки</div>
+        <div class="check-cmd">cd packages/aq_mcp_core && dart test</div>
+        <div class="check-cmd">cd packages/aq_mcp_core && dart analyze</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════ SPRINT 3 -->
+<div id="s3" class="panel">
+
+  <div class="sprint-hero">
+    <div>
+      <div class="sprint-label">Sprint 3 · Ядро системы</div>
+      <div class="sprint-title">aq_mcp_adapter — <em>Оркестратор</em></div>
+      <div class="sprint-desc">Главный компонент экосистемы. Worker Registry с persistence, dynamic registration endpoint, health check + eviction loop, capability aggregation, Queue Dispatcher (sync + async), системный tool get_job_status, Dockerfile.</div>
+      <div class="sprint-pkg" style="margin-top:14px">
+        <span class="chip chip-cyan">aq_mcp_adapter</span>
+        <span class="chip chip-green">depends: все предыдущие</span>
+        <span class="chip chip-amber">самый сложный спринт</span>
+      </div>
+    </div>
+    <div class="sprint-meta">
+      <div>
+        <div class="sprint-time">~6ч</div>
+        <div class="sprint-time-label">Расчётное время</div>
+      </div>
+      <div><span class="chip chip-red">Максимальная сложность</span></div>
+    </div>
+  </div>
+
+  <div class="section-grid">
+    <div>
+
+      <div class="question-card">
+        <div class="question-title">Подготовка</div>
+        <div class="question-text">Спринты 0-2 завершены. <code>melos bootstrap</code> успешен. Redis запущен. Понимание flow: MCP request → auth → enqueue → worker → result → MCP response.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-cyan"></div>Компоненты адаптера</div>
+        <div class="flow">
+          <div class="flow-item"><span class="flow-num">01</span><div class="flow-text"><strong>WorkerRegistry</strong> — in-memory Map + Redis HASH для persistence. CRUD операции. <code>findWorker(toolName)</code> ищет по capability.</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-item"><span class="flow-num">02</span><div class="flow-text"><strong>Registration Endpoint</strong> — <code>POST /workers/register</code>: принимает WorkerRegistration, валидирует по schema, сохраняет, возвращает queue key.</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-item"><span class="flow-num">03</span><div class="flow-text"><strong>Health Check Loop</strong> — каждые 30s опрашивает. После <code>WORKERS_EVICT_AFTER_MISSED_CHECKS</code> пропущенных heartbeat — evict из registry.</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-item"><span class="flow-num">04</span><div class="flow-text"><strong>CapabilityAggregator</strong> — собирает <code>tools</code> со всех active workers. Добавляет системный <code>get_job_status</code>. Кеширует, инвалидирует при изменении registry.</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-item"><span class="flow-num">05</span><div class="flow-text"><strong>QueueDispatcher</strong> — sync: enqueue + BLPOP result с timeout. async: enqueue + сразу возвращает job_id. Режим из <code>_aq_mode</code> или env default.</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-item"><span class="flow-num">06</span><div class="flow-text"><strong>McpAdapterServer</strong> — собирает все компоненты. Handlers: initialize, tools/list, tools/call, get_job_status. Full request flow.</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-item"><span class="flow-num">07</span><div class="flow-text"><strong>Конфигурация</strong> — все параметры из .env через <code>AdapterConfig.fromEnv()</code></div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-item"><span class="flow-num">08</span><div class="flow-text"><strong>Dockerfile</strong> — multi-stage: dart compile exe → debian:slim. <code>GET /health</code> для healthcheck.</div></div>
+        </div>
+      </div>
+
+    </div>
+    <div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-amber"></div>Шаблон запроса к AI</div>
+        <pre>
+Реализуй Sprint 3: aq_mcp_adapter.
+
+Контекст: aq_schema, aq_queue, aq_auth,
+aq_mcp_core — все готовы.
+
+<span class="ok">Задача:</span>
+1. WorkerRegistry (in-memory + Redis)
+2. POST /workers/register endpoint
+3. POST /workers/health endpoint  
+4. Health eviction loop (каждые 30s)
+5. CapabilityAggregator с кешем
+6. QueueDispatcher: sync + async режимы
+7. McpAdapterServer — полный request flow:
+   initialize → tools/list → tools/call
+8. Системный tool get_job_status
+9. AdapterConfig.fromEnv()
+10. Dockerfile (multi-stage, dart compile exe)
+11. GET /health endpoint
+
+<span class="warn">Критично:</span>
+- Worker selection: round-robin + capability
+- Sync mode: BLPOP с configurable timeout
+- Async mode: немедленный job_id ответ
+- get_job_status всегда в tools/list
+- AUTH_ENABLED=false → MockAuthMiddleware
+- Полные интеграционные тесты</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-cyan"></div>Request Flow</div>
+        <pre>
+<span class="cm">// tools/call → adapter:</span>
+<span class="kw">1.</span> decode JSON-RPC request
+<span class="kw">2.</span> lifecycle check (initialized?)
+<span class="kw">3.</span> auth.authenticate(params._aq_auth)
+<span class="kw">4.</span> validate tool exists in registry
+<span class="kw">5.</span> find worker by tool name
+<span class="kw">6.</span> create WorkerJob(uuid, payload, auth)
+<span class="kw">7.</span> mode = params._aq_mode ?? config.default
+
+<span class="kw">if</span> sync:
+  enqueue(job)
+  <span class="ok">result</span> = await getResult(job_id, timeout)
+  <span class="kw">return</span> McpToolCallResponse(content: result)
+
+<span class="kw">if</span> async:
+  enqueue(job)
+  <span class="kw">return</span> McpToolCallResponse(
+    content: [{type: text, text: job_id}]
+  )</pre>
+      </div>
+
+      <div class="deliverables">
+        <div class="deliverables-title">Результат спринта — что проверяем</div>
+        <ul>
+          <li>Adapter стартует без ошибок</li>
+          <li>initialize → корректный ответ с capabilities</li>
+          <li>Воркер регистрируется → его tools видны в tools/list</li>
+          <li><code>get_job_status</code> всегда есть в tools/list</li>
+          <li>tools/call в sync режиме → ждёт и возвращает результат</li>
+          <li>tools/call в async режиме → сразу возвращает job_id</li>
+          <li>Eviction работает: воркер без health → удалён из registry</li>
+          <li><code>docker build</code> собирает образ без ошибок</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════ SPRINT 4 -->
+<div id="s4" class="panel">
+
+  <div class="sprint-hero">
+    <div>
+      <div class="sprint-label">Sprint 4 · Python интеграция</div>
+      <div class="sprint-title">aq_py_wrapper — <em>Python Worker</em></div>
+      <div class="sprint-desc">pip-пакет для создания Python воркеров: регистрация в adapter, Redis BRPOP job loop, health check. SubprocessWorkerWrapper для оборачивания любого готового STDIO MCP сервера. Два примера воркеров.</div>
+      <div class="sprint-pkg" style="margin-top:14px">
+        <span class="chip chip-green">aq_py_wrapper (pip)</span>
+        <span class="chip chip-purple">Python 3.12</span>
+        <span class="chip chip-cyan">workers/python_wrapper</span>
+      </div>
+    </div>
+    <div class="sprint-meta">
+      <div>
+        <div class="sprint-time">~4ч</div>
+        <div class="sprint-time-label">Расчётное время</div>
+      </div>
+      <div><span class="chip chip-green">Высокий приоритет</span></div>
+    </div>
+  </div>
+
+  <div class="section-grid wide-left">
+    <div>
+
+      <div class="question-card">
+        <div class="question-title">Подготовка</div>
+        <div class="question-text">Sprint 3 завершён. Adapter запущен локально: <code>dart run packages/aq_mcp_adapter/bin/main.dart</code>. Python 3.12+, pip. Redis запущен. Adapter слушает на <code>http://localhost:8080</code>.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-green"></div>Задачи — aq_py_wrapper (pip)</div>
+        <ul class="checklist">
+          <li><div class="marker"></div><div><strong>WorkerWrapper класс</strong> — принимает: worker_id, adapter_url, redis_url, tools. Метод <code>run(execute_fn)</code>.</div></li>
+          <li><div class="marker"></div><div><strong>Registration</strong> — при старте POST <code>/workers/register</code> с retry (3 попытки, backoff). Читает queue_key из ответа.</div></li>
+          <li><div class="marker"></div><div><strong>Job Loop</strong> — asyncio BRPOP на своём queue key. Для каждого job: валидация schema, вызов execute_fn, запись результата в Redis.</div></li>
+          <li><div class="marker"></div><div><strong>Health Loop</strong> — asyncio, каждые 30s: POST <code>/workers/health</code> с текущим статусом и active_jobs count.</div></li>
+          <li><div class="marker"></div><div><strong>Error normalization</strong> — любой Exception из execute_fn → WorkerResult с status=failed, error.type='execution_error'</div></li>
+          <li><div class="marker"></div><div><strong>SubprocessWorkerWrapper</strong> — запускает STDIO MCP сервер как subprocess. Вызывает <code>tools/list</code> у subprocess при старте. Проксирует <code>tools/call</code> туда же.</div></li>
+          <li><div class="marker"></div><div><strong>Graceful shutdown</strong> — SIGTERM → завершить текущий job → POST health(unhealthy) → exit</div></li>
+          <li><div class="marker"></div><div><strong>setup.py / pyproject.toml</strong> — публикуемый pip пакет</div></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-cyan"></div>Задачи — примеры воркеров</div>
+        <ul class="checklist">
+          <li><div class="marker"></div><div><strong>worker_direct.py</strong> — прямая реализация: tool <code>fetch_url</code> через httpx. Dockerfile. .env.example.</div></li>
+          <li><div class="marker"></div><div><strong>worker_subprocess.py</strong> — SubprocessWorkerWrapper оборачивает <code>mcp-server-fetch</code> или <code>mcp-server-filesystem</code>. Dockerfile.</div></li>
+        </ul>
+      </div>
+
+    </div>
+    <div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-amber"></div>Шаблон запроса к AI</div>
+        <pre>
+Реализуй Sprint 4: Python Worker.
+
+Контекст: Dart adapter работает на localhost:8080
+Redis на localhost:6379
+
+<span class="ok">Задача:</span>
+1. aq_py_wrapper (pip) с asyncio:
+   - WorkerWrapper: register + job loop + health
+   - SubprocessWorkerWrapper для STDIO MCP
+   - Error normalization
+   - Graceful shutdown (SIGTERM)
+   - pyproject.toml
+2. worker_direct.py — tool: fetch_url (httpx)
+3. worker_subprocess.py — оборачивает
+   mcp-server-fetch через SubprocessWrapper
+4. Dockerfile для каждого
+5. Интеграционный тест:
+   воркер регистрируется → tools видны в adapter
+
+<span class="warn">Требования:</span>
+- Python 3.12, asyncio
+- Полная asyncio concurrency
+- BRPOP timeout = 5s (не блокировать вечно)
+- Concurrency через asyncio.gather
+- redis-py async client</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-green"></div>SubprocessWrapper flow</div>
+        <pre>
+<span class="cm"># При старте:</span>
+<span class="fn">process</span> = subprocess.Popen(command, stdin=PIPE, stdout=PIPE)
+<span class="cm"># Отправить MCP initialize + tools/list</span>
+<span class="fn">tools</span> = <span class="kw">await</span> mcp_call(process, <span class="str">"tools/list"</span>)
+<span class="cm"># Зарегистрировать эти tools в adapter</span>
+<span class="kw">await</span> register_with_adapter(worker_id, tools)
+
+<span class="cm"># Для каждого job из Redis:</span>
+<span class="fn">result</span> = <span class="kw">await</span> mcp_call(process, <span class="str">"tools/call"</span>, {
+    <span class="str">"name"</span>: job.tool,
+    <span class="str">"arguments"</span>: job.payload
+})
+<span class="cm"># Записать result в Redis</span></pre>
+      </div>
+
+      <div class="deliverables">
+        <div class="deliverables-title">Результат спринта — что проверяем</div>
+        <ul>
+          <li>Python воркер стартует и регистрируется в adapter</li>
+          <li>tools воркера видны в <code>tools/list</code> через curl</li>
+          <li>tools/call → воркер обрабатывает → результат в Redis → adapter возвращает</li>
+          <li>SubprocessWrapper: tools из STDIO MCP сервера проксируются</li>
+          <li>Graceful shutdown: SIGTERM → job завершается → воркер отключается</li>
+          <li>Воркер падает → adapter evicts через health timeout</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-title"><div class="icon icon-green"></div>Команды проверки</div>
+        <div class="check-cmd">pip install -e workers/python_wrapper</div>
+        <div class="check-cmd">python workers/python_wrapper/worker_direct.py &</div>
+        <div class="check-cmd">curl localhost:8080/workers</div>
+        <div class="check-cmd">curl -X POST localhost:8080/mcp -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════ SPRINT 5 -->
+<div id="s5" class="panel">
+
+  <div class="sprint-hero">
+    <div>
+      <div class="sprint-label">Sprint 5 · Dart воркеры</div>
+      <div class="sprint-title">aq_worker — <em>Dart Worker Base</em></div>
+      <div class="sprint-desc">BaseWorker абстрактный класс: авто-регистрация, schema validation, health loop, timeout, error normalization, retry, graceful shutdown, isolate support. Пример Dart воркера с реальным tool.</div>
+      <div class="sprint-pkg" style="margin-top:14px">
+        <span class="chip chip-cyan">aq_worker</span>
+        <span class="chip chip-green">depends: aq_schema, aq_queue</span>
+        <span class="chip chip-purple">workers/dart_example</span>
+      </div>
+    </div>
+    <div class="sprint-meta">
+      <div>
+        <div class="sprint-time">~3ч</div>
+        <div class="sprint-time-label">Расчётное время</div>
+      </div>
+      <div><span class="chip chip-purple">Средний приоритет</span></div>
+    </div>
+  </div>
+
+  <div class="section-grid wide-left">
+    <div>
+
+      <div class="question-card">
+        <div class="question-title">Подготовка</div>
+        <div class="question-text">Спринты 0-4 завершены. Adapter и Python воркер работают. Понимание BaseWorker паттерна: разработчик реализует только <code>execute()</code>, всё остальное — автоматически.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-cyan"></div>Задачи спринта</div>
+        <ul class="checklist">
+          <li><div class="marker"></div><div><strong>BaseWorker abstract class</strong> — getters: <code>workerId</code>, <code>tools</code>. Abstract method: <code>execute(tool, payload)</code>. <code>start(config)</code> запускает всё.</div></li>
+          <li><div class="marker"></div><div><strong>WorkerConfig.fromEnv()</strong> — читает <code>REDIS_URL</code>, <code>ADAPTER_URL</code>, <code>WORKER_ID</code>, <code>JOB_CONCURRENCY</code>, <code>HEALTH_CHECK_INTERVAL_SEC</code></div></li>
+          <li><div class="marker"></div><div><strong>Авто-регистрация</strong> — при <code>start()</code>: POST /workers/register с retry + backoff. Сохраняет queue_key.</div></li>
+          <li><div class="marker"></div><div><strong>Job loop</strong> — BRPOP на queue_key, параллельные jobs до concurrency limit, обработка через <code>execute()</code></div></li>
+          <li><div class="marker"></div><div><strong>Schema validation</strong> — перед вызовом <code>execute()</code>: validate payload против inputSchema инструмента</div></li>
+          <li><div class="marker"></div><div><strong>Timeout wrap</strong> — <code>meta.timeout_ms</code> → Future.timeout. При timeout → WorkerResult(status: timeout)</div></li>
+          <li><div class="marker"></div><div><strong>Error normalization</strong> — любой exception → WorkerResult(status: failed, error: normalized)</div></li>
+          <li><div class="marker"></div><div><strong>Health loop</strong> — Timer.periodic, каждые interval секунд: POST /workers/health</div></li>
+          <li><div class="marker"></div><div><strong>Graceful shutdown</strong> — ProcessSignal.sigterm.watch() → завершить текущие jobs → отправить unhealthy → exit</div></li>
+          <li><div class="marker"></div><div><strong>Пример воркера</strong> — <code>workers/dart_example</code>: tool <code>echo</code> + tool <code>uppercase</code>. Dockerfile. README.</div></li>
+        </ul>
+      </div>
+
+    </div>
+    <div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-amber"></div>Шаблон запроса к AI</div>
+        <pre>
+Реализуй Sprint 5: aq_worker (Dart).
+
+Контекст: все предыдущие пакеты готовы.
+Adapter работает на localhost:8080.
+
+<span class="ok">Задача:</span>
+1. packages/aq_worker/
+   - BaseWorker abstract (implement execute())
+   - WorkerConfig.fromEnv()
+   - Авто-регистрация с retry
+   - Job loop (BRPOP + concurrency)
+   - Schema validation перед execute()
+   - Timeout через meta.timeout_ms
+   - Error normalization
+   - Health loop (Timer.periodic)
+   - Graceful shutdown (SIGTERM)
+2. workers/dart_example/
+   - EchoWorker extends BaseWorker
+   - tools: echo, uppercase
+   - Dockerfile (multi-stage)
+   - README.md
+
+<span class="warn">Требования:</span>
+- depends: aq_schema, aq_queue
+- Concurrency через Isolate pool
+- Retry registration: 3 попытки, exponential backoff</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-green"></div>Минимальный воркер</div>
+        <pre>
+<span class="kw">class</span> <span class="ty">EchoWorker</span> <span class="kw">extends</span> <span class="ty">BaseWorker</span> {
+  <span class="kw">@override</span>
+  <span class="ty">String</span> <span class="kw">get</span> workerId => <span class="str">'echo-worker'</span>;
+
+  <span class="kw">@override</span>
+  <span class="ty">List</span>&lt;<span class="ty">McpTool</span>&gt; <span class="kw">get</span> tools => [
+    <span class="ty">McpTool</span>(
+      name: <span class="str">'echo'</span>,
+      description: <span class="str">'Returns input as-is'</span>,
+      inputSchema: {<span class="str">'type'</span>: <span class="str">'object'</span>,
+        <span class="str">'required'</span>: [<span class="str">'text'</span>]}
+    )
+  ];
+
+  <span class="kw">@override</span>
+  <span class="kw">Future</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="kw">dynamic</span>&gt;&gt;
+    <span class="fn">execute</span>(<span class="ty">String</span> tool, <span class="ty">Map</span> payload)
+      <span class="kw">async</span> => {<span class="str">'echo'</span>: payload[<span class="str">'text'</span>]};
+}</pre>
+      </div>
+
+      <div class="deliverables">
+        <div class="deliverables-title">Результат спринта — что проверяем</div>
+        <ul>
+          <li>EchoWorker стартует и регистрируется в adapter</li>
+          <li><code>echo</code> и <code>uppercase</code> видны в tools/list</li>
+          <li>tools/call echo → правильный ответ</li>
+          <li>Невалидный payload → error -32602</li>
+          <li>SIGTERM → воркер завершается корректно</li>
+          <li>Dart + Python воркеры работают одновременно</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════ SPRINT 6 -->
+<div id="s6" class="panel">
+
+  <div class="sprint-hero">
+    <div>
+      <div class="sprint-label">Sprint 6 · Деплой и E2E</div>
+      <div class="sprint-title">Docker + <em>End-to-End</em></div>
+      <div class="sprint-desc">Полный Docker Compose стек: nginx + adapter + redis. Отдельные compose файлы для каждого типа воркера. Nginx конфиг. Deploy скрипты. Health check. Полный E2E тест всей системы локально.</div>
+      <div class="sprint-pkg" style="margin-top:14px">
+        <span class="chip chip-red">deploy/</span>
+        <span class="chip chip-cyan">docker-compose</span>
+        <span class="chip chip-green">nginx</span>
+        <span class="chip chip-amber">E2E tests</span>
+      </div>
+    </div>
+    <div class="sprint-meta">
+      <div>
+        <div class="sprint-time">~2ч</div>
+        <div class="sprint-time-label">Расчётное время</div>
+      </div>
+      <div><span class="chip chip-amber">Критический путь</span></div>
+    </div>
+  </div>
+
+  <div class="section-grid wide-left">
+    <div>
+
+      <div class="question-card">
+        <div class="question-title">Подготовка</div>
+        <div class="question-text">Все спринты 0-5 завершены. Docker Desktop установлен. Docker Compose v2. Все образы собираются (<code>docker build</code>) без ошибок в каждом пакете.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-red"></div>Задачи спринта</div>
+        <ul class="checklist">
+          <li><div class="marker"></div><div><strong>docker-compose.yml</strong> — базовый стек: nginx + adapter + redis. Healthchecks. Networks. Volumes. Restart policies.</div></li>
+          <li><div class="marker"></div><div><strong>docker-compose.workers-python.yml</strong> — py-fetch-worker + py-filesystem-worker. Зависит от базового через external network.</div></li>
+          <li><div class="marker"></div><div><strong>docker-compose.workers-dart.yml</strong> — dart-echo-worker. Scale: replicas: 2.</div></li>
+          <li><div class="marker"></div><div><strong>nginx/nginx.conf</strong> — upstream adapter, proxy_pass /mcp, proxy_pass /health, proxy_read_timeout 300s, buffering off</div></li>
+          <li><div class="marker"></div><div><strong>.env.example</strong> — все переменные для всех сервисов</div></li>
+          <li><div class="marker"></div><div><strong>deploy/scripts/health_check.sh</strong> — ожидает готовности adapter, проверяет воркеры</div></li>
+          <li><div class="marker"></div><div><strong>E2E тест (curl)</strong> — полный сценарий: initialize → tools/list → tools/call → проверить результат</div></li>
+          <li><div class="marker"></div><div><strong>e2e_test.sh</strong> — автоматизированный bash скрипт, запускает весь стек и проверяет</div></li>
+        </ul>
+      </div>
+
+    </div>
+    <div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-amber"></div>Шаблон запроса к AI</div>
+        <pre>
+Реализуй Sprint 6: Docker + E2E.
+
+Контекст: все пакеты готовы, образы собираются.
+
+<span class="ok">Задача:</span>
+1. deploy/docker-compose.yml
+   (nginx + adapter + redis + healthchecks)
+2. deploy/docker-compose.workers-python.yml
+3. deploy/docker-compose.workers-dart.yml
+4. deploy/nginx/nginx.conf
+5. deploy/.env.example
+6. deploy/scripts/health_check.sh
+7. deploy/scripts/e2e_test.sh:
+   - docker compose up
+   - curl initialize
+   - curl tools/list (ожидаем tools воркеров)
+   - curl tools/call echo
+   - assert результат
+   - docker compose down</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-green"></div>E2E сценарий</div>
+        <pre>
+<span class="cm"># 1. Поднять стек</span>
+docker compose -f docker-compose.yml \
+  -f docker-compose.workers-dart.yml up -d
+
+<span class="cm"># 2. Initialize</span>
+curl -X POST localhost/mcp \
+  -d <span class="str">'{"jsonrpc":"2.0","id":1,
+      "method":"initialize","params":{}}'</span>
+
+<span class="cm"># 3. tools/list → должен вернуть echo, uppercase</span>
+
+<span class="cm"># 4. tools/call echo</span>
+curl -X POST localhost/mcp -d <span class="str">'{
+  "jsonrpc":"2.0","id":2,
+  "method":"tools/call",
+  "params":{"name":"echo",
+    "arguments":{"text":"hello"}}
+}'</span>
+<span class="cm"># Ожидаем: {"content":[{"type":"text","text":"hello"}]}</span></pre>
+      </div>
+
+      <div class="deliverables">
+        <div class="deliverables-title">Результат спринта — что проверяем</div>
+        <ul>
+          <li><strong>docker compose up</strong> — все сервисы healthy</li>
+          <li>nginx проксирует /mcp → adapter</li>
+          <li>initialize через nginx → успешный ответ</li>
+          <li>tools/list → tools всех воркеров присутствуют</li>
+          <li>tools/call echo → корректный результат</li>
+          <li>e2e_test.sh завершается с exit code 0</li>
+          <li>docker compose down → всё чисто</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════ SPRINT 7 -->
+<div id="s7" class="panel">
+
+  <div class="sprint-hero">
+    <div>
+      <div class="sprint-label">Sprint 7 · Финал</div>
+      <div class="sprint-title">Документация — <em>полная</em></div>
+      <div class="sprint-desc">Полная документация экосистемы: README монорепо, гайды по созданию воркеров на Dart и Python, инструкция по развёртыванию, описание расширений протокола, backlog для v2.</div>
+      <div class="sprint-pkg" style="margin-top:14px">
+        <span class="chip chip-purple">docs/</span>
+        <span class="chip chip-cyan">README</span>
+        <span class="chip chip-green">Guides</span>
+      </div>
+    </div>
+    <div class="sprint-meta">
+      <div>
+        <div class="sprint-time">~2ч</div>
+        <div class="sprint-time-label">Расчётное время</div>
+      </div>
+      <div><span class="chip chip-purple">Финальный спринт</span></div>
+    </div>
+  </div>
+
+  <div class="section-grid wide-left">
+    <div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-purple"></div>Документы для создания</div>
+        <ul class="checklist">
+          <li><div class="marker"></div><div><strong>README.md</strong> — корень репо. Что такое, как запустить за 5 минут, архитектура, ссылки на docs.</div></li>
+          <li><div class="marker"></div><div><strong>docs/WORKER_GUIDE_DART.md</strong> — шаг за шагом: создать пакет, extend BaseWorker, implement execute(), Dockerfile, добавить в compose.</div></li>
+          <li><div class="marker"></div><div><strong>docs/WORKER_GUIDE_PYTHON.md</strong> — WorkerWrapper прямой, SubprocessWorkerWrapper для STDIO MCP, примеры с 5 готовыми серверами.</div></li>
+          <li><div class="marker"></div><div><strong>docs/DEPLOY_GUIDE.md</strong> — локально (docker compose), на удалённый сервер (rsync + ssh), подключение из Claude Desktop, curl тест.</div></li>
+          <li><div class="marker"></div><div><strong>docs/MCP_EXTENSIONS.md</strong> — документация всех _aq_* расширений, обоснование, влияние на стандартные клиенты.</div></li>
+          <li><div class="marker"></div><div><strong>packages/aq_schema/README.md</strong> — описание всех схем, как добавить новую.</div></li>
+          <li><div class="marker"></div><div><strong>packages/aq_mcp_adapter/README.md</strong> — конфигурация, API endpoints, env variables.</div></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-amber"></div>Шаблон запроса к AI</div>
+        <pre>
+Реализуй Sprint 7: Документация.
+
+Контекст: вся система готова и протестирована.
+
+<span class="ok">Создай:</span>
+1. README.md (корень) — quick start за 5 минут
+2. docs/WORKER_GUIDE_DART.md
+3. docs/WORKER_GUIDE_PYTHON.md
+   (включая SubprocessWrapper и 5 готовых MCP серверов)
+4. docs/DEPLOY_GUIDE.md
+   (локально + удалённый сервер + Claude Desktop)
+5. docs/MCP_EXTENSIONS.md
+   (все _aq_* расширения с обоснованием)
+6. packages/aq_schema/README.md
+7. packages/aq_mcp_adapter/README.md
+
+<span class="warn">Требования:</span>
+- Реальные рабочие команды (проверены)
+- Примеры кода из реализации спринтов
+- Раздел troubleshooting в каждом гайде
+- Раздел v2 backlog в README</pre>
+      </div>
+
+    </div>
+    <div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon icon-cyan"></div>Структура README.md</div>
+        <pre>
+<span class="cm"># MCP Dart Ecosystem</span>
+
+<span class="ok">## Quick Start (5 минут)</span>
+git clone ... && cd mcp_dart_ecosystem
+docker compose -f deploy/docker-compose.yml \
+  -f deploy/docker-compose.workers-dart.yml up -d
+curl localhost/mcp -d '{initialize}'
+
+<span class="ok">## Архитектура</span>
+Client → NGINX → Adapter → Redis → Workers
+
+<span class="ok">## Создать воркер</span>
+- Dart: WORKER_GUIDE_DART.md
+- Python: WORKER_GUIDE_PYTHON.md
+
+<span class="ok">## Deploy</span>
+DEPLOY_GUIDE.md
+
+<span class="ok">## Пакеты</span>
+- aq_schema — источник правды
+- aq_mcp_adapter — оркестратор
+- aq_worker — Dart worker base
+- aq_queue — Redis abstraction
+- aq_auth — auth middleware
+- aq_mcp_core — protocol layer
+
+<span class="ok">## v2 Backlog</span>
+- Streaming (SSE)
+- Real Auth (JWT/OAuth2)
+- Metrics (OpenTelemetry)</pre>
+      </div>
+
+      <div class="deliverables">
+        <div class="deliverables-title">Результат спринта — финальная проверка</div>
+        <ul>
+          <li>Новый разработчик может создать воркер по WORKER_GUIDE</li>
+          <li>Гайд деплоя воспроизводим без знания кода</li>
+          <li>Все примеры команд рабочие</li>
+          <li>docs/ содержит 5+ документов</li>
+          <li>каждый пакет имеет свой README</li>
+          <li><strong>Весь стек поднимается с нуля одной командой</strong></li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-title"><div class="icon icon-green"></div>Финальная проверка всей системы</div>
+        <div class="check-cmd">git clone . /tmp/test_deploy && cd /tmp/test_deploy</div>
+        <div class="check-cmd">cp deploy/.env.example deploy/.env</div>
+        <div class="check-cmd">docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.workers-dart.yml up -d</div>
+        <div class="check-cmd">bash deploy/scripts/e2e_test.sh</div>
+        <div style="margin-top:8px" class="callout callout-green">
+          <strong>Если e2e_test.sh завершается с exit 0 — экосистема готова к продакшену.</strong>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</div>
+</main>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+  }
+
+  function setActive(btnIndex) {
+    const btns = document.querySelectorAll('.nav-btn');
+    btns.forEach(b => b.classList.remove('active'));
+    if (btns[btnIndex]) btns[btnIndex].classList.add('active');
+  }
+
+  // Make nav buttons work with setActive
+  document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:mcp:error",
+  "title": "MCP Error Response",
+  "description": "JSON-RPC 2.0 error response with AQ-extended error codes",
+  "type": "object",
+  "required": ["jsonrpc", "error"],
+  "properties": {
+    "jsonrpc": {
+      "type": "string",
+      "const": "2.0"
+    },
+    "id": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "integer" },
+        { "type": "null" }
+      ]
+    },
+    "error": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "description": "JSON-RPC standard codes (-32700..-32600) + AQ extension codes (-32000..-32004)",
+          "examples": [-32700, -32600, -32601, -32602, -32603, -32000, -32001, -32002, -32003, -32004]
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable error description"
+        },
+        "data": {
+          "description": "Optional additional error context"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

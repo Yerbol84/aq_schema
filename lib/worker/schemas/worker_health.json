@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:worker:health",
+  "title": "Worker Health Check",
+  "description": "Periodic health report sent by worker to adapter. TTL 90s in Redis.",
+  "type": "object",
+  "required": ["worker_id", "status", "timestamp"],
+  "properties": {
+    "worker_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["healthy", "degraded", "unhealthy"],
+      "description": "healthy=fully operational, degraded=running but impaired, unhealthy=shutting down"
+    },
+    "active_jobs": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of jobs currently being processed"
+    },
+    "queue_depth": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of jobs waiting in this worker's queue"
+    },
+    "uptime_seconds": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Worker process uptime in seconds"
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) of this health report"
+    }
+  },
+  "additionalProperties": false
+}

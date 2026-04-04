@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:worker:registration",
+  "title": "Worker Registration",
+  "description": "Sent by worker on startup to register itself with the adapter",
+  "type": "object",
+  "required": ["worker_id", "tools", "capabilities"],
+  "properties": {
+    "worker_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Unique worker ID within the stack. kebab-case.",
+      "maxLength": 64
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "../mcp/schemas/mcp_tool.json" },
+      "description": "Tools this worker can handle"
+    },
+    "capabilities": {
+      "type": "object",
+      "required": ["async", "concurrency"],
+      "properties": {
+        "async": {
+          "type": "boolean",
+          "description": "Whether this worker supports async mode (returns job_id)"
+        },
+        "streaming": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this worker supports streaming (phase 2)"
+        },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64,
+          "description": "Max simultaneous jobs this worker can handle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "type": "string",
+          "examples": ["dart", "python", "go", "node"]
+        },
+        "version": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

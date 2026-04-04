@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:auth:token_payload",
+  "title": "Auth Token Payload",
+  "description": "AQ EXTENSION: authorization token passed in params._aq_auth on tools/call. Works for both STDIO and HTTP transports.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["bearer", "apikey", "oauth2_token", "none"],
+      "default": "none"
+    },
+    "token": {
+      "type": "string",
+      "description": "Bearer token or API key value"
+    },
+    "oauth2": {
+      "type": "object",
+      "description": "Present only when type=oauth2_token",
+      "required": ["access_token", "token_type"],
+      "properties": {
+        "access_token": { "type": "string" },
+        "token_type": { "type": "string", "enum": ["Bearer", "bearer"] },
+        "refresh_token": { "type": "string" },
+        "expires_in": { "type": "integer" },
+        "scope": { "type": "string" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

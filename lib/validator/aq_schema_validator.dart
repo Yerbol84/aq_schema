@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:aq_schema/src/validator/aq_validation_result.dart';
+import 'package:aq_schema/validator/aq_validation_result.dart';
 import 'package:json_schema/json_schema.dart';
 
 enum AqSchemaType { ui, mcp, workflow }

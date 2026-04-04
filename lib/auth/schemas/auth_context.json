@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:auth:context",
+  "title": "Auth Context",
+  "description": "Internal object representing validated auth state. Created by adapter after token validation and passed into the job queue. Never contains raw tokens.",
+  "type": "object",
+  "required": ["type", "validated", "timestamp"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["bearer", "apikey", "oauth2", "none", "mock"]
+    },
+    "validated": {
+      "type": "boolean",
+      "description": "true = token passed validation by AuthProvider"
+    },
+    "subject": {
+      "type": "string",
+      "description": "User or service identifier extracted from token claims"
+    },
+    "scopes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Granted permission scopes"
+    },
+    "claims": {
+      "type": "object",
+      "description": "Decoded token claims (e.g. JWT payload)"
+    },
+    "expires_at": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) when token expires"
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) when validation occurred"
+    },
+    "_mock": {
+      "type": "boolean",
+      "description": "AQ EXTENSION: true when MockAuthProvider was used (v1 stub)",
+      "x-aq-extension": true
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:worker:job",
+  "title": "Worker Job",
+  "description": "Task placed in Redis queue by adapter for worker consumption",
+  "type": "object",
+  "required": ["job_id", "tool", "payload", "created_at"],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID v4 — unique job identifier"
+    },
+    "tool": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Tool name from tools/list to be executed"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Tool arguments from tools/call — validated against tool inputSchema by adapter"
+    },
+    "auth": {
+      "$ref": "../auth/schemas/auth_context.json",
+      "description": "Validated auth context from adapter (validated, not raw token)"
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 30000,
+          "description": "Execution timeout in milliseconds"
+        },
+        "retry_count": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Current attempt number (0 = first attempt)"
+        },
+        "max_retries": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1,
+          "description": "Maximum retry attempts"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["sync", "async"],
+          "default": "sync",
+          "description": "Execution mode requested by client"
+        },
+        "source_request_id": {
+          "type": "string",
+          "description": "Original MCP request id for tracing"
+        }
+      },
+      "additionalProperties": false
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) when job was created"
+    }
+  },
+  "additionalProperties": false
+}

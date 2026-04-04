@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Dart Ecosystem — Architecture Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Unbounded:wght@300;600;800&display=swap');
+
+  :root {
+    --bg: #0a0b0f;
+    --surface: #111318;
+    --surface2: #181b24;
+    --border: #1f2535;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --danger: #ef4444;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .noise {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 1; }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+
+  .tag {
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600;
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 3px 10px; border-radius: 2px;
+    display: inline-block; margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(24px, 4vw, 42px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle { color: var(--muted); font-size: 13px; max-width: 600px; }
+
+  /* NAV TABS */
+  .tabs {
+    display: flex; gap: 4px; margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto; padding-bottom: 0;
+  }
+
+  .tab {
+    padding: 10px 20px; cursor: pointer;
+    color: var(--muted); font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s; white-space: nowrap;
+    background: none; border-top: none; border-left: none; border-right: none;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .card h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .card h3 {
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 12px; margin-top: 20px;
+  }
+
+  .card h3:first-child { margin-top: 0; }
+
+  /* ARCH DIAGRAM */
+  .arch {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    margin: 16px 0;
+  }
+
+  .arch-row {
+    display: flex; align-items: center; gap: 0;
+  }
+
+  .arch-box {
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    min-width: 140px;
+  }
+
+  .arch-arrow {
+    color: var(--muted); font-size: 18px; padding: 0 8px;
+  }
+
+  /* PACKAGE GRID */
+  .pkg-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+
+  .pkg-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px;
+    transition: border-color 0.2s;
+  }
+
+  .pkg-card:hover { border-color: var(--accent2); }
+
+  .pkg-name {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 12px; font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .pkg-role {
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+  }
+
+  .pkg-desc { font-size: 12px; color: var(--text); line-height: 1.5; margin-bottom: 12px; }
+
+  .pkg-deps {
+    font-size: 10px; color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 8px; margin-top: 8px;
+  }
+
+  .pkg-deps span { color: var(--accent3); }
+
+  /* PHASE TIMELINE */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 8px; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+
+  .phase {
+    position: relative; margin-bottom: 28px;
+  }
+
+  .phase::before {
+    content: '';
+    position: absolute; left: -28px; top: 6px;
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--bg);
+  }
+
+  .phase-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+  }
+
+  .phase-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px; font-weight: 800;
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 2px 8px; border-radius: 2px;
+  }
+
+  .phase-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px; font-weight: 600;
+  }
+
+  .phase-time {
+    margin-left: auto; font-size: 10px; color: var(--accent4);
+    letter-spacing: 0.1em;
+  }
+
+  .checklist { list-style: none; }
+  .checklist li {
+    padding: 4px 0; font-size: 12px; color: var(--muted);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+
+  .checklist li::before {
+    content: '→'; color: var(--accent3); flex-shrink: 0;
+  }
+
+  /* CODE BLOCK */
+  pre {
+    background: #0d0f14;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 11px;
+    line-height: 1.7;
+    margin: 12px 0;
+    color: #a8b3cf;
+  }
+
+  .kw { color: #c792ea; }
+  .str { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .fn { color: #82aaff; }
+  .ty { color: #ffcb6b; }
+  .num { color: #f78c6c; }
+
+  /* GRID 2COL */
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 2px; font-weight: 600;
+    margin-right: 4px;
+  }
+
+  .badge-blue { background: rgba(0,212,255,0.12); color: var(--accent); border: 1px solid rgba(0,212,255,0.25); }
+  .badge-green { background: rgba(16,185,129,0.12); color: var(--accent3); border: 1px solid rgba(16,185,129,0.25); }
+  .badge-yellow { background: rgba(245,158,11,0.12); color: var(--accent4); border: 1px solid rgba(245,158,11,0.25); }
+  .badge-red { background: rgba(239,68,68,0.12); color: var(--danger); border: 1px solid rgba(239,68,68,0.25); }
+  .badge-purple { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    text-align: left; font-size: 9px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted);
+    padding: 8px 12px; border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 12px; border-bottom: 1px solid rgba(31,37,53,0.5);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  .flow {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+
+  .flow-step {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 11px;
+  }
+
+  .flow-step .num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px; font-weight: 800;
+    color: var(--accent2); min-width: 20px;
+  }
+
+  .flow-connector {
+    width: 1px; height: 12px; background: var(--border);
+    margin-left: 19px;
+  }
+
+  .section-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px; font-weight: 800;
+    margin-bottom: 20px; letter-spacing: -0.02em;
+  }
+
+  .section-title span { color: var(--accent); }
+
+  /* HIGHLIGHT BOX */
+  .highlight {
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    background: rgba(0,212,255,0.04);
+    border-radius: 0 4px 4px 0;
+    margin: 12px 0;
+    font-size: 12px;
+  }
+
+  .highlight.warn {
+    border-left-color: var(--accent4);
+    background: rgba(245,158,11,0.04);
+  }
+
+  .highlight.ok {
+    border-left-color: var(--accent3);
+    background: rgba(16,185,129,0.04);
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="container">
+
+  <header>
+    <div class="tag">v1.0 — Architecture Plan</div>
+    <h1>MCP Dart <span>Ecosystem</span></h1>
+    <p class="subtitle">Полный план разработки: пакеты, стэк, развёртывание, воркеры — от нуля до работающего стэка за один день.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="show('overview')">Обзор</button>
+    <button class="tab" onclick="show('packages')">Пакеты</button>
+    <button class="tab" onclick="show('schema')">aq_schema</button>
+    <button class="tab" onclick="show('adapter')">Adapter</button>
+    <button class="tab" onclick="show('workers')">Workers</button>
+    <button class="tab" onclick="show('deploy')">Deploy</button>
+    <button class="tab" onclick="show('phases')">Фазы / ToDo</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════ OVERVIEW -->
+  <div id="overview" class="panel active">
+    <div class="section-title">Системная <span>архитектура</span></div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="dot" style="background:var(--accent)"></div>
+        <h2>Полный стэк — компоненты</h2>
+      </div>
+      <pre>
+<span class="cm">┌──────────────────────────────────────────────────────────────┐</span>
+<span class="cm">│                    CLIENT LAYER                              │</span>
+<span class="cm">│   LLM Agent (Claude/GPT) / IDE Plugin / Custom Client        │</span>
+<span class="cm">└──────────────────────┬───────────────────────────────────────┘</span>
+                       <span class="cm">│  MCP Protocol (JSON-RPC over STDIO/HTTP)</span>
+<span class="cm">┌──────────────────────▼───────────────────────────────────────┐</span>
+<span class="cm">│                   NGINX GATEWAY                              │</span>
+<span class="cm">│   TCP proxy / TLS termination / rate limit / no logic        │</span>
+<span class="cm">└──────────────────────┬───────────────────────────────────────┘</span>
+                       <span class="cm">│</span>
+<span class="cm">┌──────────────────────▼───────────────────────────────────────┐</span>
+<span class="cm">│            DART MCP ADAPTER  (aq_mcp_adapter)                │</span>
+<span class="cm">│                                                              │</span>
+<span class="cm">│  ┌─────────────┐  ┌──────────────┐  ┌───────────────────┐   │</span>
+<span class="cm">│  │ MCP Protocol│  │ Worker       │  │ Auth Middleware    │   │</span>
+<span class="cm">│  │ Handler     │  │ Registry     │  │ (mock → real)     │   │</span>
+<span class="cm">│  └─────────────┘  └──────────────┘  └───────────────────┘   │</span>
+<span class="cm">│           │               │                                  │</span>
+<span class="cm">│  ┌────────▼───────────────▼─────────────────────────────┐   │</span>
+<span class="cm">│  │         Queue Dispatcher (aq_queue)                  │   │</span>
+<span class="cm">│  └────────────────────────┬─────────────────────────────┘   │</span>
+<span class="cm">└───────────────────────────┼──────────────────────────────────┘</span>
+                            <span class="cm">│</span>
+<span class="cm">┌───────────────────────────▼──────────────────────────────────┐</span>
+<span class="cm">│                    REDIS                                     │</span>
+<span class="cm">│    job_queue / result_store / worker_registry / pub-sub      │</span>
+<span class="cm">└───────┬──────────────────────────────────────────────────────┘</span>
+        <span class="cm">│</span>
+<span class="cm">┌───────▼──────────────────────────────────────────────────────┐</span>
+<span class="cm">│                   WORKER POOL                                │</span>
+<span class="cm">│                                                              │</span>
+<span class="cm">│  ┌─────────────────┐    ┌─────────────────────────────────┐  │</span>
+<span class="cm">│  │  Dart Worker    │    │  Python Worker (aq_py_wrapper)  │  │</span>
+<span class="cm">│  │  (aq_worker)    │    │  ← любой готовый MCP сервер     │  │</span>
+<span class="cm">│  └─────────────────┘    └─────────────────────────────────┘  │</span>
+<span class="cm">└──────────────────────────────────────────────────────────────┘</span></pre>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-header"><div class="dot" style="background:var(--accent3)"></div><h2>Принципы</h2></div>
+        <ul class="checklist">
+          <li>Строгий MCP протокол — промышленная совместимость</li>
+          <li>Каждый компонент — отдельный pub-пакет Dart</li>
+          <li>aq_schema — единственный источник правды (JSON схемы + Dart интерфейсы)</li>
+          <li>Adapter stateless → горизонтально масштабируемый</li>
+          <li>Worker wrapper обязателен — единый контракт для любого языка</li>
+          <li>Auth — заглушка сейчас, реальный сервис позже без изменения архитектуры</li>
+          <li>Docker Compose — один файл, весь стэк поднят</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="dot" style="background:var(--accent4)"></div><h2>Ограничения MCP (важно)</h2></div>
+        <div class="highlight warn">
+          MCP не поддерживает нативный async/polling. Долгие задачи решаем через <strong>job_id pattern</strong>: tools/call возвращает job_id, отдельный tool <code>get_job_status</code> проверяет статус. Это de-facto стандарт в реальных реализациях.
+        </div>
+        <ul class="checklist">
+          <li>Sync: adapter блокируется, ждёт Redis (до N секунд)</li>
+          <li>Async: сразу возвращает job_id + tool get_job_status</li>
+          <li>Streaming: фаза 2 (SSE / chunked)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--accent2)"></div><h2>Транспорты</h2></div>
+      <table>
+        <tr><th>Транспорт</th><th>Где используется</th><th>Формат</th><th>Статус</th></tr>
+        <tr><td>STDIO</td><td>Локальный клиент (Claude Desktop, IDE)</td><td>Content-Length: N\n\n{json}</td><td><span class="badge badge-green">v1</span></td></tr>
+        <tr><td>HTTP/SSE</td><td>Удалённый сервер через NGINX</td><td>JSON-RPC over HTTP</td><td><span class="badge badge-green">v1</span></td></tr>
+        <tr><td>WebSocket</td><td>Streaming воркеры</td><td>JSON frames</td><td><span class="badge badge-yellow">v2</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ PACKAGES -->
+  <div id="packages" class="panel">
+    <div class="section-title">Структура <span>пакетов</span></div>
+
+    <div class="highlight ok">
+      Монорепо — один Git-репозиторий, несколько пакетов в <code>packages/</code>. Каждый пакет независимо версионируется и может быть опубликован на pub.dev.
+    </div>
+
+    <pre style="margin-bottom: 24px;">
+<span class="cm">mcp_dart_ecosystem/
+├── packages/
+│   ├── aq_schema/           ← ЯДРО: JSON схемы + Dart интерфейсы
+│   ├── aq_mcp_core/         ← MCP Protocol: types, codec, lifecycle
+│   ├── aq_mcp_adapter/      ← Adapter: сервер, registry, dispatcher
+│   ├── aq_worker/           ← Dart Worker: wrapper + base класс
+│   ├── aq_queue/            ← Redis Queue абстракция
+│   └── aq_auth/             ← Auth middleware (mock → real)
+├── workers/
+│   ├── dart_example/        ← Пример Dart воркера
+│   └── python_wrapper/      ← Python воркер шаблон (aq_py_wrapper)
+├── deploy/
+│   ├── docker-compose.yml
+│   ├── nginx/
+│   └── .env.example
+└── examples/
+    └── quick_start/</span></pre>
+
+    <div class="pkg-grid">
+
+      <div class="pkg-card">
+        <div class="pkg-name">aq_schema</div>
+        <div class="pkg-role">ЯДРО / Источник правды</div>
+        <div class="pkg-desc">JSON Schema файлы + сгенерированные Dart классы. Все остальные пакеты зависят только от него. Никогда не зависит от других пакетов экосистемы.</div>
+        <div class="pkg-deps">deps: <span>dart:core</span>, <span>json_annotation</span></div>
+        <div style="margin-top:10px">
+          <span class="badge badge-blue">mcp/</span>
+          <span class="badge badge-purple">worker/</span>
+          <span class="badge badge-green">queue/</span>
+          <span class="badge badge-yellow">auth/</span>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-name">aq_mcp_core</div>
+        <div class="pkg-role">MCP Protocol Layer</div>
+        <div class="pkg-desc">Полная реализация MCP протокола: JSON-RPC codec, все типы (Initialize, ToolsList, ToolCall, Error), lifecycle manager, STDIO transport, HTTP transport.</div>
+        <div class="pkg-deps">deps: <span>aq_schema</span></div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-name">aq_mcp_adapter</div>
+        <div class="pkg-role">Adapter / Оркестратор</div>
+        <div class="pkg-desc">Главный сервер. Принимает MCP, агрегирует tools со всех воркеров, диспетчеризует в очередь, возвращает результат. Stateless, масштабируется горизонтально.</div>
+        <div class="pkg-deps">deps: <span>aq_schema</span>, <span>aq_mcp_core</span>, <span>aq_queue</span>, <span>aq_auth</span></div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-name">aq_worker</div>
+        <div class="pkg-role">Dart Worker Base</div>
+        <div class="pkg-desc">Базовый класс для написания Dart воркеров. Включает: wrapper, auto-registration, health check loop, JSON schema validation, error normalization, timeout.</div>
+        <div class="pkg-deps">deps: <span>aq_schema</span>, <span>aq_queue</span></div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-name">aq_queue</div>
+        <div class="pkg-role">Queue Abstraction</div>
+        <div class="pkg-desc">Абстракция над Redis. Job enqueue/dequeue, result store, pub-sub. Позволяет заменить Redis на другой брокер без изменения остального кода.</div>
+        <div class="pkg-deps">deps: <span>aq_schema</span>, <span>redis</span> (pub.dev)</div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-name">aq_auth</div>
+        <div class="pkg-role">Auth Middleware</div>
+        <div class="pkg-desc">Заглушка v1: пропускает всё, логирует. Интерфейс AuthProvider заготовлен — позже подключается реальный сервис (JWT, OAuth) без изменения остальных пакетов.</div>
+        <div class="pkg-deps">deps: <span>aq_schema</span></div>
+      </div>
+
+    </div>
+
+    <div class="card" style="margin-top: 24px;">
+      <div class="card-header"><div class="dot" style="background:var(--accent4)"></div><h2>Зависимости между пакетами</h2></div>
+      <pre>
+<span class="ty">aq_schema</span>  ← <span class="cm">никаких зависимостей от наших пакетов</span>
+    ↑
+    ├── <span class="ty">aq_mcp_core</span>   ← знает только schema
+    ├── <span class="ty">aq_queue</span>      ← знает только schema
+    └── <span class="ty">aq_auth</span>       ← знает только schema
+         ↑
+    ┌────┴────────────┐
+    <span class="ty">aq_worker</span>     <span class="ty">aq_mcp_adapter</span>   ← знают все нижние пакеты
+                    <span class="cm">но НЕ знают ничего о бизнес-логике воркеров</span></pre>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ SCHEMA -->
+  <div id="schema" class="panel">
+    <div class="section-title">aq_schema — <span>структура</span></div>
+
+    <div class="highlight">
+      aq_schema — это единственный источник правды. Все JSON схемы живут здесь. Dart классы генерируются из них (или пишутся вручную, но соответствуют схемам). Остальные пакеты импортируют только aq_schema.
+    </div>
+
+    <pre>
+<span class="cm">aq_schema/
+├── lib/
+│   ├── aq_schema.dart          ← barrel export
+│   ├── mcp/
+│   │   ├── schemas/            ← JSON Schema файлы (стандарт MCP)
+│   │   │   ├── initialize.json
+│   │   │   ├── tools_list.json
+│   │   │   ├── tools_call.json
+│   │   │   ├── tool_result.json
+│   │   │   └── error.json
+│   │   ├── models/             ← Dart классы (generated + manual)
+│   │   │   ├── mcp_request.dart
+│   │   │   ├── mcp_response.dart
+│   │   │   ├── mcp_tool.dart
+│   │   │   ├── mcp_error.dart
+│   │   │   └── mcp_capabilities.dart
+│   │   └── validators/
+│   │       └── mcp_validator.dart
+│   ├── worker/
+│   │   ├── schemas/            ← JSON Schema для worker protocol
+│   │   │   ├── register.json
+│   │   │   ├── job.json
+│   │   │   ├── job_result.json
+│   │   │   └── health_check.json
+│   │   ├── models/
+│   │   │   ├── worker_registration.dart
+│   │   │   ├── worker_job.dart
+│   │   │   ├── worker_result.dart
+│   │   │   └── worker_health.dart
+│   │   └── validators/
+│   │       └── worker_validator.dart
+│   ├── queue/
+│   │   ├── schemas/
+│   │   │   ├── queue_job.json
+│   │   │   └── queue_result.json
+│   │   └── models/
+│   │       ├── queue_job.dart
+│   │       └── queue_result.dart
+│   └── auth/
+│       ├── schemas/
+│       │   └── auth_context.json
+│       └── models/
+│           └── auth_context.dart
+└── test/
+    └── schema_validation_test.dart</span></pre>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>MCP Tool Schema (стандарт)</h3>
+        <pre>
+<span class="cm">// mcp/schemas/mcp_tool.json</span>
+{
+  <span class="str">"$schema"</span>: <span class="str">"http://json-schema.org/draft-07/schema"</span>,
+  <span class="str">"type"</span>: <span class="str">"object"</span>,
+  <span class="str">"required"</span>: [<span class="str">"name"</span>, <span class="str">"description"</span>, <span class="str">"inputSchema"</span>],
+  <span class="str">"properties"</span>: {
+    <span class="str">"name"</span>: { <span class="str">"type"</span>: <span class="str">"string"</span> },
+    <span class="str">"description"</span>: { <span class="str">"type"</span>: <span class="str">"string"</span> },
+    <span class="str">"inputSchema"</span>: { <span class="str">"type"</span>: <span class="str">"object"</span> },
+    <span class="str">"auth"</span>: {
+      <span class="str">"type"</span>: <span class="str">"object"</span>,
+      <span class="str">"properties"</span>: {
+        <span class="str">"required"</span>: { <span class="str">"type"</span>: <span class="str">"boolean"</span> },
+        <span class="str">"type"</span>: { <span class="str">"enum"</span>: [<span class="str">"bearer"</span>, <span class="str">"apikey"</span>, <span class="str">"none"</span>] }
+      }
+    }
+  }
+}</pre>
+      </div>
+
+      <div class="card">
+        <h3>Worker Job Schema (расширение)</h3>
+        <pre>
+<span class="cm">// worker/schemas/job.json</span>
+{
+  <span class="str">"$schema"</span>: <span class="str">"http://json-schema.org/draft-07/schema"</span>,
+  <span class="str">"type"</span>: <span class="str">"object"</span>,
+  <span class="str">"required"</span>: [<span class="str">"job_id"</span>, <span class="str">"tool"</span>, <span class="str">"payload"</span>],
+  <span class="str">"properties"</span>: {
+    <span class="str">"job_id"</span>: { <span class="str">"type"</span>: <span class="str">"string"</span>, <span class="str">"format"</span>: <span class="str">"uuid"</span> },
+    <span class="str">"tool"</span>: { <span class="str">"type"</span>: <span class="str">"string"</span> },
+    <span class="str">"payload"</span>: { <span class="str">"type"</span>: <span class="str">"object"</span> },
+    <span class="str">"auth"</span>: { <span class="str">"$ref"</span>: <span class="str">"../auth/auth_context.json"</span> },
+    <span class="str">"meta"</span>: {
+      <span class="str">"type"</span>: <span class="str">"object"</span>,
+      <span class="str">"properties"</span>: {
+        <span class="str">"timeout_ms"</span>: { <span class="str">"type"</span>: <span class="str">"integer"</span> },
+        <span class="str">"retry_count"</span>: { <span class="str">"type"</span>: <span class="str">"integer"</span> },
+        <span class="str">"mode"</span>: { <span class="str">"enum"</span>: [<span class="str">"sync"</span>, <span class="str">"async"</span>] }
+      }
+    }
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Dart интерфейсы (обязательные)</h3>
+      <pre>
+<span class="cm">// Все пакеты реализуют эти интерфейсы из aq_schema</span>
+
+<span class="kw">abstract class</span> <span class="ty">McpTool</span> {
+  <span class="ty">String</span> <span class="kw">get</span> name;
+  <span class="ty">String</span> <span class="kw">get</span> description;
+  <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="kw">dynamic</span>&gt; <span class="kw">get</span> inputSchema;
+  <span class="ty">AuthRequirement</span>? <span class="kw">get</span> auth;
+}
+
+<span class="kw">abstract class</span> <span class="ty">WorkerJob</span> {
+  <span class="ty">String</span> <span class="kw">get</span> jobId;
+  <span class="ty">String</span> <span class="kw">get</span> tool;
+  <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="kw">dynamic</span>&gt; <span class="kw">get</span> payload;
+  <span class="ty">AuthContext</span>? <span class="kw">get</span> auth;
+  <span class="ty">JobMeta</span>? <span class="kw">get</span> meta;
+}
+
+<span class="kw">abstract class</span> <span class="ty">WorkerResult</span> {
+  <span class="ty">String</span> <span class="kw">get</span> jobId;
+  <span class="ty">JobStatus</span> <span class="kw">get</span> status;       <span class="cm">// pending | running | done | failed</span>
+  <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="kw">dynamic</span>&gt;? <span class="kw">get</span> result;
+  <span class="ty">String</span>? <span class="kw">get</span> error;
+}</pre>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ ADAPTER -->
+  <div id="adapter" class="panel">
+    <div class="section-title">aq_mcp_adapter — <span>детали</span></div>
+
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--accent)"></div><h2>Request Flow</h2></div>
+      <div class="flow">
+        <div class="flow-step"><span class="num">01</span> MCP Client → JSON-RPC request (initialize / tools/list / tools/call)</div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><span class="num">02</span> Transport Layer → STDIO или HTTP handler парсит Content-Length frame</div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><span class="num">03</span> Auth Middleware → проверяет token (v1: mock, всегда OK)</div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><span class="num">04</span> MCP Handler → routes по method: initialize | tools/list | tools/call | get_job_status</div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><span class="num">05</span> tools/list → Worker Registry → агрегация capabilities → ответ клиенту</div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><span class="num">06</span> tools/call → Queue Dispatcher → генерирует job_id → кладёт в Redis</div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><span class="num">07</span> Mode check: sync → await Redis result (timeout) | async → сразу возвращает job_id</div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><span class="num">08</span> Serialize → MCP Response → клиент</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Worker Registry</h3>
+        <pre>
+<span class="cm">// In-memory + Redis persistence</span>
+<span class="kw">class</span> <span class="ty">WorkerRegistry</span> {
+  <span class="cm">// Регистрация воркера</span>
+  <span class="kw">Future</span>&lt;<span class="kw">void</span>&gt; <span class="fn">register</span>(<span class="ty">WorkerRegistration</span> reg);
+
+  <span class="cm">// Агрегация всех tools</span>
+  <span class="kw">List</span>&lt;<span class="ty">McpTool</span>&gt; <span class="fn">allTools</span>();
+
+  <span class="cm">// Найти воркер по tool name</span>
+  <span class="ty">WorkerInfo</span>? <span class="fn">findWorker</span>(<span class="ty">String</span> toolName);
+
+  <span class="cm">// Health check loop (каждые 30s)</span>
+  <span class="kw">void</span> <span class="fn">startHealthCheck</span>();
+
+  <span class="cm">// Деregistрация мёртвого воркера</span>
+  <span class="kw">void</span> <span class="fn">evict</span>(<span class="ty">String</span> workerId);
+}</pre>
+      </div>
+
+      <div class="card">
+        <h3>Adapter Config (.env)</h3>
+        <pre>
+<span class="cm"># Adapter</span>
+<span class="ty">MCP_PORT</span>=<span class="num">8080</span>
+<span class="ty">MCP_TRANSPORT</span>=http  <span class="cm"># или stdio</span>
+
+<span class="cm"># Redis</span>
+<span class="ty">REDIS_URL</span>=redis://redis:6379
+
+<span class="cm"># Queue</span>
+<span class="ty">JOB_TIMEOUT_MS</span>=<span class="num">30000</span>
+<span class="ty">JOB_DEFAULT_MODE</span>=sync  <span class="cm"># sync | async</span>
+
+<span class="cm"># Auth (mock)</span>
+<span class="ty">AUTH_ENABLED</span>=<span class="kw">false</span>
+<span class="ty">AUTH_SERVICE_URL</span>=http://auth:3000
+
+<span class="cm"># Workers (dynamic)</span>
+<span class="ty">WORKERS_CONFIG</span>=[
+  {"id":"py-worker","type":"docker",
+   "image":"my/py-worker:latest"}
+]</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Async job_id pattern (MCP расширение)</h3>
+      <pre>
+<span class="cm">// Tool: long_task → возвращает job_id</span>
+{ <span class="str">"content"</span>: [{ <span class="str">"type"</span>: <span class="str">"text"</span>, <span class="str">"text"</span>: <span class="str">"job_id=abc-123"</span> }] }
+
+<span class="cm">// Tool: get_job_status → системный tool, всегда присутствует</span>
+<span class="cm">// Автоматически добавляется adapter в tools/list</span>
+{
+  <span class="str">"name"</span>: <span class="str">"get_job_status"</span>,
+  <span class="str">"description"</span>: <span class="str">"Check status of async job"</span>,
+  <span class="str">"inputSchema"</span>: {
+    <span class="str">"type"</span>: <span class="str">"object"</span>,
+    <span class="str">"required"</span>: [<span class="str">"job_id"</span>],
+    <span class="str">"properties"</span>: { <span class="str">"job_id"</span>: { <span class="str">"type"</span>: <span class="str">"string"</span> } }
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ WORKERS -->
+  <div id="workers" class="panel">
+    <div class="section-title">Workers — <span>Dart &amp; Python</span></div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-header"><div class="dot" style="background:var(--accent)"></div><h2>Dart Worker (aq_worker)</h2></div>
+        <pre>
+<span class="cm">// Расширяешь BaseWorker</span>
+<span class="kw">class</span> <span class="ty">MyDartWorker</span> <span class="kw">extends</span> <span class="ty">BaseWorker</span> {
+
+  <span class="kw">@override</span>
+  <span class="ty">String</span> <span class="kw">get</span> workerId => <span class="str">'my-dart-worker'</span>;
+
+  <span class="kw">@override</span>
+  <span class="ty">List</span>&lt;<span class="ty">McpTool</span>&gt; <span class="kw">get</span> tools => [
+    <span class="ty">McpToolImpl</span>(
+      name: <span class="str">'my_tool'</span>,
+      description: <span class="str">'Does something useful'</span>,
+      inputSchema: { ... }
+    )
+  ];
+
+  <span class="kw">@override</span>
+  <span class="kw">Future</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="kw">dynamic</span>&gt;&gt; <span class="fn">execute</span>(
+    <span class="ty">String</span> tool,
+    <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="kw">dynamic</span>&gt; payload
+  ) <span class="kw">async</span> {
+    <span class="cm">// только бизнес-логика</span>
+    <span class="kw">return</span> {<span class="str">'result'</span>: <span class="str">'done'</span>};
+  }
+}
+<span class="cm">// BaseWorker автоматически:</span>
+<span class="cm">// - регистрируется в адаптере</span>
+<span class="cm">// - валидирует input по schema</span>
+<span class="cm">// - отправляет health check</span>
+<span class="cm">// - нормализует ошибки</span></pre>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="dot" style="background:var(--accent3)"></div><h2>Python Worker (aq_py_wrapper)</h2></div>
+        <pre>
+<span class="cm"># aq_py_wrapper — pip пакет</span>
+<span class="cm"># Обёртывает ЛЮБОЙ готовый Python MCP сервер</span>
+
+<span class="kw">from</span> aq_py_wrapper <span class="kw">import</span> WorkerWrapper
+
+<span class="cm"># Подключаем любой MCP сервер из</span>
+<span class="cm"># pip install mcp-server-filesystem</span>
+<span class="cm"># pip install mcp-server-github</span>
+<span class="cm"># и т.д.</span>
+
+wrapper = WorkerWrapper(
+  worker_id=<span class="str">"filesystem-worker"</span>,
+  redis_url=os.environ[<span class="str">"REDIS_URL"</span>],
+  adapter_url=os.environ[<span class="str">"ADAPTER_URL"</span>],
+  tools=[
+    {
+      <span class="str">"name"</span>: <span class="str">"read_file"</span>,
+      <span class="str">"description"</span>: <span class="str">"Read file from filesystem"</span>,
+      <span class="str">"inputSchema"</span>: { ... }
+    }
+  ]
+)
+
+<span class="kw">async def</span> <span class="fn">execute</span>(tool, payload, auth):
+  <span class="cm"># вызываем внутренний MCP сервер</span>
+  <span class="kw">return await</span> mcp_server.<span class="fn">call_tool</span>(tool, payload)
+
+wrapper.<span class="fn">run</span>(execute)</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--accent4)"></div><h2>Готовые Python MCP серверы (доноры)</h2></div>
+      <div class="highlight ok">
+        Огромная экосистема готовых MCP серверов — оборачиваем через aq_py_wrapper и получаем любой функционал без написания кода.
+      </div>
+      <table>
+        <tr><th>Пакет</th><th>Функционал</th><th>Установка</th></tr>
+        <tr><td>mcp-server-filesystem</td><td>Чтение/запись файлов</td><td><span class="badge badge-green">pip install</span></td></tr>
+        <tr><td>mcp-server-github</td><td>GitHub API</td><td><span class="badge badge-green">pip install</span></td></tr>
+        <tr><td>mcp-server-brave-search</td><td>Web поиск</td><td><span class="badge badge-green">pip install</span></td></tr>
+        <tr><td>mcp-server-postgres</td><td>PostgreSQL</td><td><span class="badge badge-green">pip install</span></td></tr>
+        <tr><td>mcp-server-slack</td><td>Slack API</td><td><span class="badge badge-green">pip install</span></td></tr>
+        <tr><td>mcp-server-puppeteer</td><td>Browser automation</td><td><span class="badge badge-green">npm + wrapper</span></td></tr>
+        <tr><td>Любой STDIO MCP</td><td>Любой</td><td><span class="badge badge-blue">subprocess wrap</span></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Запуск воркера (единый сценарий)</h3>
+      <pre>
+<span class="cm"># .env воркера</span>
+<span class="ty">WORKER_ID</span>=filesystem-worker
+<span class="ty">REDIS_URL</span>=redis://redis:6379
+<span class="ty">ADAPTER_REGISTRATION_URL</span>=http://adapter:8080/workers/register
+<span class="ty">HEALTH_CHECK_INTERVAL_SEC</span>=<span class="num">30</span>
+<span class="ty">JOB_CONCURRENCY</span>=<span class="num">4</span>
+
+<span class="cm"># Воркер стартует → регистрируется в adapter → слушает Redis queue</span>
+<span class="cm"># Adapter автоматически добавляет его tools в tools/list</span>
+<span class="cm"># При падении — eviction через health check timeout</span></pre>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ DEPLOY -->
+  <div id="deploy" class="panel">
+    <div class="section-title">Deploy — <span>Docker Compose</span></div>
+
+    <div class="highlight ok">
+      Один файл docker-compose.yml поднимает весь базовый стэк. Воркеры запускаются отдельно или через отдельные compose файлы.
+    </div>
+
+    <div class="card">
+      <h3>docker-compose.yml (базовый стэк)</h3>
+      <pre>
+<span class="kw">version</span>: <span class="str">'3.9'</span>
+<span class="kw">services</span>:
+  <span class="fn">nginx</span>:
+    image: nginx:alpine
+    ports: [<span class="str">"443:443"</span>, <span class="str">"80:80"</span>]
+    volumes: [<span class="str">"./nginx/nginx.conf:/etc/nginx/nginx.conf"</span>]
+    depends_on: [adapter]
+
+  <span class="fn">adapter</span>:
+    build: <span class="str">"./packages/aq_mcp_adapter"</span>
+    env_file: <span class="str">.env</span>
+    environment:
+      REDIS_URL: <span class="str">redis://redis:6379</span>
+      MCP_PORT: <span class="num">8080</span>
+      AUTH_ENABLED: <span class="str">"false"</span>
+    depends_on: [redis]
+    restart: unless-stopped
+
+  <span class="fn">redis</span>:
+    image: redis:7-alpine
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes: [<span class="str">"redis_data:/data"</span>]
+    restart: unless-stopped
+
+<span class="kw">volumes</span>:
+  redis_data:</pre>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Сценарий 1: Dart воркер</h3>
+        <pre>
+<span class="cm"># docker-compose.workers-dart.yml</span>
+<span class="kw">services</span>:
+  <span class="fn">dart-worker</span>:
+    build: <span class="str">"./workers/dart_example"</span>
+    env_file: <span class="str">.env.dart-worker</span>
+    environment:
+      ADAPTER_URL: <span class="str">http://adapter:8080</span>
+      REDIS_URL: <span class="str">redis://redis:6379</span>
+    networks: [mcp_net]
+    restart: unless-stopped
+    <span class="kw">deploy</span>:
+      replicas: <span class="num">2</span>
+
+<span class="cm"># Запуск:</span>
+<span class="cm"># docker compose -f docker-compose.yml \</span>
+<span class="cm">#   -f docker-compose.workers-dart.yml up -d</span></pre>
+      </div>
+
+      <div class="card">
+        <h3>Сценарий 2: Python воркер</h3>
+        <pre>
+<span class="cm"># docker-compose.workers-python.yml</span>
+<span class="kw">services</span>:
+  <span class="fn">py-filesystem-worker</span>:
+    build: <span class="str">"./workers/python_wrapper"</span>
+    env_file: <span class="str">.env.py-worker</span>
+    environment:
+      WORKER_ID: <span class="str">filesystem-worker</span>
+      ADAPTER_URL: <span class="str">http://adapter:8080</span>
+      REDIS_URL: <span class="str">redis://redis:6379</span>
+      MCP_PACKAGE: <span class="str">mcp-server-filesystem</span>
+    volumes:
+      - <span class="str">"/data:/data:ro"</span>    <span class="cm"># для файловых серверов</span>
+    networks: [mcp_net]
+    restart: unless-stopped</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Nginx конфиг (MCP over HTTP)</h3>
+      <pre>
+<span class="cm"># nginx/nginx.conf</span>
+<span class="kw">upstream</span> adapter {
+  server adapter:<span class="num">8080</span>;
+  keepalive <span class="num">32</span>;
+}
+
+server {
+  listen <span class="num">80</span>;
+  location /mcp {
+    proxy_pass http://adapter;
+    proxy_http_version <span class="num">1.1</span>;
+    proxy_set_header Connection <span class="str">""</span>;
+    proxy_read_timeout <span class="num">300s</span>;        <span class="cm"># для долгих задач</span>
+    proxy_buffering off;
+  }
+
+  location /health {
+    proxy_pass http://adapter/health;
+  }
+}</pre>
+    </div>
+
+    <div class="card">
+      <h3>Подключение из локального агента (Claude Desktop)</h3>
+      <pre>
+<span class="cm"># claude_desktop_config.json</span>
+{
+  <span class="str">"mcpServers"</span>: {
+    <span class="str">"my-mcp-stack"</span>: {
+      <span class="str">"command"</span>: <span class="str">"curl"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-X"</span>, <span class="str">"POST"</span>, <span class="str">"http://YOUR_SERVER/mcp"</span>],
+      <span class="cm">// или через STDIO proxy:</span>
+      <span class="str">"command"</span>: <span class="str">"mcp-remote"</span>,
+      <span class="str">"args"</span>: [<span class="str">"http://YOUR_SERVER/mcp"</span>]
+    }
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ PHASES -->
+  <div id="phases" class="panel">
+    <div class="section-title">Фазы — <span>план на сегодня и далее</span></div>
+
+    <div class="highlight">
+      <strong>Цель сегодня:</strong> работающий стэк с Python MCP воркером (filesystem или brave-search), подключённый к локальному агенту.
+    </div>
+
+    <div class="timeline">
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">PHASE 0</span>
+          <span class="phase-title">aq_schema — ядро</span>
+          <span class="phase-time">~2ч</span>
+        </div>
+        <ul class="checklist">
+          <li>Создать репо, настроить монорепо структуру</li>
+          <li>aq_schema/mcp/schemas/ — JSON схемы initialize, tools_list, tools_call, error</li>
+          <li>aq_schema/worker/schemas/ — register, job, job_result, health</li>
+          <li>aq_schema/queue/schemas/ — queue_job, queue_result</li>
+          <li>Написать Dart модели (McpTool, WorkerJob, WorkerResult, AuthContext)</li>
+          <li>Написать валидаторы (jsonschema)</li>
+          <li>Тесты на схемы</li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">PHASE 1</span>
+          <span class="phase-title">aq_queue + aq_auth</span>
+          <span class="phase-time">~1ч</span>
+        </div>
+        <ul class="checklist">
+          <li>aq_queue: Redis connection, enqueue job, dequeue, get result, set result</li>
+          <li>aq_queue: простой BLPOP loop для воркеров</li>
+          <li>aq_auth: интерфейс AuthProvider + MockAuthProvider (всегда OK)</li>
+          <li>Тесты с реальным Redis (testcontainers или docker)</li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">PHASE 2</span>
+          <span class="phase-title">aq_mcp_core</span>
+          <span class="phase-time">~2ч</span>
+        </div>
+        <ul class="checklist">
+          <li>JSON-RPC codec (encode/decode)</li>
+          <li>STDIO transport (Content-Length framing)</li>
+          <li>HTTP transport (shelf или dart:io)</li>
+          <li>MCP lifecycle: initialize handshake</li>
+          <li>Handlers: tools/list, tools/call, get_job_status</li>
+          <li>Error mapping (worker errors → MCP errors)</li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">PHASE 3</span>
+          <span class="phase-title">aq_mcp_adapter (MVP)</span>
+          <span class="phase-time">~2ч</span>
+        </div>
+        <ul class="checklist">
+          <li>Worker Registry (in-memory, сохранение в Redis)</li>
+          <li>Worker registration HTTP endpoint (POST /workers/register)</li>
+          <li>Health check loop + eviction</li>
+          <li>Queue Dispatcher: tools/call → Redis → await result</li>
+          <li>Capability aggregation → tools/list</li>
+          <li>Sync mode (await result) + Async mode (return job_id)</li>
+          <li>Dockerfile + health endpoint</li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">PHASE 4</span>
+          <span class="phase-title">Python Worker + Docker Compose</span>
+          <span class="phase-time">~1ч</span>
+        </div>
+        <ul class="checklist">
+          <li>aq_py_wrapper (pip пакет): registration, Redis BLPOP, health check</li>
+          <li>Пример воркера: mcp-server-filesystem или mcp-server-brave-search</li>
+          <li>docker-compose.yml: nginx + adapter + redis</li>
+          <li>docker-compose.workers-python.yml: python воркер</li>
+          <li>.env.example для всех сервисов</li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-num">PHASE 5</span>
+          <span class="phase-title">Интеграция и тест</span>
+          <span class="phase-time">~1ч</span>
+        </div>
+        <ul class="checklist">
+          <li>docker compose up → стэк поднят</li>
+          <li>Тест tools/list — видны tools из python воркера</li>
+          <li>Тест tools/call — выполняется через Redis → Python → результат</li>
+          <li>Подключение к Claude Desktop или другому агенту</li>
+          <li>E2E тест: агент вызывает tool, получает результат</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="card" style="margin-top: 24px;">
+      <div class="card-header"><div class="dot" style="background:var(--accent2)"></div><h2>Backlog (после v1)</h2></div>
+      <table>
+        <tr><th>Задача</th><th>Пакет</th><th>Приоритет</th></tr>
+        <tr><td>Streaming (SSE / chunked)</td><td>aq_mcp_core, aq_mcp_adapter</td><td><span class="badge badge-yellow">medium</span></td></tr>
+        <tr><td>Реальный Auth сервис</td><td>aq_auth</td><td><span class="badge badge-yellow">medium</span></td></tr>
+        <tr><td>Dart Worker (aq_worker)</td><td>aq_worker</td><td><span class="badge badge-blue">low</span></td></tr>
+        <tr><td>Node.js worker wrapper</td><td>aq_node_wrapper</td><td><span class="badge badge-blue">low</span></td></tr>
+        <tr><td>Metrics / OpenTelemetry</td><td>aq_telemetry</td><td><span class="badge badge-blue">low</span></td></tr>
+        <tr><td>Web UI для Registry</td><td>отдельное приложение</td><td><span class="badge badge-blue">low</span></td></tr>
+        <tr><td>Горизонтальное масштабирование adapter</td><td>aq_mcp_adapter</td><td><span class="badge badge-blue">low</span></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--accent3)"></div><h2>Минимальный стэк для запуска сегодня</h2></div>
+      <pre>
+<span class="cm"># Что нужно реализовать минимально:</span>
+<span class="cm"># 1. aq_schema (только MCP + worker схемы)</span>
+<span class="cm"># 2. aq_queue (Redis, минимально)</span>
+<span class="cm"># 3. aq_mcp_adapter (без auth, sync only)</span>
+<span class="cm"># 4. aq_py_wrapper (минимальный)</span>
+<span class="cm"># 5. docker-compose.yml</span>
+
+<span class="cm"># Итого: ~8 часов разработки</span>
+<span class="cm"># Результат: работающий MCP стэк с Python воркером</span>
+<span class="cm"># Агент с локальной машины подключается к удалённому серверу</span>
+<span class="cm"># и использует Python MCP tools через Dart adapter</span></pre>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:mcp:tools_list_response",
+  "title": "MCP Tools List Response",
+  "description": "Response to tools/list request — aggregated tools from all registered workers",
+  "type": "object",
+  "required": ["jsonrpc", "result"],
+  "properties": {
+    "jsonrpc": {
+      "type": "string",
+      "const": "2.0"
+    },
+    "id": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "integer" }
+      ]
+    },
+    "result": {
+      "type": "object",
+      "required": ["tools"],
+      "properties": {
+        "tools": {
+          "type": "array",
+          "items": { "$ref": "mcp_tool.json" },
+          "description": "List of all available tools including system tools (get_job_status)"
+        }
+      }
+    }
+  }
+}

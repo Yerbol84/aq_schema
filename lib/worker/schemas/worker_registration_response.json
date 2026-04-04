@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:worker:registration_response",
+  "title": "Worker Registration Response",
+  "description": "Response sent by adapter to worker after successful registration via POST /workers/register. Contains the Redis queue key the worker should listen on for jobs.",
+  "type": "object",
+  "required": ["ok", "worker_id", "queue_key"],
+  "properties": {
+    "ok": {
+      "type": "boolean",
+      "const": true,
+      "description": "Always true on success. On failure, HTTP status is non-200."
+    },
+    "worker_id": {
+      "type": "string",
+      "description": "Echoed back from registration request for confirmation."
+    },
+    "queue_key": {
+      "type": "string",
+      "description": "Redis LIST key the worker should BRPOP on. Format: aq:queue:jobs:{worker_id}",
+      "examples": ["aq:queue:jobs:search-worker"]
+    },
+    "adapter_version": {
+      "type": "string",
+      "description": "Adapter version string for compatibility checking."
+    },
+    "registered_at": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) when registration was accepted."
+    }
+  },
+  "additionalProperties": false
+}

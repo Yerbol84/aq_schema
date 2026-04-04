@@ -1,0 +1,201 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:deploy:stack",
+  "title": "AQ Stack Definition",
+  "description": "Defines a deployable AQ stack: gateway + adapter + workers.",
+  "type": "object",
+  "required": ["stack_name", "version", "server", "gateway", "adapter", "workers"],
+  "additionalProperties": false,
+  "properties": {
+
+    "stack_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Unique stack name. Used as Docker network name and deploy directory.",
+      "examples": ["calculator", "data-processing", "web-search-v2"]
+    },
+
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Stack version (semver)."
+    },
+
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of what this stack does."
+    },
+
+    "server": {
+      "type": "object",
+      "required": ["host", "user"],
+      "additionalProperties": false,
+      "description": "Target server configuration.",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "Server IP address or hostname.",
+          "examples": ["192.168.64.10", "my-server.example.com"]
+        },
+        "user": {
+          "type": "string",
+          "description": "SSH username.",
+          "default": "ubuntu"
+        },
+        "ssh_key": {
+          "type": "string",
+          "description": "Path to SSH private key on developer machine.",
+          "default": "~/.ssh/id_rsa"
+        },
+        "ssh_port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "default": 22
+        },
+        "arch": {
+          "type": "string",
+          "enum": ["amd64", "arm64"],
+          "default": "amd64",
+          "description": "Target server CPU architecture. Used to select build container."
+        },
+        "deploy_dir": {
+          "type": "string",
+          "default": "/opt/aq_stacks",
+          "description": "Base directory on server where stacks are deployed."
+        }
+      }
+    },
+
+    "gateway": {
+      "type": "object",
+      "required": ["port"],
+      "additionalProperties": false,
+      "description": "Nginx gateway configuration.",
+      "properties": {
+        "port": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535,
+          "description": "External HTTP port. Must be unique across all stacks on the server."
+        },
+        "ssl": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable HTTPS (requires domain, v2 feature)."
+        },
+        "domain": {
+          "type": "string",
+          "description": "Domain name for SSL certificate."
+        }
+      }
+    },
+
+    "adapter": {
+      "type": "object",
+      "required": ["source"],
+      "additionalProperties": false,
+      "description": "AQ MCP Adapter configuration.",
+      "properties": {
+        "source": { "$ref": "#/definitions/source" },
+        "env": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Environment variables for the adapter. Merged with defaults.",
+          "default": {}
+        }
+      }
+    },
+
+    "workers": {
+      "type": "array",
+      "minItems": 0,
+      "description": "Workers to deploy. Each worker is a separate process/container.",
+      "items": { "$ref": "#/definitions/worker" }
+    }
+  },
+
+  "definitions": {
+
+    "source": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "description": "Source location of the component.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["monorepo", "local", "git", "git_ssh"],
+          "description": "Source type: monorepo=relative to monorepo root, local=absolute path, git/git_ssh=git repo"
+        },
+        "path": {
+          "type": "string",
+          "description": "For monorepo: relative path from monorepo root. For local: absolute path."
+        },
+        "url": {
+          "type": "string",
+          "description": "For git/git_ssh: repository URL."
+        },
+        "branch": {
+          "type": "string",
+          "default": "main",
+          "description": "Git branch to use."
+        },
+        "tag": {
+          "type": "string",
+          "description": "Git tag to use (overrides branch)."
+        }
+      }
+    },
+
+    "worker": {
+      "type": "object",
+      "required": ["id", "type", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "Unique worker ID within the stack. Used as worker_id in adapter."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["dart", "python"],
+          "description": "Worker runtime type."
+        },
+        "source": { "$ref": "#/definitions/source" },
+        "replicas": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 1,
+          "description": "Number of worker instances to run."
+        },
+        "mcp_packages": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Python only: pip packages to install (MCP servers).",
+          "examples": [["mcp-server-fetch", "mcp-server-brave-search"]]
+        },
+        "mcp_github_repos": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Python only: GitHub repos to install via pip+git.",
+          "examples": [["https://github.com/myorg/my-mcp-server.git"]]
+        },
+        "mcp_commands": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Python only: commands to start MCP STDIO servers (one per server).",
+          "examples": [["python -m mcp_server_fetch"]]
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Environment variables for this worker.",
+          "default": {}
+        }
+      }
+    }
+  }
+}

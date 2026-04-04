@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:mcp:tool",
+  "title": "MCP Tool Definition",
+  "description": "Single tool definition as exposed to MCP clients via tools/list",
+  "type": "object",
+  "required": ["name", "description", "inputSchema"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "snake_case tool name, lowercase letters, digits, underscores only",
+      "maxLength": 64
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "Human-readable tool description for LLM context"
+    },
+    "inputSchema": {
+      "type": "object",
+      "description": "JSON Schema for tool input parameters",
+      "properties": {
+        "type": { "type": "string", "const": "object" },
+        "properties": { "type": "object" },
+        "required": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["type"]
+    },
+    "_aq_auth": {
+      "description": "AQ EXTENSION: authorization requirements for this tool",
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "enum": ["bearer", "apikey", "oauth2", "none"]
+        },
+        "scopes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Required OAuth2 scopes if type=oauth2"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

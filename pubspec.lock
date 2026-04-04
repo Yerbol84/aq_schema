@@ -170,7 +170,7 @@ packages:
     source: hosted
     version: "0.12.19"
   meta:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: meta
       sha256: df0c643f44ad098eb37988027a8e2b2b5a031fd3977f06bbfd3a76637e8df739
@@ -426,4 +426,4 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.10.4 <4.0.0"
+  dart: ">=3.9.0 <4.0.0"

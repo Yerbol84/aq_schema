@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:auth:result",
+  "title": "Auth Result",
+  "description": "Return value from AuthProvider.validate() — success path or failure with reason",
+  "type": "object",
+  "required": ["success", "timestamp"],
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "true = token accepted, false = token rejected"
+    },
+    "context": {
+      "$ref": "auth_context.json",
+      "description": "Populated when success=true"
+    },
+    "error": {
+      "type": "string",
+      "enum": [
+        "token_missing",
+        "token_expired",
+        "token_invalid",
+        "token_revoked",
+        "scope_insufficient",
+        "service_unavailable"
+      ],
+      "description": "Populated when success=false"
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) of validation attempt"
+    }
+  },
+  "additionalProperties": false
+}

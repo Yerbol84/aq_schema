@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:mcp:initialize_response",
+  "title": "MCP Initialize Response",
+  "description": "Server capabilities response to initialize handshake",
+  "type": "object",
+  "required": ["jsonrpc", "id", "result"],
+  "properties": {
+    "jsonrpc": {
+      "type": "string",
+      "const": "2.0"
+    },
+    "id": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "integer" }
+      ]
+    },
+    "result": {
+      "type": "object",
+      "required": ["protocolVersion", "capabilities", "serverInfo"],
+      "properties": {
+        "protocolVersion": {
+          "type": "string",
+          "description": "MCP protocol version supported by server"
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "tools": {
+              "type": "object",
+              "properties": {
+                "listChanged": { "type": "boolean" }
+              }
+            },
+            "logging": { "type": "object" }
+          }
+        },
+        "serverInfo": {
+          "type": "object",
+          "required": ["name", "version"],
+          "properties": {
+            "name": { "type": "string" },
+            "version": { "type": "string" }
+          }
+        },
+        "_aq_extensions": {
+          "description": "AQ EXTENSION: not part of MCP standard, optional vendor field. Standard clients ignore unknown fields per JSON-RPC spec.",
+          "type": "object",
+          "properties": {
+            "auth": {
+              "type": "object",
+              "properties": {
+                "supported": { "type": "boolean" },
+                "methods": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["bearer", "apikey", "oauth2", "none"]
+                  }
+                }
+              }
+            },
+            "async_jobs": {
+              "type": "boolean",
+              "description": "Whether server supports async job pattern via get_job_status tool"
+            },
+            "worker_count": {
+              "type": "integer",
+              "description": "Currently registered worker count"
+            }
+          }
+        }
+      }
+    }
+  }
+}

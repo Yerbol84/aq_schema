@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:worker:result",
+  "title": "Worker Result",
+  "description": "Final execution result written to Redis result store by worker",
+  "type": "object",
+  "required": ["job_id", "status", "completed_at"],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["done", "failed", "timeout"],
+      "description": "Final job status. pending/running are intermediate states stored separately."
+    },
+    "result": {
+      "type": "object",
+      "description": "Successful execution result — any JSON object. Present when status=done."
+    },
+    "error": {
+      "type": "object",
+      "description": "Error details. Present when status=failed or status=timeout.",
+      "required": ["code", "message", "type"],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "description": "MCP error code (-32000..-32004 for AQ codes)"
+        },
+        "message": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["execution_error", "validation_error", "auth_error", "timeout", "internal"],
+          "description": "Error category for normalization"
+        }
+      },
+      "additionalProperties": false
+    },
+    "completed_at": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) when job completed"
+    },
+    "duration_ms": {
+      "type": "integer",
+      "description": "Total execution time in milliseconds"
+    }
+  },
+  "additionalProperties": false
+}

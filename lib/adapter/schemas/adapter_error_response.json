@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:adapter:error_response",
+  "title": "Adapter HTTP Error Response",
+  "description": "Standard error response for non-MCP HTTP endpoints (worker registration, health, status). Separate from MCP JSON-RPC errors which use mcp_error.json.",
+  "type": "object",
+  "required": ["ok", "error", "code"],
+  "properties": {
+    "ok": {
+      "type": "boolean",
+      "const": false
+    },
+    "error": {
+      "type": "string",
+      "description": "Human-readable error description."
+    },
+    "code": {
+      "type": "string",
+      "enum": [
+        "validation_failed",
+        "schema_violation",
+        "worker_id_conflict",
+        "internal_error",
+        "queue_unavailable"
+      ],
+      "description": "Machine-readable error code."
+    },
+    "details": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Validation error details (field-level messages)."
+    }
+  },
+  "additionalProperties": false
+}

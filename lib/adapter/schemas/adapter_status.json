@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "aq:adapter:status",
+  "title": "Adapter Status",
+  "description": "Status response from GET / and GET /health. Represents the current state of the MCP adapter: initialized, registered workers, available tools.",
+  "type": "object",
+  "required": ["ok", "status", "mcp", "workers", "tools", "timestamp"],
+  "properties": {
+    "ok": {
+      "type": "boolean",
+      "description": "true when adapter is fully operational."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["starting", "ready", "degraded", "stopping"],
+      "description": "Adapter lifecycle state."
+    },
+    "mcp": {
+      "type": "object",
+      "required": ["initialized", "protocol_version", "server_name", "server_version"],
+      "properties": {
+        "initialized": {
+          "type": "boolean",
+          "description": "true after first MCP initialize handshake was completed."
+        },
+        "protocol_version": {
+          "type": "string",
+          "description": "MCP protocol version supported."
+        },
+        "server_name": { "type": "string" },
+        "server_version": { "type": "string" },
+        "transport": {
+          "type": "string",
+          "enum": ["stdio", "http"],
+          "description": "Active transport type."
+        }
+      }
+    },
+    "workers": {
+      "type": "object",
+      "required": ["count", "registered"],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "registered": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["worker_id", "tool_count"],
+            "properties": {
+              "worker_id": { "type": "string" },
+              "tool_count": { "type": "integer" },
+              "language": { "type": "string" },
+              "status": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "tools": {
+      "type": "object",
+      "required": ["count", "names"],
+      "properties": {
+        "count": { "type": "integer" },
+        "names": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "All available tool names including system tools."
+        }
+      }
+    },
+    "queue": {
+      "type": "object",
+      "properties": {
+        "connected": { "type": "boolean" },
+        "host": { "type": "string" }
+      }
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) of this status snapshot."
+    },
+    "uptime_seconds": {
+      "type": "integer",
+      "description": "Seconds since adapter process started."
+    }
+  },
+  "additionalProperties": false
+}
