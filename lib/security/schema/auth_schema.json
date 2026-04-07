@@ -1,0 +1,308 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aqstudio.dev/schemas/security/v1/auth_schema.json",
+  "title": "AQ Security Schema v1",
+  "description": "Master schema for AQ Studio authentication, authorization, sessions and identity management.",
+
+  "definitions": {
+
+    "UserType": {
+      "type": "string",
+      "enum": ["platform_admin", "developer", "end_user", "service"],
+      "description": "platform_admin — full platform control. developer — creates projects/agents. end_user — uses deployed agents only. service — machine-to-machine (workers, data service)."
+    },
+
+    "AuthProvider": {
+      "type": "string",
+      "enum": ["google", "email_password", "api_key", "mock"],
+      "description": "Identity provider used for authentication."
+    },
+
+    "TokenType": {
+      "type": "string",
+      "enum": ["access", "refresh", "id"],
+      "description": "access — short-lived bearer token (15 min). refresh — long-lived (30 days). id — user identity token (Google)."
+    },
+
+    "SessionStatus": {
+      "type": "string",
+      "enum": ["active", "expired", "revoked"],
+      "description": "Current state of a session."
+    },
+
+    "TenantPlan": {
+      "type": "string",
+      "enum": ["free", "starter", "pro", "enterprise"],
+      "description": "Subscription plan of the tenant."
+    },
+
+    "AqTenant": {
+      "type": "object",
+      "description": "An organization or company. All users belong to exactly one tenant.",
+      "required": ["id", "name", "slug", "plan", "isActive", "createdAt"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "type": "string", "format": "uuid" },
+        "name":        { "type": "string", "minLength": 1, "maxLength": 128 },
+        "slug":        { "type": "string", "pattern": "^[a-z0-9-]{2,64}$", "description": "URL-safe unique identifier." },
+        "plan":        { "$ref": "#/definitions/TenantPlan" },
+        "isActive":    { "type": "boolean" },
+        "ownerId":     { "type": "string", "format": "uuid", "description": "User ID of the tenant owner." },
+        "logoUrl":     { "type": ["string", "null"], "format": "uri" },
+        "settings":    { "type": "object", "description": "Tenant-level configuration." },
+        "createdAt":   { "type": "integer", "description": "Unix timestamp (seconds)." },
+        "updatedAt":   { "type": "integer" }
+      }
+    },
+
+    "AqUser": {
+      "type": "object",
+      "description": "A platform user. Can belong to one tenant. Service accounts are also users (type=service).",
+      "required": ["id", "email", "userType", "tenantId", "authProvider", "isActive", "createdAt"],
+      "additionalProperties": false,
+      "properties": {
+        "id":            { "type": "string", "format": "uuid" },
+        "email":         { "type": "string", "format": "email" },
+        "displayName":   { "type": ["string", "null"], "maxLength": 128 },
+        "photoUrl":      { "type": ["string", "null"], "format": "uri" },
+        "userType":      { "$ref": "#/definitions/UserType" },
+        "tenantId":      { "type": "string", "format": "uuid" },
+        "authProvider":  { "$ref": "#/definitions/AuthProvider" },
+        "providerUserId":{ "type": ["string", "null"], "description": "User ID in the external provider (Google sub, etc)." },
+        "isActive":      { "type": "boolean" },
+        "isVerified":    { "type": "boolean", "default": false },
+        "lastLoginAt":   { "type": ["integer", "null"] },
+        "createdAt":     { "type": "integer" },
+        "updatedAt":     { "type": "integer" }
+      }
+    },
+
+    "AqProfile": {
+      "type": "object",
+      "description": "Extended user profile. 1:1 with AqUser.",
+      "required": ["userId"],
+      "additionalProperties": false,
+      "properties": {
+        "userId":      { "type": "string", "format": "uuid" },
+        "bio":         { "type": ["string", "null"], "maxLength": 512 },
+        "timezone":    { "type": ["string", "null"], "description": "IANA timezone string." },
+        "locale":      { "type": ["string", "null"], "pattern": "^[a-z]{2}(-[A-Z]{2})?$" },
+        "preferences": { "type": "object", "description": "UI preferences, notification settings, etc." },
+        "updatedAt":   { "type": "integer" }
+      }
+    },
+
+    "AqRole": {
+      "type": "object",
+      "description": "Named role. Can be platform-level (tenantId=null) or tenant-scoped.",
+      "required": ["id", "name", "permissions"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "type": "string", "format": "uuid" },
+        "name":        { "type": "string", "maxLength": 64 },
+        "description": { "type": ["string", "null"] },
+        "tenantId":    { "type": ["string", "null"], "format": "uuid", "description": "null = platform-level role." },
+        "permissions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Permission keys. Example: 'projects:read', 'agents:run', 'admin:*'"
+        },
+        "isSystem":    { "type": "boolean", "default": false, "description": "System roles cannot be deleted." },
+        "createdAt":   { "type": "integer" }
+      }
+    },
+
+    "AqUserRole": {
+      "type": "object",
+      "description": "Assignment of a role to a user within a tenant context.",
+      "required": ["userId", "roleId", "tenantId", "grantedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "userId":     { "type": "string", "format": "uuid" },
+        "roleId":     { "type": "string", "format": "uuid" },
+        "tenantId":   { "type": "string", "format": "uuid" },
+        "grantedBy":  { "type": ["string", "null"], "format": "uuid" },
+        "grantedAt":  { "type": "integer" },
+        "expiresAt":  { "type": ["integer", "null"], "description": "null = permanent." }
+      }
+    },
+
+    "AqSession": {
+      "type": "object",
+      "description": "An authenticated session. Created on login, invalidated on logout or expiry.",
+      "required": ["id", "userId", "tenantId", "status", "createdAt", "expiresAt"],
+      "additionalProperties": false,
+      "properties": {
+        "id":            { "type": "string", "format": "uuid", "description": "Session ID — also embedded in JWT (sid claim)." },
+        "userId":        { "type": "string", "format": "uuid" },
+        "tenantId":      { "type": "string", "format": "uuid" },
+        "status":        { "$ref": "#/definitions/SessionStatus" },
+        "authProvider":  { "$ref": "#/definitions/AuthProvider" },
+        "ipAddress":     { "type": ["string", "null"] },
+        "userAgent":     { "type": ["string", "null"] },
+        "deviceHint":    { "type": ["string", "null"], "description": "Browser/OS hint for UI display." },
+        "lastSeenAt":    { "type": "integer" },
+        "createdAt":     { "type": "integer" },
+        "expiresAt":     { "type": "integer" },
+        "revokedAt":     { "type": ["integer", "null"] },
+        "revokedReason": { "type": ["string", "null"] }
+      }
+    },
+
+    "AqTokenClaims": {
+      "type": "object",
+      "description": "JWT payload. Both access and refresh tokens use this structure. Shared between client and server.",
+      "required": ["sub", "tid", "email", "type", "iat", "exp", "jti", "sid"],
+      "additionalProperties": false,
+      "properties": {
+        "sub":   { "type": "string", "description": "Subject — AqUser.id." },
+        "tid":   { "type": "string", "description": "Tenant ID — AqTenant.id." },
+        "email": { "type": "string", "format": "email" },
+        "name":  { "type": ["string", "null"] },
+        "type":  { "$ref": "#/definitions/TokenType" },
+        "roles": { "type": "array", "items": { "type": "string" }, "description": "Role names active in this session." },
+        "perms": { "type": "array", "items": { "type": "string" }, "description": "Flattened permission keys from all roles." },
+        "utype": { "$ref": "#/definitions/UserType", "description": "UserType shortcut — avoids role lookup on every request." },
+        "iat":   { "type": "integer", "description": "Issued at (Unix seconds)." },
+        "exp":   { "type": "integer", "description": "Expires at (Unix seconds)." },
+        "jti":   { "type": "string", "description": "Unique token ID — used for revocation." },
+        "sid":   { "type": "string", "description": "Session ID — matches AqSession.id." }
+      }
+    },
+
+    "AqApiKey": {
+      "type": "object",
+      "description": "Long-lived API key for service accounts (workers, data service, external clients).",
+      "required": ["id", "userId", "tenantId", "keyPrefix", "keyHash", "isActive", "createdAt"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "type": "string", "format": "uuid" },
+        "userId":      { "type": "string", "format": "uuid", "description": "The service user this key belongs to." },
+        "tenantId":    { "type": "string", "format": "uuid" },
+        "name":        { "type": "string", "description": "Human-readable label (e.g. 'Graph Worker Production')." },
+        "keyPrefix":   { "type": "string", "description": "First 8 chars of key — for display, not auth." },
+        "keyHash":     { "type": "string", "description": "SHA-256 hash of the full key — stored, never the raw key." },
+        "permissions": { "type": "array", "items": { "type": "string" }, "description": "Scoped permissions for this key." },
+        "isActive":    { "type": "boolean" },
+        "lastUsedAt":  { "type": ["integer", "null"] },
+        "expiresAt":   { "type": ["integer", "null"], "description": "null = never expires." },
+        "createdAt":   { "type": "integer" }
+      }
+    },
+
+    "TokenPair": {
+      "type": "object",
+      "description": "Access + Refresh token pair returned on successful login or refresh.",
+      "required": ["accessToken", "refreshToken", "accessExpiresAt", "refreshExpiresAt"],
+      "additionalProperties": false,
+      "properties": {
+        "accessToken":      { "type": "string" },
+        "refreshToken":     { "type": "string" },
+        "accessExpiresAt":  { "type": "integer" },
+        "refreshExpiresAt": { "type": "integer" },
+        "tokenType":        { "type": "string", "default": "Bearer" }
+      }
+    },
+
+    "AuthRequest": {
+      "type": "object",
+      "description": "Generic auth request. Discriminated by 'provider' field.",
+      "required": ["provider"],
+      "properties": {
+        "provider": { "$ref": "#/definitions/AuthProvider" },
+        "googleCode":        { "type": "string", "description": "Google OAuth2 authorization code." },
+        "googleRedirectUri": { "type": "string", "description": "Must match registered redirect URI." },
+        "email":    { "type": "string" },
+        "password": { "type": "string" },
+        "apiKey":   { "type": "string" }
+      }
+    },
+
+    "AuthResponse": {
+      "type": "object",
+      "description": "Response to a successful authentication request.",
+      "required": ["user", "tenant", "tokens", "session"],
+      "additionalProperties": false,
+      "properties": {
+        "user":    { "$ref": "#/definitions/AqUser" },
+        "tenant":  { "$ref": "#/definitions/AqTenant" },
+        "tokens":  { "$ref": "#/definitions/TokenPair" },
+        "session": { "$ref": "#/definitions/AqSession" }
+      }
+    },
+
+    "ValidateTokenRequest": {
+      "type": "object",
+      "required": ["token"],
+      "properties": {
+        "token":         { "type": "string" },
+        "requiredPerms": { "type": "array", "items": { "type": "string" }, "description": "Permissions to check." }
+      }
+    },
+
+    "ValidateTokenResponse": {
+      "type": "object",
+      "required": ["valid", "claims"],
+      "properties": {
+        "valid":     { "type": "boolean" },
+        "claims":    { "oneOf": [{ "$ref": "#/definitions/AqTokenClaims" }, { "type": "null" }] },
+        "permitted": { "type": "boolean", "description": "True if all requiredPerms are satisfied." },
+        "reason":    { "type": ["string", "null"], "description": "Why validation failed." }
+      }
+    },
+
+    "ErrorResponse": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code":    { "type": "string", "description": "Machine-readable error code." },
+        "message": { "type": "string" },
+        "details": { "type": ["object", "null"] }
+      }
+    }
+  },
+
+  "properties": {
+    "endpoints": {
+      "type": "object",
+      "description": "Auth service HTTP API.",
+      "properties": {
+        "POST /auth/login":            { "description": "Authenticate via provider. Body: AuthRequest. Returns: AuthResponse." },
+        "POST /auth/refresh":          { "description": "Exchange refresh token for new token pair. Body: {refreshToken}. Returns: TokenPair." },
+        "POST /auth/logout":           { "description": "Revoke current session. Bearer token required." },
+        "GET  /auth/me":               { "description": "Get current user + session. Bearer token required. Returns: AuthResponse." },
+        "GET  /auth/sessions":         { "description": "List all active sessions for current user. Returns: [{AqSession}]." },
+        "DELETE /auth/sessions/:id":   { "description": "Revoke a specific session." },
+        "POST /auth/validate":         { "description": "Validate a token (for other services). Body: ValidateTokenRequest. Returns: ValidateTokenResponse." },
+        "POST /auth/api-keys":         { "description": "Create API key for a service account. Returns: {apiKey: string, ...AqApiKey} (raw key shown once)." },
+        "DELETE /auth/api-keys/:id":   { "description": "Revoke API key." },
+        "GET  /auth/health":           { "description": "Health check. Returns: {ok: true, ts: int}." }
+      }
+    },
+    "tokenLifetimes": {
+      "type": "object",
+      "properties": {
+        "accessTokenTtlSeconds":  { "const": 900,    "description": "15 minutes." },
+        "refreshTokenTtlSeconds": { "const": 2592000, "description": "30 days." },
+        "sessionTtlSeconds":      { "const": 2592000, "description": "30 days." }
+      }
+    },
+    "systemRoles": {
+      "type": "array",
+      "description": "Built-in roles seeded on first run.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name":        { "type": "string" },
+          "permissions": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "default": [
+        { "name": "platform_admin", "permissions": ["*"] },
+        { "name": "developer",      "permissions": ["projects:*", "agents:*", "blueprints:*", "runs:*", "knowledge:*"] },
+        { "name": "end_user",       "permissions": ["agents:run", "runs:read"] },
+        { "name": "service",        "permissions": ["runs:*", "graphs:read", "knowledge:read"] }
+      ]
+    }
+  }
+}

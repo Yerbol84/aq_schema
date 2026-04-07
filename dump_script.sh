@@ -1,19 +1,42 @@
 #!/bin/bash
-# improved_dump_with_skipped.sh – дамп с отчётом о пропущенных файлах
-# Исправлена ошибка с пустыми массивами при set -u
+# improved_dump_with_skipped.sh – дамп Flutter-проекта с отчётом о пропущенных файлах
+# Теперь можно указать, какие корневые папки включать (по умолчанию только lib/)
 
 set -euo pipefail
 
 # ---------- НАСТРОЙКИ ----------
 MAX_LINES_PER_FILE=5000
-MAX_TOTAL_SIZE_MB=10
+MAX_TOTAL_SIZE_MB=10               # 0 = без лимита
 
-INCLUDE_ROOT_DIRS=("lib" "pkgs")
-INCLUDE_ROOT_FILES=("pubspec.yaml" "README.md" "analysis_options.yaml" ".gitignore")
-EXCLUDE_DIRS=(".dart_tool" ".git" "ios/Pods" "macos/Pods" "android/.gradle" "build" "ios" "android" ".idea" "linux" "macos" "windows" "web") 
+# Какие папки в КОРНЕ проекта включать (рекурсивно)
+INCLUDE_ROOT_DIRS=("lib" 
+# "pkgs" 
+"doc" 
+# "server_apps" 
+"deploys"
+)
+
+# Какие отдельные файлы в КОРНЕ включать (например, конфиги)
+INCLUDE_ROOT_FILES=("pubspec.yaml" "README.md" "analysis_options.yaml" ".gitignore"
+  "doc/AQ_ARCHITECTURE_RULES.md"
+  "doc/project_consts_rules.md"
+  "doc/MCP_protocol_rules.md"
+)
+
+# Директории, которые исключаются В ЛЮБОМ МЕСТЕ (кроме тех, что входят в INCLUDE_ROOT_DIRS)
+EXCLUDE_DIRS=(".dart_tool" ".git" "ios/Pods" "macos/Pods" "android/.gradle" "build" "ios" "android" ".idea" "linux" "macos" "windows" "web" "test" "doc/todo" "doc/tender") 
+
+# Расширения, которые гарантированно не нужны (дополнительная фильтрация)
 BINARY_EXTENSIONS=("png" "jpg" "jpeg" "gif" "bmp" "ico" "mp3" "mp4" "avi" "mov" "pdf" "doc" "docx" "zip" "tar" "gz" "rar" "7z" "class" "o" "so" "dll" "exe" "pyc" "pyo")
 # ---------------------------------
 
+
+EXCLUDE_PATTERNS=(
+  "*.g.dart" "*.freezed.dart" "*.pbxproj" "*.xcconfig" "*.plist"
+  "*.iml" "*.lock" "*.html" "*.css" "*.js" "README.md" "CHANGELOG.md"
+)
+
+# Проверка наличия file
 if ! command -v file &> /dev/null; then
     echo "Предупреждение: команда 'file' не найдена, буду использовать упрощённую проверку бинарных файлов." >&2
     USE_FILE=false
@@ -21,6 +44,7 @@ else
     USE_FILE=true
 fi
 
+# Получить имя проекта
 PROJECT_NAME=$(grep '^name:' pubspec.yaml 2>/dev/null | head -n1 | awk '{print $2}') || true
 if [ -z "$PROJECT_NAME" ]; then
     PROJECT_NAME=$(basename "$PWD")
@@ -30,9 +54,13 @@ fi
 OUT="${PROJECT_NAME}_dump.md"
 > "$OUT"
 
+# Функция проверки, нужно ли исключить директорию (по полному пути)
 is_excluded_dir() {
     local path="$1"
+    # Нормализуем путь: убираем ведущий ./
     path="${path#./}"
+
+    # Проверяем, не входит ли путь в одну из исключаемых поддиректорий
     for excl in "${EXCLUDE_DIRS[@]}"; do
         if [[ "$path" == "$excl" || "$path" == "$excl"/* || "$path" == */"$excl" || "$path" == */"$excl"/* ]]; then
             return 0
@@ -41,17 +69,29 @@ is_excluded_dir() {
     return 1
 }
 
+# Функция проверки, является ли файл текстовым
 is_text_file() {
     local file="$1"
     if $USE_FILE; then
-        file -b --mime-type "$file" | grep -q '^text/'
+        if file -b --mime-type "$file" | grep -q '^text/'; then
+            return 0
+        else
+            return 1
+        fi
     else
-        ! head -c 1024 "$file" 2>/dev/null | grep -q -P '\x00'
+        # Fallback: ищем нулевой байт
+        if head -c 1024 "$file" | grep -q -F -m 1 ''; then
+            return 1
+        else
+            return 0
+        fi
     fi
 }
 
-# Сбор файлов
+# Сбор файлов (только из разрешённых корневых папок и отдельных файлов)
 all_files=()
+
+# 1. Добавляем файлы из разрешённых корневых папок
 for dir in "${INCLUDE_ROOT_DIRS[@]}"; do
     if [ -d "./$dir" ]; then
         while IFS= read -r -d '' file; do
@@ -60,36 +100,47 @@ for dir in "${INCLUDE_ROOT_DIRS[@]}"; do
     fi
 done
 
+# 2. Добавляем отдельные файлы из корня
 for fname in "${INCLUDE_ROOT_FILES[@]}"; do
     if [ -f "./$fname" ]; then
         all_files+=("./$fname")
     fi
 done
 
-# Убираем дубликаты
-if [ ${#all_files[@]} -gt 0 ]; then
-    mapfile -t all_files < <(printf "%s\n" "${all_files[@]}" | sort -u)
-fi
+# Убираем дубликаты (на случай, если файл попал дважды – маловероятно)
+all_files=($(printf "%s\n" "${all_files[@]}" | sort -u))
 
+# Массивы для включённых и пропущенных
 included_files=()
-skipped_files=()
+skipped_files=()  # каждый элемент = "путь|причина"
+
 total_size=0
 total_lines=0
 
+# Функция добавления файла в дамп
 process_file() {
     local file="$1"
-    
+    local reason=""
+    for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+        if [[ "$file" == $pattern ]]; then
+            skipped_files+=("$file|исключён по шаблону")
+            return
+        fi
+    done
+    # 1. Проверка на исключённую директорию
     if is_excluded_dir "$file"; then
         skipped_files+=("$file|исключённая директория")
         return
     fi
 
+    # 2. Проверка на текстовость
     if ! is_text_file "$file"; then
         skipped_files+=("$file|бинарный файл")
         return
     fi
 
-    local ext="${file##*.}"
+    # 3. Дополнительная фильтрация по расширению
+    ext="${file##*.}"
     for bext in "${BINARY_EXTENSIONS[@]}"; do
         if [[ "$ext" == "$bext" ]]; then
             skipped_files+=("$file|бинарное расширение")
@@ -97,13 +148,14 @@ process_file() {
         fi
     done
 
-    local lines size
+    # Если дошли сюда – файл подходит
     lines=$(wc -l < "$file" 2>/dev/null || echo "0")
     size=$(wc -c < "$file" 2>/dev/null || echo "0")
 
+    # Проверка общего лимита
     if [ "$MAX_TOTAL_SIZE_MB" -gt 0 ]; then
-        local new_total=$((total_size + size))
-        local new_total_mb=$((new_total / 1048576))
+        new_total=$((total_size + size))
+        new_total_mb=$((new_total / 1048576))
         if [ "$new_total_mb" -gt "$MAX_TOTAL_SIZE_MB" ]; then
             skipped_files+=("$file|превышен общий лимит размера дампа")
             return
@@ -115,21 +167,15 @@ process_file() {
     total_lines=$((total_lines + lines))
 }
 
-for file in "${all_files[@]+"${all_files[@]}"}"; do
-    [ -n "$file" ] && process_file "$file"
+# Обрабатываем все собранные файлы
+for file in "${all_files[@]}"; do
+    process_file "$file"
 done
 
-# Сортировка с проверкой на пустоту
-sorted_included=()
-sorted_skipped=()
-
-if [ ${#included_files[@]} -gt 0 ]; then
-    mapfile -t sorted_included < <(printf "%s\n" "${included_files[@]}" | sort)
-fi
-
-if [ ${#skipped_files[@]} -gt 0 ]; then
-    mapfile -t sorted_skipped < <(printf "%s\n" "${skipped_files[@]}" | sort)
-fi
+# Сортировка
+IFS=$'\n' sorted_included=($(sort <<<"${included_files[*]}"))
+IFS=$'\n' sorted_skipped=($(sort <<<"${skipped_files[*]}"))
+unset IFS
 
 # --- Запись дампа ---
 {
@@ -139,46 +185,35 @@ fi
     echo "**Включено:** ${#included_files[@]}"
     echo "**Пропущено:** ${#skipped_files[@]}"
     echo ""
-    
     echo "## Включённые файлы"
     echo ""
-    if [ ${#sorted_included[@]} -gt 0 ]; then
-        echo "| Файл | Строк | Размер (байт) |"
-        echo "|------|-------|---------------|"
-        for entry in "${sorted_included[@]}"; do
-            IFS='|' read -r path lines size <<< "$entry"
-            echo "| \`$path\` | $lines | $size |"
-        done
-    else
-        echo "_Нет включённых файлов_"
-    fi
+    echo "| Файл | Строк | Размер (байт) |"
+    echo "|------|-------|---------------|"
+    for entry in "${sorted_included[@]}"; do
+        IFS='|' read -r path lines size <<< "$entry"
+        echo "| \`$path\` | $lines | $size |"
+    done
     echo ""
     echo "---"
     echo ""
-    
     echo "## Пропущенные файлы"
     echo ""
-    if [ ${#sorted_skipped[@]} -gt 0 ]; then
-        echo "| Файл | Причина |"
-        echo "|------|---------|"
-        for entry in "${sorted_skipped[@]}"; do
-            IFS='|' read -r path reason <<< "$entry"
-            echo "| \`$path\` | $reason |"
-        done
-    else
-        echo "_Нет пропущенных файлов_"
-    fi
+    echo "| Файл | Причина |"
+    echo "|------|---------|"
+    for entry in "${sorted_skipped[@]}"; do
+        IFS='|' read -r path reason <<< "$entry"
+        echo "| \`$path\` | $reason |"
+    done
     echo ""
     echo "---"
     echo ""
-    
     echo "## Содержимое включённых файлов"
     echo ""
 
-    for entry in "${sorted_included[@]+"${sorted_included[@]}"}"; do
-        [ -z "$entry" ] && continue
+    # Выводим содержимое
+    for entry in "${sorted_included[@]}"; do
         IFS='|' read -r path lines size <<< "$entry"
-        
+        # Определяем язык для подсветки
         case "${path##*.}" in
             dart) lang="dart" ;;
             yaml|yml) lang="yaml" ;;
@@ -211,6 +246,7 @@ fi
         echo ""
     done
 
+    # Финальная статистика
     echo "---"
     echo "**Суммарно строк в включённых файлах:** $total_lines"
     echo "**Суммарный размер включённых файлов:** $total_size байт (~$((total_size / 1024)) КБ)"

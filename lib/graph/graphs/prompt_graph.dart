@@ -1,6 +1,6 @@
 import 'package:aq_schema/graph/core/graph_def.dart';
+import 'package:aq_schema/aq_schema.dart';
 
-// --- ENUM ТИПОВ ---
 enum PromptNodeType {
   textBlock,
   variable,
@@ -10,12 +10,11 @@ enum PromptNodeType {
   static PromptNodeType fromJson(String json) => values.byName(json);
 }
 
-// --- УЗЕЛ ---
 class PromptNode extends $Node {
   @override
   final String id;
   final PromptNodeType type;
-  final Map<String, dynamic> data; // { ..., "comment": "..." }
+  final Map<String, dynamic> data;
 
   const PromptNode({
     required this.id,
@@ -28,34 +27,28 @@ class PromptNode extends $Node {
     String? id,
     PromptNodeType? type,
     Map<String, dynamic>? data,
-  }) {
-    return PromptNode(
-      id: id ?? this.id,
-      type: type ?? this.type,
-      data: data ?? this.data,
-    );
-  }
+  }) =>
+      PromptNode(
+        id: id ?? this.id,
+        type: type ?? this.type,
+        data: data ?? this.data,
+      );
 
-  /// Получить комментарий узла (удобный геттер)
   String? get comment => data['comment'] as String?;
 
-  // СЕРИАЛИЗАЦИЯ
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'type': type.toJson(),
-    'data': data,
-  };
+        'id': id,
+        'type': type.toJson(),
+        'data': data,
+      };
 
-  factory PromptNode.fromJson(Map<String, dynamic> json) {
-    return PromptNode(
-      id: json['id'] as String,
-      type: PromptNodeType.fromJson(json['type'] as String),
-      data: json['data'] as Map<String, dynamic>,
-    );
-  }
+  factory PromptNode.fromJson(Map<String, dynamic> json) => PromptNode(
+        id: json['id'] as String,
+        type: PromptNodeType.fromJson(json['type'] as String),
+        data: (json['data'] as Map<String, dynamic>?) ?? {},
+      );
 }
 
-// --- РЕБРО ---
 class PromptEdge extends $Edge {
   @override
   final String id;
@@ -65,11 +58,12 @@ class PromptEdge extends $Edge {
   final String targetId;
   @override
   final String branchName;
+
   const PromptEdge({
     required this.id,
     required this.sourceId,
     required this.targetId,
-    required this.branchName,
+    this.branchName = 'main',
   });
 
   @override
@@ -78,78 +72,182 @@ class PromptEdge extends $Edge {
     String? sourceId,
     String? targetId,
     String? branchName,
-  }) {
-    return PromptEdge(
-      id: id ?? this.id,
-      sourceId: sourceId ?? this.sourceId,
-      targetId: targetId ?? this.targetId,
-      branchName: branchName ?? this.branchName,
-    );
-  }
+  }) =>
+      PromptEdge(
+        id: id ?? this.id,
+        sourceId: sourceId ?? this.sourceId,
+        targetId: targetId ?? this.targetId,
+        branchName: branchName ?? this.branchName,
+      );
 
-  // СЕРИАЛИЗАЦИЯ
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'sourceId': sourceId,
-    'targetId': targetId,
-    'branchName': branchName,
-  };
+        'id': id,
+        'sourceId': sourceId,
+        'targetId': targetId,
+        'branchName': branchName,
+      };
 
-  factory PromptEdge.fromJson(Map<String, dynamic> json) {
-    return PromptEdge(
-      id: json['id'] as String,
-      sourceId: json['sourceId'] as String,
-      targetId: json['targetId'] as String,
-      branchName: json['branchName'] as String,
-    );
-  }
+  factory PromptEdge.fromJson(Map<String, dynamic> json) => PromptEdge(
+        id: json['id'] as String,
+        sourceId: json['sourceId'] as String,
+        targetId: json['targetId'] as String,
+        branchName: json['branchName'] as String? ?? 'main',
+      );
 }
 
-// --- ГРАФ ---
-class PromptGraph extends $Graph<PromptNode, PromptEdge> {
-  const PromptGraph({super.nodes = const {}, super.edges = const {}});
-
-  factory PromptGraph.empty() => const PromptGraph();
-
-  @override
-  PromptGraph addNode(PromptNode node) {
-    return PromptGraph(nodes: {...nodes, node.id: node}, edges: edges);
-  }
-
-  @override
-  PromptGraph removeNode(String nodeId) {
-    final newNodes = Map<String, PromptNode>.from(nodes)..remove(nodeId);
-    final newEdges = Map<String, PromptEdge>.from(edges)
-      ..removeWhere(
-        (_, edge) => edge.sourceId == nodeId || edge.targetId == nodeId,
-      );
-    return PromptGraph(nodes: newNodes, edges: newEdges);
-  }
-
-  @override
-  PromptGraph addEdge(PromptEdge edge) {
-    return PromptGraph(nodes: nodes, edges: {...edges, edge.id: edge});
-  }
-
-  @override
-  PromptGraph removeEdge(String edgeId) {
-    final newEdges = Map<String, PromptEdge>.from(edges)..remove(edgeId);
-    return PromptGraph(nodes: nodes, edges: newEdges);
-  }
-
-  // СЕРИАЛИЗАЦИЯ ГРАФА
-  Map<String, dynamic> toJson() => {
-    'nodes': nodes.values.map((n) => n.toJson()).toList(),
-    'edges': edges.values.map((e) => e.toJson()).toList(),
+/// Prompt graph — an LLM prompt template with variable blocks.
+/// Implements [VersionedStorable]: prompts are versioned like graphs.
+/// [ownerId] = projectId.
+class PromptGraph extends $Graph<PromptNode, PromptEdge>
+    implements VersionedStorable {
+  static const kCollection = 'prompt_graphs';
+  static const kSchemaVersion = '1.0.0';
+  static const kJsonSchema = {
+    'type': 'object',
+    'properties': {
+      'id': {'type': 'string', 'format': 'uuid'},
+      'tenantId': {'type': 'string'},
+      'ownerId': {'type': 'string'},
+      'name': {'type': 'string'},
+      'nodes': {'type': 'array', 'items': {'type': 'object'}},
+      'edges': {'type': 'array', 'items': {'type': 'object'}},
+      'accessGrants': {'type': 'array', 'items': {'type': 'object'}},
+    },
+    'required': ['id', 'tenantId', 'ownerId', 'name'],
   };
 
-  factory PromptGraph.fromJson(Map<String, dynamic> json) {
-    final nodeList = (json['nodes'] as List).map((e) => PromptNode.fromJson(e));
-    final edgeList = (json['edges'] as List).map((e) => PromptEdge.fromJson(e));
+  @override
+  final String id;
 
+  @override
+  final String tenantId;
+
+  @override
+  final String ownerId; // projectId
+
+  @override
+  final List<AccessGrant> accessGrants;
+
+  final String name;
+
+  @override
+  String get collectionName => kCollection;
+
+  @override
+  String get schemaVersion => kSchemaVersion;
+
+  @override
+  List<Object> get migrations => const [];
+
+  @override
+  Map<String, dynamic> get jsonSchema => kJsonSchema;
+
+  @override
+  String get defaultSharingPolicy => 'tenant';
+
+  const PromptGraph({
+    required this.id,
+    required this.tenantId,
+    required this.ownerId,
+    required this.name,
+    super.nodes = const {},
+    super.edges = const {},
+    this.accessGrants = const [],
+  });
+
+  factory PromptGraph.empty({
+    String id = 'id',
+    String tenantId = 'system',
+    String projectId = 'id',
+    String name = 'name',
+  }) =>
+      PromptGraph(
+        id: id,
+        tenantId: tenantId,
+        ownerId: projectId,
+        name: name,
+      );
+
+  // ── $Graph ──────────────────────────────────────────────────────────────────
+
+  @override
+  PromptGraph addNode(PromptNode node) =>
+      _copy(nodes: {...nodes, node.id: node});
+
+  @override
+  PromptGraph removeNode(String nodeId) => _copy(
+        nodes: Map.from(nodes)..remove(nodeId),
+        edges: Map.from(edges)
+          ..removeWhere((_, e) => e.sourceId == nodeId || e.targetId == nodeId),
+      );
+
+  @override
+  PromptGraph addEdge(PromptEdge edge) =>
+      _copy(edges: {...edges, edge.id: edge});
+
+  @override
+  PromptGraph removeEdge(String edgeId) =>
+      _copy(edges: Map.from(edges)..remove(edgeId));
+
+  // ── Storable ────────────────────────────────────────────────────────────────
+
+  @override
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'tenantId': tenantId,
+        'ownerId': ownerId,
+        'name': name,
+        'nodes': nodes.values.map((n) => n.toJson()).toList(),
+        'edges': edges.values.map((e) => e.toJson()).toList(),
+        'accessGrants': accessGrants.map((g) => g.toMap()).toList(),
+      };
+
+  @override
+  Map<String, dynamic> get indexFields => {
+        'ownerId': ownerId,
+        'name': name,
+      };
+
+  static PromptGraph fromMap(Map<String, dynamic> m) {
+    final nList = ((m['nodes'] as List?) ?? [])
+        .map((e) => PromptNode.fromJson(e as Map<String, dynamic>));
+    final eList = ((m['edges'] as List?) ?? [])
+        .map((e) => PromptEdge.fromJson(e as Map<String, dynamic>));
     return PromptGraph(
-      nodes: {for (var n in nodeList) n.id: n},
-      edges: {for (var e in edgeList) e.id: e},
+      id: m['id'] as String,
+      tenantId: m['tenantId'] as String? ?? 'system',
+      ownerId: m['ownerId'] as String? ?? '',
+      name: m['name'] as String? ?? '',
+      nodes: {for (var n in nList) n.id: n},
+      edges: {for (var e in eList) e.id: e},
+      accessGrants: ((m['accessGrants'] as List?) ?? [])
+          .whereType<Map<String, dynamic>>()
+          .map(AccessGrant.fromMap)
+          .toList(),
     );
   }
+
+  PromptGraph copyWith({
+    String? name,
+    Map<String, PromptNode>? nodes,
+    Map<String, PromptEdge>? edges,
+    List<AccessGrant>? accessGrants,
+  }) =>
+      _copy(name: name, nodes: nodes, edges: edges, accessGrants: accessGrants);
+
+  PromptGraph _copy({
+    String? name,
+    Map<String, PromptNode>? nodes,
+    Map<String, PromptEdge>? edges,
+    List<AccessGrant>? accessGrants,
+  }) =>
+      PromptGraph(
+        id: id,
+        tenantId: tenantId,
+        ownerId: ownerId,
+        name: name ?? this.name,
+        nodes: nodes ?? this.nodes,
+        edges: edges ?? this.edges,
+        accessGrants: accessGrants ?? this.accessGrants,
+      );
 }

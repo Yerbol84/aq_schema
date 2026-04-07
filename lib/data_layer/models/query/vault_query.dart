@@ -51,6 +51,22 @@ final class VaultQuery {
         offset: offset,
       );
 
+  /// Set the maximum number of records to return.
+  VaultQuery withLimit(int limit) => VaultQuery(
+        filters: filters,
+        sort: sort,
+        limit: limit,
+        offset: offset,
+      );
+
+  /// Set the number of records to skip.
+  VaultQuery withOffset(int offset) => VaultQuery(
+        filters: filters,
+        sort: sort,
+        limit: limit,
+        offset: offset,
+      );
+
   // ── In-memory application ──────────────────────────────────────────────────
 
   /// Apply this query to an in-memory list of maps.
