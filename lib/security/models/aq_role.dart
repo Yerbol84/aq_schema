@@ -42,6 +42,26 @@ final class AqRole {
     return false;
   }
 
+  AqRole copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? tenantId,
+    List<String>? permissions,
+    bool? isSystem,
+    int? createdAt,
+  }) {
+    return AqRole(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      tenantId: tenantId ?? this.tenantId,
+      permissions: permissions ?? this.permissions,
+      isSystem: isSystem ?? this.isSystem,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   factory AqRole.fromJson(Map<String, dynamic> json) => AqRole(
         id: json['id'] as String,
         name: json['name'] as String,
@@ -95,6 +115,24 @@ final class AqUserRole {
   bool get isExpired {
     if (expiresAt == null) return false;
     return DateTime.now().millisecondsSinceEpoch ~/ 1000 >= expiresAt!;
+  }
+
+  AqUserRole copyWith({
+    String? userId,
+    String? roleId,
+    String? tenantId,
+    String? grantedBy,
+    int? grantedAt,
+    int? expiresAt,
+  }) {
+    return AqUserRole(
+      userId: userId ?? this.userId,
+      roleId: roleId ?? this.roleId,
+      tenantId: tenantId ?? this.tenantId,
+      grantedBy: grantedBy ?? this.grantedBy,
+      grantedAt: grantedAt ?? this.grantedAt,
+      expiresAt: expiresAt ?? this.expiresAt,
+    );
   }
 
   factory AqUserRole.fromJson(Map<String, dynamic> json) => AqUserRole(
