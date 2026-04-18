@@ -15,6 +15,8 @@ final class AqRole {
     this.createdAt,
   });
 
+  static const String kCollection = 'rbac_roles';
+
   final String id;
   final String name;
   final String? description;
@@ -80,6 +82,8 @@ final class AqUserRole {
     this.grantedBy,
     this.expiresAt,
   });
+
+  static const String kCollection = 'rbac_user_roles';
 
   final String userId;
   final String roleId;

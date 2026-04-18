@@ -9,19 +9,19 @@ import '../models/mcp_error.dart';
 import '../models/mcp_tool.dart';
 
 /// Result of a validation operation.
-final class ValidationResult {
-  const ValidationResult._({
+final class McpValidationResult {
+  const McpValidationResult._({
     required this.isValid,
     this.errors = const [],
   });
 
-  const ValidationResult.ok() : this._(isValid: true);
+  const McpValidationResult.ok() : this._(isValid: true);
 
-  const ValidationResult.fail(List<String> errors)
+  const McpValidationResult.fail(List<String> errors)
       : this._(isValid: false, errors: errors);
 
-  factory ValidationResult.single(String error) =>
-      ValidationResult.fail([error]);
+  factory McpValidationResult.single(String error) =>
+      McpValidationResult.fail([error]);
 
   final bool isValid;
   final List<String> errors;
@@ -30,7 +30,7 @@ final class ValidationResult {
 
   @override
   String toString() =>
-      isValid ? 'ValidationResult.ok' : 'ValidationResult.fail($errors)';
+      isValid ? 'McpValidationResult.ok' : 'McpValidationResult.fail($errors)';
 }
 
 /// Validates MCP protocol JSON objects.
@@ -38,7 +38,7 @@ abstract final class McpValidator {
   // ── JSON-RPC base ──────────────────────────────────────
 
   /// Validates that a raw map is a well-formed JSON-RPC 2.0 message.
-  static ValidationResult validateJsonRpc(Map<String, dynamic> json) {
+  static McpValidationResult validateJsonRpc(Map<String, dynamic> json) {
     final errors = <String>[];
 
     if (json['jsonrpc'] != '2.0') {
@@ -50,14 +50,14 @@ abstract final class McpValidator {
     }
 
     return errors.isEmpty
-        ? const ValidationResult.ok()
-        : ValidationResult.fail(errors);
+        ? const McpValidationResult.ok()
+        : McpValidationResult.fail(errors);
   }
 
   // ── initialize ─────────────────────────────────────────
 
   /// Validates an initialize request map.
-  static ValidationResult validateInitializeRequest(Map<String, dynamic> json) {
+  static McpValidationResult validateInitializeRequest(Map<String, dynamic> json) {
     final errors = <String>[];
     final base = validateJsonRpc(json);
     if (!base.isValid) errors.addAll(base.errors);
@@ -67,14 +67,14 @@ abstract final class McpValidator {
     }
 
     return errors.isEmpty
-        ? const ValidationResult.ok()
-        : ValidationResult.fail(errors);
+        ? const McpValidationResult.ok()
+        : McpValidationResult.fail(errors);
   }
 
   // ── tools/call ─────────────────────────────────────────
 
   /// Validates a tools/call request map.
-  static ValidationResult validateToolsCallRequest(Map<String, dynamic> json) {
+  static McpValidationResult validateToolsCallRequest(Map<String, dynamic> json) {
     final errors = <String>[];
     final base = validateJsonRpc(json);
     if (!base.isValid) errors.addAll(base.errors);
@@ -100,14 +100,14 @@ abstract final class McpValidator {
     }
 
     return errors.isEmpty
-        ? const ValidationResult.ok()
-        : ValidationResult.fail(errors);
+        ? const McpValidationResult.ok()
+        : McpValidationResult.fail(errors);
   }
 
   // ── McpTool ────────────────────────────────────────────
 
   /// Validates a tool definition map matches the mcp_tool.json schema.
-  static ValidationResult validateTool(Map<String, dynamic> json) {
+  static McpValidationResult validateTool(Map<String, dynamic> json) {
     final errors = <String>[];
 
     final name = json['name'];
@@ -135,24 +135,24 @@ abstract final class McpValidator {
     }
 
     return errors.isEmpty
-        ? const ValidationResult.ok()
-        : ValidationResult.fail(errors);
+        ? const McpValidationResult.ok()
+        : McpValidationResult.fail(errors);
   }
 
   /// Validates a [McpToolImpl] instance.
-  static ValidationResult validateMcpTool(McpToolImpl tool) =>
+  static McpValidationResult validateMcpTool(McpToolImpl tool) =>
       validateTool(tool.toJson());
 
   // ── error response ─────────────────────────────────────
 
   /// Validates an error response map.
-  static ValidationResult validateErrorResponse(Map<String, dynamic> json) {
+  static McpValidationResult validateErrorResponse(Map<String, dynamic> json) {
     final errors = <String>[];
 
     final error = json['error'] as Map<String, dynamic>?;
     if (error == null) {
       errors.add('error field is required in error response');
-      return ValidationResult.fail(errors);
+      return McpValidationResult.fail(errors);
     }
 
     if (error['code'] == null || error['code'] is! int) {
@@ -164,8 +164,8 @@ abstract final class McpValidator {
     }
 
     return errors.isEmpty
-        ? const ValidationResult.ok()
-        : ValidationResult.fail(errors);
+        ? const McpValidationResult.ok()
+        : McpValidationResult.fail(errors);
   }
 
   // ── tool arguments ─────────────────────────────────────
@@ -174,7 +174,7 @@ abstract final class McpValidator {
   ///
   /// Only validates required fields and basic types — a full
   /// JSON Schema validator is in aq_queue / aq_worker.
-  static ValidationResult validateToolArguments({
+  static McpValidationResult validateToolArguments({
     required Map<String, dynamic> inputSchema,
     required Map<String, dynamic> arguments,
     required String toolName,
@@ -191,8 +191,8 @@ abstract final class McpValidator {
     }
 
     return errors.isEmpty
-        ? const ValidationResult.ok()
-        : ValidationResult.fail(errors);
+        ? const McpValidationResult.ok()
+        : McpValidationResult.fail(errors);
   }
 
   // ── MCP error codes ────────────────────────────────────

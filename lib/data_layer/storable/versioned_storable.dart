@@ -6,8 +6,8 @@ import 'versionable.dart';
 ///
 /// Combines [Sharable] (multi-tenancy + sharing) and [Versionable]
 /// (schema versioning + migrations).
+///
+/// Access control is managed by security layer via IVaultSecurityProtocol.
 abstract interface class VersionedStorable implements Sharable, Versionable {
-  /// Access grants for other actors.
-  /// Used by VersionedRepository for fine-grained access control.
-  List<Object> get accessGrants;
+  // Access grants removed - managed by security layer
 }

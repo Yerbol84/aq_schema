@@ -1,0 +1,46 @@
+{
+  "id": "instruction_llm_ask",
+  "name": "LLM Ask",
+  "description": "Базовая инструкция для запроса к LLM",
+  "contract": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "Промпт для LLM"
+        },
+        "model": {
+          "type": "string",
+          "description": "Модель LLM",
+          "default": "gpt-4"
+        }
+      },
+      "required": ["prompt"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "string",
+          "description": "Ответ от LLM"
+        }
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "node1",
+      "type": "systemAction",
+      "payload": {
+        "tool_id": "llm_action",
+        "tool_args_variables": {
+          "prompt": "prompt",
+          "model": "model"
+        },
+        "output_var": "result"
+      }
+    }
+  ],
+  "edges": []
+}

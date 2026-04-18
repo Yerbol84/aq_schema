@@ -1,8 +1,8 @@
 # Дамп проекта aq_schema
 
-**Всего обработано файлов:** 128
-**Включено:** 99
-**Пропущено:** 29
+**Всего обработано файлов:** 180
+**Включено:** 142
+**Пропущено:** 38
 
 ## Включённые файлы
 
@@ -11,14 +11,14 @@
 | `./.gitignore` |        3 |       86 |
 | `./analysis_options.yaml` |       30 |     1038 |
 | `./lib/adapter/adapter_models.dart` |      260 |     8530 |
-| `./lib/aq_schema.dart` |       58 |     2738 |
+| `./lib/aq_schema.dart` |       79 |     3612 |
 | `./lib/auth/models/auth_context.dart` |      315 |    11271 |
-| `./lib/data_layer/aq_domains.dart` |      105 |     3485 |
+| `./lib/data_layer/aq_domains.dart` |      129 |     4619 |
 | `./lib/data_layer/models/access_grant.dart` |       19 |      534 |
 | `./lib/data_layer/models/access_level.dart` |       15 |      380 |
 | `./lib/data_layer/models/field_diff.dart` |       35 |      818 |
 | `./lib/data_layer/models/increment_type.dart` |        2 |      103 |
-| `./lib/data_layer/models/log_entry.dart` |       92 |     2944 |
+| `./lib/data_layer/models/log_entry.dart` |      126 |     4262 |
 | `./lib/data_layer/models/log_operation.dart` |       12 |      279 |
 | `./lib/data_layer/models/query/page_result.dart` |       41 |     1075 |
 | `./lib/data_layer/models/query/vault_filter.dart` |       16 |      447 |
@@ -32,31 +32,67 @@
 | `./lib/data_layer/storable/artifact_entry.dart` |       28 |      855 |
 | `./lib/data_layer/storable/direct_storable.dart` |        4 |      161 |
 | `./lib/data_layer/storable/logged_storable.dart` |        9 |      352 |
+| `./lib/data_layer/storable/sharable.dart` |       45 |     1485 |
 | `./lib/data_layer/storable/sql_query_translator.dart` |       65 |     1886 |
-| `./lib/data_layer/storable/storable.dart` |       21 |      807 |
-| `./lib/data_layer/storable/versioned_storable.dart` |       11 |      342 |
+| `./lib/data_layer/storable/storable.dart` |       86 |     3009 |
+| `./lib/data_layer/storable/versionable.dart` |       80 |     2632 |
+| `./lib/data_layer/storable/versioned_storable.dart` |       13 |      491 |
 | `./lib/data_layer/storage/artifact_storage.dart` |       54 |     2683 |
 | `./lib/data_layer/storage/buffered_storage.dart` |      106 |     6695 |
+| `./lib/data_layer/storage/proxy_storage.dart` |       25 |     1056 |
 | `./lib/data_layer/storage/vault_storage.dart` |       78 |     3740 |
 | `./lib/data_layer/storage/vector_storage.dart` |      114 |     4488 |
-| `./lib/graph/core/graph_def.dart` |       62 |     2912 |
+| `./lib/graph/core/graph_def.dart` |      139 |     7048 |
 | `./lib/graph/engine/i_hand.dart` |       25 |     1263 |
-| `./lib/graph/engine/run_context.dart` |      166 |     5834 |
+| `./lib/graph/engine/run_context.dart` |      280 |    10318 |
 | `./lib/graph/engine/tool_registry.dart` |       28 |      961 |
-| `./lib/graph/graph.dart` |       28 |      909 |
+| `./lib/graph/engine/workflow_run.dart` |      165 |     5701 |
+| `./lib/graph/graph.dart` |       29 |      953 |
 | `./lib/graph/graphs/contract_schema.dart` |      326 |    11852 |
-| `./lib/graph/graphs/instruction_graph.dart` |      267 |     7940 |
-| `./lib/graph/graphs/prompt_graph.dart` |      214 |     5833 |
-| `./lib/graph/graphs/workflow_graph.dart` |      245 |     6914 |
+| `./lib/graph/graphs/instruction_graph.dart` |      308 |     9090 |
+| `./lib/graph/graphs/prompt_graph.dart` |      253 |     6882 |
+| `./lib/graph/graphs/workflow_graph.dart` |      341 |    10519 |
 | `./lib/graph/graphs/workflow/i_workflow_run.dart` |        1 |       31 |
 | `./lib/graph/logging/workflow_event_logger.dart` |      161 |     4464 |
+| `./lib/graph/nodes/base/automatic_node.dart` |       61 |     2519 |
+| `./lib/graph/nodes/base/composite_node.dart` |       69 |     2690 |
+| `./lib/graph/nodes/base/i_instruction_node.dart` |       38 |     1458 |
+| `./lib/graph/nodes/base/i_prompt_node.dart` |       32 |     1232 |
+| `./lib/graph/nodes/base/i_workflow_node.dart` |       74 |     3476 |
+| `./lib/graph/nodes/base/interactive_node.dart` |       69 |     2769 |
+| `./lib/graph/nodes/instruction/condition_node.dart` |      159 |     4857 |
+| `./lib/graph/nodes/instruction/llm_query_node.dart` |      136 |     4228 |
+| `./lib/graph/nodes/instruction/tool_call_node.dart` |      130 |     3668 |
+| `./lib/graph/nodes/instruction/transform_node.dart` |      183 |     5596 |
+| `./lib/graph/nodes/nodes.dart` |       37 |     1466 |
+| `./lib/graph/nodes/prompt/conditional_block_node.dart` |      137 |     4177 |
+| `./lib/graph/nodes/prompt/text_block_node.dart` |       77 |     1962 |
+| `./lib/graph/nodes/prompt/variable_insert_node.dart` |      108 |     3098 |
+| `./lib/graph/nodes/workflow/automatic/file_read_node.dart` |      174 |     5721 |
+| `./lib/graph/nodes/workflow/automatic/file_write_node.dart` |      166 |     4886 |
+| `./lib/graph/nodes/workflow/automatic/git_commit_node.dart` |      167 |     4953 |
+| `./lib/graph/nodes/workflow/automatic/llm_action_node.dart` |      107 |     3234 |
+| `./lib/graph/nodes/workflow/composite/run_instruction_node.dart` |      116 |     3773 |
+| `./lib/graph/nodes/workflow/composite/sub_graph_node.dart` |      115 |     3601 |
+| `./lib/graph/nodes/workflow/interactive/co_creation_chat_node.dart` |      121 |     3924 |
+| `./lib/graph/nodes/workflow/interactive/file_upload_node.dart` |      108 |     3247 |
+| `./lib/graph/nodes/workflow/interactive/manual_review_node.dart` |      111 |     3258 |
+| `./lib/graph/nodes/workflow/interactive/user_input_node.dart` |      107 |     3077 |
 | `./lib/graph/transport/analysis_options.yaml` |        0 |       39 |
 | `./lib/graph/transport/interfaces/i_engine_transport.dart` |       27 |     1302 |
 | `./lib/graph/transport/messages/run_event.dart` |      138 |     3909 |
-| `./lib/graph/transport/messages/run_request.dart` |       61 |     2236 |
+| `./lib/graph/transport/messages/run_request.dart` |       62 |     2266 |
+| `./lib/graph/transport/messages/run_state.dart` |      134 |     4251 |
 | `./lib/graph/transport/messages/run_status.dart` |       27 |      678 |
 | `./lib/graph/transport/messages/user_input_response.dart` |       44 |     1431 |
 | `./lib/graph/validation/graph_contract_validator.dart` |       59 |     2034 |
+| `./lib/graph/validation/graph_validator.dart` |      284 |     9053 |
+| `./lib/http/error_codes.dart` |       44 |     1879 |
+| `./lib/http/response_builder.dart` |      204 |     4894 |
+| `./lib/http/responses/error_response.dart` |       64 |     1994 |
+| `./lib/http/responses/validation_field_error.dart` |       34 |      884 |
+| `./lib/http/validation/field_type.dart` |       10 |      186 |
+| `./lib/http/validation/request_schema.dart` |       98 |     2758 |
 | `./lib/mcp/models/mcp_capabilities.dart` |      131 |     3673 |
 | `./lib/mcp/models/mcp_error.dart` |      149 |     4868 |
 | `./lib/mcp/models/mcp_request.dart` |      259 |     8219 |
@@ -88,19 +124,26 @@
 | `./lib/sandbox/sandbox.dart` |       29 |      991 |
 | `./lib/security/interfaces/i_session_repository.dart` |       35 |     1237 |
 | `./lib/security/interfaces/i_user_repository.dart` |       30 |     1141 |
-| `./lib/security/models/aq_api_key.dart` |      255 |     7717 |
+| `./lib/security/models/aq_api_key.dart` |      217 |     6597 |
 | `./lib/security/models/aq_profile.dart` |       61 |     1662 |
 | `./lib/security/models/aq_role.dart` |      116 |     3254 |
 | `./lib/security/models/aq_session.dart` |      122 |     3563 |
 | `./lib/security/models/aq_tenant.dart` |      107 |     2856 |
 | `./lib/security/models/aq_token_claims.dart` |      157 |     4286 |
-| `./lib/security/models/aq_user.dart` |      137 |     3956 |
-| `./lib/security/security.dart` |       32 |     1654 |
-| `./lib/security/storable/security_domains.dart` |       92 |     4338 |
-| `./lib/security/storable/security_storables.dart` |      237 |     7413 |
+| `./lib/security/models/aq_user.dart` |      138 |     3976 |
+| `./lib/security/models/credentials.dart` |      152 |     6053 |
+| `./lib/security/rbac.dart` |       10 |      234 |
+| `./lib/security/rbac/aq_access_log.dart` |      332 |     9490 |
+| `./lib/security/rbac/aq_permission.dart` |      211 |     5871 |
+| `./lib/security/rbac/aq_policy.dart` |      340 |     8739 |
+| `./lib/security/rbac/aq_role.dart` |      229 |     6696 |
+| `./lib/security/security.dart` |       33 |     1688 |
+| `./lib/security/storable/security_domains.dart` |      152 |     7486 |
+| `./lib/security/storable/security_storables.dart` |      312 |     9682 |
+| `./lib/security/storable/storable_rbac.dart` |      262 |     9985 |
 | `./lib/security/token/token_codec.dart` |      124 |     4516 |
 | `./lib/security/token/token_validator.dart` |       95 |     2901 |
-| `./lib/studio_project/aq_studio_project.dart` |       77 |     1946 |
+| `./lib/studio_project/aq_studio_project.dart` |      121 |     3164 |
 | `./lib/validator/aq_schema_validator.dart` |       50 |     1680 |
 | `./lib/validator/aq_validation_result.dart` |       20 |      449 |
 | `./lib/worker/models/worker_models.dart` |      448 |    13951 |
@@ -123,7 +166,13 @@
 | `./lib/auth/schemas/auth_context.json` | бинарный файл |
 | `./lib/auth/schemas/auth_result.json` | бинарный файл |
 | `./lib/auth/schemas/auth_token_payload.json` | бинарный файл |
+| `./lib/data_layer/.DS_Store` | бинарный файл |
 | `./lib/data_layer/models/.DS_Store` | бинарный файл |
+| `./lib/graph/.DS_Store` | бинарный файл |
+| `./lib/graph/instructions/code_analyzer.json` | бинарный файл |
+| `./lib/graph/instructions/file_read.json` | бинарный файл |
+| `./lib/graph/instructions/file_write.json` | бинарный файл |
+| `./lib/graph/instructions/llm_ask.json` | бинарный файл |
 | `./lib/mcp/.DS_Store` | бинарный файл |
 | `./lib/mcp/doc/sprint_plan.html` | исключён по шаблону |
 | `./lib/mcp/doc/startegy.html` | исключён по шаблону |
@@ -137,7 +186,10 @@
 | `./lib/sandbox/schema/sandbox_event.schema.json` | бинарный файл |
 | `./lib/sandbox/schema/sandbox_item.schema.json` | бинарный файл |
 | `./lib/sandbox/schema/sandbox_policy.schema.json` | бинарный файл |
+| `./lib/security/.DS_Store` | бинарный файл |
 | `./lib/security/schema/auth_schema.json` | бинарный файл |
+| `./lib/test/test_document.dart` | исключённая директория |
+| `./lib/worker/.DS_Store` | бинарный файл |
 | `./lib/worker/schemas/worker_health.json` | бинарный файл |
 | `./lib/worker/schemas/worker_job.json` | бинарный файл |
 | `./lib/worker/schemas/worker_registration_response.json` | бинарный файл |
@@ -456,7 +508,7 @@ enum AdapterErrorCode {
 }
 ```
 
-### Файл: `./lib/aq_schema.dart` (строк:       58, размер:     2738 байт)
+### Файл: `./lib/aq_schema.dart` (строк:       79, размер:     3612 байт)
 
 ```dart
 /// aq_schema — Core JSON schemas, Dart models, validators and abstract interfaces.
@@ -470,7 +522,16 @@ enum AdapterErrorCode {
 ///   worker/ — Worker protocol types (jobs, results, registration, health)
 ///   queue/  — Queue abstractions (job status, JobQueue, WorkerRegistry interfaces)
 ///   auth/   — Auth types (token payload, context, result, provider interface)
+///   http/   — HTTP protocol (responses, errors, validation) for all services
 library aq_schema;
+
+// ── HTTP Protocol (для всех сервисов) ────────────────────────
+export 'http/responses/error_response.dart';
+export 'http/responses/validation_field_error.dart';
+export 'http/response_builder.dart';
+export 'http/error_codes.dart';
+export 'http/validation/field_type.dart';
+export 'http/validation/request_schema.dart';
 
 // ── MCP domain ────────────────────────────────────────────
 
@@ -489,6 +550,9 @@ export 'queue/roles/job_worker_client.dart';
 
 export 'graph/graph.dart';
 export 'graph/graphs/workflow/i_workflow_run.dart';
+export 'graph/transport/messages/run_state.dart';
+export 'graph/transport/messages/run_status.dart';
+export 'graph/engine/workflow_run.dart';
 export 'studio_project/aq_studio_project.dart';
 export 'data_layer/models/query/vault_query.dart';
 export 'data_layer/models/query/vault_sort.dart';
@@ -509,14 +573,23 @@ export 'data_layer/storable/artifact_entry.dart';
 export 'data_layer/storage/artifact_storage.dart';
 export 'data_layer/storable/direct_storable.dart';
 export 'data_layer/storable/logged_storable.dart';
+export 'data_layer/storable/sharable.dart';
+export 'data_layer/storable/versionable.dart';
 export 'data_layer/storable/sql_query_translator.dart';
 export 'data_layer/storable/storable.dart';
 export 'data_layer/storage/vault_storage.dart';
+export 'data_layer/storage/proxy_storage.dart';
 export 'data_layer/storage/vector_storage.dart';
 export 'data_layer/storable/versioned_storable.dart';
 export 'sandbox/sandbox.dart';
 export 'data_layer/aq_domains.dart';
 export 'data_layer/storage/buffered_storage.dart';
+
+// Security & RBAC
+export 'security/rbac.dart';
+
+// Test domains (for migration testing)
+export 'test/test_document.dart';
 ```
 
 ### Файл: `./lib/auth/models/auth_context.dart` (строк:      315, размер:    11271 байт)
@@ -839,7 +912,7 @@ abstract interface class AuthMiddleware {
 }
 ```
 
-### Файл: `./lib/data_layer/aq_domains.dart` (строк:      105, размер:     3485 байт)
+### Файл: `./lib/data_layer/aq_domains.dart` (строк:      129, размер:     4619 байт)
 
 ```dart
 import 'package:aq_schema/aq_schema.dart';
@@ -945,6 +1018,30 @@ class AqDomains {
         VaultIndex(name: 'idx_pg_name', field: 'name'),
       ],
     ),
+
+    // ── Graph Run States ──────────────────────────────────────────────────────
+    DomainDescriptor.direct(
+      collection: 'graph_run_states',
+      fromMap: GraphRunState.fromJson,
+      indexes: [
+        VaultIndex(name: 'idx_run_blueprint', field: 'blueprintId'),
+        VaultIndex(name: 'idx_run_project', field: 'projectId'),
+        VaultIndex(name: 'idx_run_status', field: 'status'),
+        VaultIndex(name: 'idx_run_started', field: 'startedAt'),
+      ],
+    ),
+
+    // ── Workflow Runs (LoggedStorable - audit trail) ──────────────────────────
+    DomainDescriptor.logged(
+      collection: 'workflow_runs',
+      fromMap: WorkflowRun.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_wfrun_project', field: 'projectId'),
+        VaultIndex(name: 'idx_wfrun_blueprint', field: 'blueprintId'),
+        VaultIndex(name: 'idx_wfrun_status', field: 'status'),
+        VaultIndex(name: 'idx_wfrun_created', field: 'createdAt'),
+      ],
+    ),
   ];
 }
 ```
@@ -1040,7 +1137,7 @@ final class FieldDiff {
 enum IncrementType { major, minor, patch }
 ```
 
-### Файл: `./lib/data_layer/models/log_entry.dart` (строк:       92, размер:     2944 байт)
+### Файл: `./lib/data_layer/models/log_entry.dart` (строк:      126, размер:     4262 байт)
 
 ```dart
 import 'dart:convert';
@@ -1078,39 +1175,49 @@ final class LogEntry {
     this.rollbackToEntryId,
   });
 
-  Map<String, dynamic> toMap() => {
-        'entryId': entryId,
-        'entityId': entityId,
-        'collectionId': collectionId,
-        'changedBy': changedBy,
-        'changedAt': changedAt.toIso8601String(),
-        'operation': operation.name,
-        'diff': jsonEncode(
-          diff.map((k, v) => MapEntry(k, v.toMap())),
-        ),
-        'snapshot': snapshot != null ? jsonEncode(snapshot) : null,
-        'rollbackToEntryId': rollbackToEntryId,
-      };
+  /// 3-level constants system: Domain → Sphere → Key
+  static final keys = _LogEntryKeys._();
+
+  // ── Serialization ───────────────────────────────────────────────────────────
+
+  Map<String, dynamic> toMap() {
+    final k = LogEntry.keys.jsonKeys;
+    return {
+      k.entryId: entryId,
+      k.entityId: entityId,
+      k.collectionId: collectionId,
+      k.changedBy: changedBy,
+      k.changedAt: changedAt.toIso8601String(),
+      k.operation: operation.name,
+      k.diff: jsonEncode(
+        diff.map((key, value) => MapEntry(key, value.toMap())),
+      ),
+      k.snapshot: snapshot != null ? jsonEncode(snapshot) : null,
+      k.rollbackToEntryId: rollbackToEntryId,
+    };
+  }
 
   factory LogEntry.fromMap(Map<String, dynamic> m) {
+    final k = LogEntry.keys.jsonKeys;
+
     // Decode diff
-    final rawDiff = m['diff'];
+    final rawDiff = m[k.diff];
     final Map<String, FieldDiff> diff;
     if (rawDiff is String && rawDiff.isNotEmpty) {
       final decoded = jsonDecode(rawDiff) as Map<String, dynamic>? ?? {};
       diff = decoded.map(
-        (k, v) => MapEntry(k, FieldDiff.fromMap(v as Map<String, dynamic>)),
+        (key, value) => MapEntry(key, FieldDiff.fromMap(value as Map<String, dynamic>)),
       );
     } else if (rawDiff is Map) {
       diff = (rawDiff as Map<String, dynamic>).map(
-        (k, v) => MapEntry(k, FieldDiff.fromMap(v as Map<String, dynamic>)),
+        (key, value) => MapEntry(key, FieldDiff.fromMap(value as Map<String, dynamic>)),
       );
     } else {
       diff = {};
     }
 
     // Decode snapshot
-    final rawSnap = m['snapshot'];
+    final rawSnap = m[k.snapshot];
     Map<String, dynamic>? snapshot;
     if (rawSnap is String && rawSnap.isNotEmpty) {
       snapshot = jsonDecode(rawSnap) as Map<String, dynamic>?;
@@ -1119,21 +1226,45 @@ final class LogEntry {
     }
 
     return LogEntry(
-      entryId: m['entryId'] as String,
-      entityId: m['entityId'] as String,
-      collectionId: m['collectionId'] as String? ?? '',
-      changedBy: m['changedBy'] as String? ?? '',
-      changedAt: DateTime.tryParse(m['changedAt'] as String? ?? '') ?? DateTime.now(),
-      operation: LogOperation.fromString(m['operation'] as String? ?? 'updated'),
+      entryId: m[k.entryId] as String,
+      entityId: m[k.entityId] as String,
+      collectionId: m[k.collectionId] as String? ?? '',
+      changedBy: m[k.changedBy] as String? ?? '',
+      changedAt: DateTime.tryParse(m[k.changedAt] as String? ?? '') ?? DateTime.now(),
+      operation: LogOperation.fromString(m[k.operation] as String? ?? 'updated'),
       diff: diff,
       snapshot: snapshot,
-      rollbackToEntryId: m['rollbackToEntryId'] as String?,
+      rollbackToEntryId: m[k.rollbackToEntryId] as String?,
     );
   }
 
   @override
   String toString() =>
       'LogEntry($entryId op:${operation.name} by:$changedBy at:${changedAt.toIso8601String()})';
+}
+
+// ── Level 2: Spheres ──────────────────────────────────────────────────────────
+
+class _LogEntryKeys {
+  _LogEntryKeys._();
+
+  final jsonKeys = _LogEntryJsonKeys._();
+}
+
+// ── Level 3: JSON Keys ────────────────────────────────────────────────────────
+
+class _LogEntryJsonKeys {
+  _LogEntryJsonKeys._();
+
+  final String entryId = 'entryId';
+  final String entityId = 'entityId';
+  final String collectionId = 'collectionId';
+  final String changedBy = 'changedBy';
+  final String changedAt = 'changedAt';
+  final String operation = 'operation';
+  final String diff = 'diff';
+  final String snapshot = 'snapshot';
+  final String rollbackToEntryId = 'rollbackToEntryId';
 }
 ```
 
@@ -1751,6 +1882,56 @@ abstract interface class LoggedStorable implements Storable {
 }
 ```
 
+### Файл: `./lib/data_layer/storable/sharable.dart` (строк:       45, размер:     1485 байт)
+
+```dart
+import 'storable.dart';
+
+/// Interface for entities that support multi-tenancy and sharing.
+///
+/// Entities implementing this interface can be:
+/// - Owned by a specific tenant (organization, team, user)
+/// - Shared with other tenants via access control
+/// - Isolated by tenant_id in storage
+///
+/// ## Multi-tenancy
+///
+/// [tenantId] identifies the owning tenant. Storage backends use this to:
+/// - Filter queries (WHERE tenant_id = ?)
+/// - Enforce data isolation
+/// - Support multi-tenant SaaS deployments
+///
+/// ## Ownership
+///
+/// [ownerId] identifies the creator/owner within the tenant.
+/// Used for:
+/// - Permission checks (can this user edit?)
+/// - Audit trails (who created this?)
+/// - Default access control
+///
+/// ## Sharing
+///
+/// [defaultSharingPolicy] defines who can access this entity:
+/// - 'private': only owner
+/// - 'tenant': all users in the same tenant
+/// - 'public': anyone (use with caution!)
+///
+/// Fine-grained access is managed via the `access_grants` table in storage.
+abstract interface class Sharable implements Storable {
+  /// Tenant (organization/team) that owns this entity.
+  /// Used for data isolation in multi-tenant deployments.
+  String get tenantId;
+
+  /// User/actor who created this entity.
+  /// Used for ownership checks and audit trails.
+  String get ownerId;
+
+  /// Default sharing policy: 'private', 'tenant', or 'public'.
+  /// Storage backends use this to determine default access.
+  String get defaultSharingPolicy;
+}
+```
+
 ### Файл: `./lib/data_layer/storable/sql_query_translator.dart` (строк:       65, размер:     1886 байт)
 
 ```dart
@@ -1821,7 +2002,7 @@ final class SqlFragment {
 }
 ```
 
-### Файл: `./lib/data_layer/storable/storable.dart` (строк:       21, размер:      807 байт)
+### Файл: `./lib/data_layer/storable/storable.dart` (строк:       86, размер:     3009 байт)
 
 ```dart
 /// Base interface that every model stored in dart_vault must implement.
@@ -1844,21 +2025,173 @@ abstract interface class Storable {
   /// Key = index name, value = value to index.
   /// Return empty map if no fields need indexing.
   Map<String, dynamic> get indexFields;
+
+  /// JSON Schema describing this domain's structure.
+  /// Used by storage backends to auto-create tables/collections.
+  ///
+  /// Required fields:
+  /// - `type`: "object"
+  /// - `properties`: map of field name → field schema
+  /// - `required`: list of required field names
+  ///
+  /// Example:
+  /// ```dart
+  /// static const jsonSchema = {
+  ///   'type': 'object',
+  ///   'properties': {
+  ///     'id': {'type': 'string', 'format': 'uuid'},
+  ///     'name': {'type': 'string'},
+  ///   },
+  ///   'required': ['id', 'name'],
+  /// };
+  /// ```
+  Map<String, dynamic> get jsonSchema;
+
+  /// 3-level constants system: Domain → Sphere → Key
+  static final keys = _StorableKeys._();
+}
+
+// ── Level 2: Spheres ──────────────────────────────────────────────────────────
+
+class _StorableKeys {
+  _StorableKeys._();
+
+  final dbKeys = _StorableDbKeys._();
+  final jsonKeys = _StorableJsonKeys._();
+  final transportKeys = _StorableTransportKeys._();
+}
+
+// ── Level 3: DB Keys ──────────────────────────────────────────────────────────
+
+class _StorableDbKeys {
+  _StorableDbKeys._();
+
+  final String id = 'id';
+  final String tenantId = 'tenant_id';
+  final String data = 'data';
+  final String createdAt = 'created_at';
+  final String updatedAt = 'updated_at';
+}
+
+// ── Level 3: JSON Keys ────────────────────────────────────────────────────────
+
+class _StorableJsonKeys {
+  _StorableJsonKeys._();
+
+  final String id = 'id';
+  final String tenantId = 'tenantId';
+}
+
+// ── Level 3: Transport Keys ───────────────────────────────────────────────────
+
+class _StorableTransportKeys {
+  _StorableTransportKeys._();
+
+  final String collection = 'collection';
+  final String operation = 'operation';
+  final String tenantId = 'tenantId';
 }
 ```
 
-### Файл: `./lib/data_layer/storable/versioned_storable.dart` (строк:       11, размер:      342 байт)
+### Файл: `./lib/data_layer/storable/versionable.dart` (строк:       80, размер:     2632 байт)
 
 ```dart
 import 'storable.dart';
 
+/// Interface for entities that support schema versioning and migrations.
+///
+/// Entities implementing this interface declare:
+/// - Current schema version (semver)
+/// - Migration path from previous versions
+/// - JSON Schema for automatic table creation
+///
+/// ## Schema Version
+///
+/// [schemaVersion] is a semver string (e.g., "1.2.0") that identifies
+/// the current structure of this domain model.
+///
+/// When you change the model (add/remove/rename fields), increment the version:
+/// - Patch (1.0.0 → 1.0.1): backward-compatible changes (add nullable field)
+/// - Minor (1.0.0 → 1.1.0): new features (add indexed field)
+/// - Major (1.0.0 → 2.0.0): breaking changes (rename field, change type)
+///
+/// ## Migrations
+///
+/// [migrations] is a list of migration descriptors that transform data
+/// from older versions to the current version.
+///
+/// Example:
+/// ```dart
+/// static const migrations = [
+///   DomainMigration(
+///     collection: 'workflows',
+///     fromVersion: '1.0.0',
+///     toVersion: '2.0.0',
+///     description: 'Rename dataJson → graphData',
+///     transform: _migrateV1toV2,
+///   ),
+/// ];
+/// ```
+///
+/// ## JSON Schema
+///
+/// [jsonSchema] describes the structure of this domain for storage backends.
+/// Used by PostgresSchemaDeployer to auto-create tables.
+///
+/// Required fields:
+/// - `type`: "object"
+/// - `properties`: map of field name → field schema
+/// - `required`: list of required field names
+///
+/// Field schema:
+/// - `type`: "string" | "number" | "boolean" | "array" | "object"
+/// - `format`: (optional) "uuid" | "date-time" | "email" | etc.
+/// - `items`: (for arrays) schema of array elements
+/// - `properties`: (for objects) nested field schemas
+///
+/// Example:
+/// ```dart
+/// static const jsonSchema = {
+///   'type': 'object',
+///   'properties': {
+///     'id': {'type': 'string', 'format': 'uuid'},
+///     'name': {'type': 'string'},
+///     'createdAt': {'type': 'string', 'format': 'date-time'},
+///     'tags': {'type': 'array', 'items': {'type': 'string'}},
+///   },
+///   'required': ['id', 'name'],
+/// };
+/// ```
+abstract interface class Versionable implements Storable {
+  /// Current schema version (semver: "1.2.0").
+  /// Increment when changing the domain model structure.
+  String get schemaVersion;
+
+  /// List of migrations from previous versions.
+  /// Applied automatically by SchemaDeployer on startup.
+  List<Object> get migrations;
+
+  /// JSON Schema describing this domain's structure.
+  /// Used by storage backends to auto-create tables/collections.
+  @override
+  Map<String, dynamic> get jsonSchema;
+}
+```
+
+### Файл: `./lib/data_layer/storable/versioned_storable.dart` (строк:       13, размер:      491 байт)
+
+```dart
+import 'sharable.dart';
+import 'versionable.dart';
+
 /// Marker interface for versioned storage.
 /// Entities have semver lifecycle, branching, and access control.
-abstract interface class VersionedStorable implements Storable {
-  /// Owner of this entity (user/tenant ID).
-  String get ownerId;
-
+///
+/// Combines [Sharable] (multi-tenancy + sharing) and [Versionable]
+/// (schema versioning + migrations).
+abstract interface class VersionedStorable implements Sharable, Versionable {
   /// Access grants for other actors.
+  /// Used by VersionedRepository for fine-grained access control.
   List<Object> get accessGrants;
 }
 ```
@@ -2030,6 +2363,36 @@ abstract interface class IBufferedStorage implements VaultStorage {
 
   /// Предзагрузить несколько записей одним запросом.
   Future<void> warmupAll(String collection, {VaultQuery? query});
+}
+```
+
+### Файл: `./lib/data_layer/storage/proxy_storage.dart` (строк:       25, размер:     1056 байт)
+
+```dart
+/// Marker interface for storage implementations that act as proxies to remote servers.
+///
+/// When a repository detects that its storage implements [ProxyStorage], it should:
+/// - Send operations to the base collection name (e.g., 'workflow_graphs')
+/// - NOT use internal collection suffixes (e.g., '__nodes', '__meta')
+/// - Let the remote server handle storage implementation details
+///
+/// This allows repositories to work seamlessly with both:
+/// - Local storage (InMemory, IndexedDB) - uses internal collections
+/// - Remote storage (HTTP, gRPC) - delegates to server
+///
+/// Example:
+/// ```dart
+/// if (storage is ProxyStorage) {
+///   // Remote: single request to base collection
+///   await storage.put('workflow_graphs', id, data);
+/// } else {
+///   // Local: multiple requests to internal collections
+///   await storage.put('workflow_graphs__nodes', nodeId, nodeData);
+///   await storage.put('workflow_graphs__meta', entityId, metaData);
+/// }
+/// ```
+abstract interface class ProxyStorage {
+  // Marker interface - no methods needed
 }
 ```
 
@@ -2235,7 +2598,7 @@ abstract interface class VectorStorage {
 }
 ```
 
-### Файл: `./lib/graph/core/graph_def.dart` (строк:       62, размер:     2912 байт)
+### Файл: `./lib/graph/core/graph_def.dart` (строк:      139, размер:     7048 байт)
 
 ```dart
 // Базовые абстракции графа — Узел, Ребро, Граф.
@@ -2246,6 +2609,18 @@ import 'package:meta/meta.dart';
 // БАЗОВЫЙ УЗЕЛ
 // ─────────────────────────────────────────────────────────────────────────────
 
+/// Стратегия обработки входящих рёбер
+enum NodeJoinStrategy {
+  /// Первый пришёл - первый обслужился (по умолчанию)
+  firstCome,
+
+  /// Ждать все входящие рёбра (join/merge pattern)
+  waitAll,
+
+  /// Ждать любое из приоритетных рёбер
+  waitPriority,
+}
+
 @immutable
 abstract class $Node {
   String get id;
@@ -2253,11 +2628,53 @@ abstract class $Node {
   const $Node();
 
   $Node copyWith();
+
+  // ── Управление исходящими рёбрами ──────────────────────────────────────────
+
+  /// Выбор исходящих рёбер после выполнения узла.
+  ///
+  /// Если возвращает null - движок использует стандартную логику (все подходящие рёбра).
+  /// Если возвращает List<String> - выполняются только указанные рёбра по ID.
+  ///
+  /// [availableEdges] - рёбра которые прошли фильтрацию по типу (onSuccess/onError)
+  /// [executionResult] - результат выполнения узла
+  ///
+  /// Пример: узел может выбрать только одно ребро на основе результата
+  List<String>? selectOutgoingEdges(
+    List<$Edge> availableEdges,
+    dynamic executionResult,
+  ) =>
+      null; // По умолчанию - стандартная логика
+
+  // ── Управление входящими рёбрами ───────────────────────────────────────────
+
+  /// Стратегия обработки входящих рёбер
+  NodeJoinStrategy get joinStrategy => NodeJoinStrategy.firstCome;
+
+  /// Приоритеты входящих рёбер (edgeId -> priority)
+  ///
+  /// Используется со стратегией waitPriority.
+  /// Узел будет ждать приоритетное ребро даже если пришли другие.
+  ///
+  /// Пример: {'edge1': 100, 'edge2': 50} - edge1 важнее
+  Map<String, int>? get incomingEdgePriorities => null;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // БАЗОВОЕ РЕБРО (связь между узлами)
 // ─────────────────────────────────────────────────────────────────────────────
+
+/// Режим выполнения ребра
+enum EdgeExecutionMode {
+  /// Последовательное выполнение - ждёт завершения предыдущего ребра
+  sequential,
+
+  /// Параллельное выполнение - запускается в отдельном потоке
+  parallel,
+
+  /// Отложенное выполнение - ждёт сигнала от других рёбер
+  deferred,
+}
 
 @immutable
 abstract class $Edge {
@@ -2269,6 +2686,29 @@ abstract class $Edge {
   const $Edge();
 
   $Edge copyWith();
+
+  // ── Управление выполнением ─────────────────────────────────────────────────
+
+  /// Приоритет ребра (0-100, по умолчанию 50)
+  ///
+  /// Чем выше приоритет - тем раньше выполняется ребро.
+  /// Используется для сортировки исходящих рёбер от узла.
+  int get priority => 50;
+
+  /// Режим выполнения ребра
+  ///
+  /// - sequential: выполняется последовательно, ждёт завершения предыдущего
+  /// - parallel: выполняется параллельно в отдельном потоке
+  /// - deferred: откладывается до получения сигнала
+  EdgeExecutionMode get executionMode => EdgeExecutionMode.sequential;
+
+  /// Ревнивое ребро - блокирует выполнение других исходящих рёбер
+  ///
+  /// Если true - после выполнения этого ребра остальные рёбра игнорируются.
+  /// По умолчанию true для onSuccess/onError рёбер (взаимоисключающие).
+  ///
+  /// Пример: onSuccess ревнивое - если узел успешен, onError не выполняется
+  bool get isExclusive => false;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2332,7 +2772,7 @@ abstract class IHand {
 }
 ```
 
-### Файл: `./lib/graph/engine/run_context.dart` (строк:      166, размер:     5834 байт)
+### Файл: `./lib/graph/engine/run_context.dart` (строк:      280, размер:    10318 байт)
 
 ```dart
 // pkgs/aq_schema/lib/graph/engine/run_context.dart
@@ -2358,6 +2798,12 @@ class RunContext implements ISandboxContext {
   // ── Состояние ────────────────────────────────────────────────────────
   @override
   final Map<String, dynamic> state = {};
+
+  // ИСПРАВЛЕНИЕ: Добавлен механизм транзакций для rollback при ошибке
+  Map<String, dynamic>? _savepoint;
+
+  // ИСПРАВЛЕНИЕ: Отслеживание временных ресурсов для cleanup
+  final List<String> _tempResources = [];
 
   // ── Sandbox ──────────────────────────────────────────────────────────
   @override
@@ -2410,16 +2856,29 @@ class RunContext implements ISandboxContext {
         sandbox = sandbox ?? _FallbackSandbox(runId);
 
   // ── Методы состояния ─────────────────────────────────────────────────
+
+  /// ИСПРАВЛЕНИЕ: Deep copy для предотвращения memory leak
+  /// Проблема: контекст хранил ссылки на объекты, изменение извне меняло контекст
+  /// Решение: делаем deep copy при setVar()
   @override
   void setVar(String key, dynamic value) {
-    state[key] = value;
-    _log('Memory updated: [$key]',
+    // Deep copy для предотвращения изменения извне
+    final copiedValue = _deepCopy(value);
+    state[key] = copiedValue;
+
+    // Маскируем секреты в логах
+    final maskedValue = _maskSecrets(key, copiedValue);
+    _log('Memory updated: [$key] = $maskedValue',
         type: 'system', depth: 0, branch: currentBranch);
   }
 
   @override
   dynamic getVar(String name) {
-    if (!name.contains('.')) return state[name];
+    if (!name.contains('.')) {
+      final value = state[name];
+      // Возвращаем копию, чтобы изменения извне не влияли на контекст
+      return _deepCopy(value);
+    }
     final parts = name.split('.');
     dynamic current = state[parts[0]];
     for (int i = 1; i < parts.length; i++) {
@@ -2429,7 +2888,49 @@ class RunContext implements ISandboxContext {
         return null;
       }
     }
-    return current;
+    // Возвращаем копию
+    return _deepCopy(current);
+  }
+
+  /// Deep copy для предотвращения изменения объектов извне
+  dynamic _deepCopy(dynamic value) {
+    if (value == null) return null;
+    if (value is String || value is num || value is bool) return value;
+
+    if (value is List) {
+      return value.map((item) => _deepCopy(item)).toList();
+    }
+
+    if (value is Map) {
+      return Map<String, dynamic>.from(
+        value.map((key, val) => MapEntry(key.toString(), _deepCopy(val)))
+      );
+    }
+
+    // Для других типов возвращаем как есть (DateTime, etc)
+    return value;
+  }
+
+  /// Маскирование секретов в логах
+  String _maskSecrets(String key, dynamic value) {
+    final lowerKey = key.toLowerCase();
+
+    // Список ключей, которые содержат секреты
+    final secretKeys = [
+      'password', 'secret', 'token', 'key', 'api_key',
+      'jwt', 'auth', 'credential', 'private'
+    ];
+
+    // Проверяем содержит ли ключ секретное слово
+    final isSecret = secretKeys.any((secret) => lowerKey.contains(secret));
+
+    if (isSecret && value is String && value.isNotEmpty) {
+      // Маскируем: показываем первые 4 символа + ***
+      if (value.length <= 4) return '***';
+      return '${value.substring(0, 4)}***';
+    }
+
+    return value.toString();
   }
 
   @override
@@ -2444,6 +2945,59 @@ class RunContext implements ISandboxContext {
     );
     newCtx.state.addAll(state);
     return newCtx;
+  }
+
+  // ── ИСПРАВЛЕНИЕ: Транзакционность ─────────────────────────────────────
+
+  /// Создаёт savepoint для возможности rollback
+  void createSavepoint() {
+    _savepoint = _deepCopy(state) as Map<String, dynamic>;
+    _log('Savepoint created', type: 'system', depth: 0, branch: currentBranch);
+  }
+
+  /// Откатывает состояние к savepoint
+  void rollback() {
+    if (_savepoint != null) {
+      state.clear();
+      state.addAll(_savepoint!);
+      _savepoint = null;
+      _log('Rolled back to savepoint', type: 'system', depth: 0, branch: currentBranch);
+    }
+  }
+
+  /// Подтверждает изменения и удаляет savepoint
+  void commit() {
+    _savepoint = null;
+    _log('Changes committed', type: 'system', depth: 0, branch: currentBranch);
+  }
+
+  // ── ИСПРАВЛЕНИЕ: Resource Management ──────────────────────────────────
+
+  /// Регистрирует временный ресурс для cleanup
+  void registerTempResource(String resourcePath) {
+    _tempResources.add(resourcePath);
+    _log('Temp resource registered: $resourcePath',
+        type: 'system', depth: 0, branch: currentBranch);
+  }
+
+  /// Освобождает все ресурсы
+  Future<void> dispose() async {
+    // Cleanup временных ресурсов
+    for (final resource in _tempResources) {
+      _log('Cleaning up temp resource: $resource',
+          type: 'system', depth: 0, branch: currentBranch);
+      // TODO: реальное удаление файлов через sandbox
+    }
+    _tempResources.clear();
+
+    // Очистка состояния
+    state.clear();
+    _savepoint = null;
+
+    // Dispose sandbox
+    await sandbox.dispose();
+
+    _log('RunContext disposed', type: 'system', depth: 0, branch: currentBranch);
   }
 
   // ── Сериализация (без изменений) ─────────────────────────────────────
@@ -2536,7 +3090,177 @@ class ToolRegistry {
 }
 ```
 
-### Файл: `./lib/graph/graph.dart` (строк:       28, размер:      909 байт)
+### Файл: `./lib/graph/engine/workflow_run.dart` (строк:      165, размер:     5701 байт)
+
+```dart
+// Модель запуска графа (WorkflowRun)
+// LoggedStorable - каждое изменение статуса записывается в audit trail
+
+import 'package:aq_schema/data_layer/storable/logged_storable.dart';
+
+/// Статус выполнения графа
+enum WorkflowRunStatus {
+  running('running'),
+  suspended('suspended'),
+  completed('completed'),
+  failed('failed'),
+  cancelled('cancelled');
+
+  const WorkflowRunStatus(this.value);
+  final String value;
+
+  static WorkflowRunStatus fromString(String s) {
+    return values.firstWhere(
+      (e) => e.value == s,
+      orElse: () => WorkflowRunStatus.running,
+    );
+  }
+}
+
+/// Запуск графа - хранит состояние выполнения
+/// LoggedStorable - отслеживаем изменения статуса, логов, контекста
+final class WorkflowRun implements LoggedStorable {
+  static const kCollection = 'workflow_runs';
+  static const kJsonSchema = {
+    'type': 'object',
+    'properties': {
+      'id': {'type': 'string'},
+      'projectId': {'type': 'string'},
+      'blueprintId': {'type': 'string'},
+      'graphSnapshot': {'type': 'object'},
+      'status': {'type': 'string'},
+      'logsJson': {'type': 'string'},
+      'contextJson': {'type': 'string'},
+      'suspendedNodeId': {'type': 'string'},
+      'createdAt': {'type': 'string', 'format': 'date-time'},
+    },
+    'required': ['id', 'projectId', 'blueprintId', 'graphSnapshot', 'status', 'logsJson', 'createdAt'],
+  };
+
+  /// ID запуска (UUID)
+  final String id;
+
+  /// ID проекта, в котором выполняется граф
+  final String projectId;
+
+  /// ID blueprint графа (WorkflowGraph.id)
+  final String blueprintId;
+
+  /// Снимок графа на момент запуска (JSON)
+  final Map<String, dynamic> graphSnapshot;
+
+  /// Текущий статус выполнения
+  final WorkflowRunStatus status;
+
+  /// Логи выполнения (JSON array строк)
+  final String logsJson;
+
+  /// Контекст выполнения (JSON) - для resume после suspend
+  final String? contextJson;
+
+  /// ID узла, на котором приостановлен граф
+  final String? suspendedNodeId;
+
+  /// Время создания
+  final DateTime createdAt;
+
+  const WorkflowRun({
+    required this.id,
+    required this.projectId,
+    required this.blueprintId,
+    required this.graphSnapshot,
+    required this.status,
+    required this.logsJson,
+    this.contextJson,
+    this.suspendedNodeId,
+    required this.createdAt,
+  });
+
+  // ── Storable interface ──────────────────────────────────────────────────────
+
+  @override
+  String get collectionName => 'workflow_runs';
+
+  @override
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'projectId': projectId,
+        'blueprintId': blueprintId,
+        'graphSnapshot': graphSnapshot,
+        'status': status.value,
+        'logsJson': logsJson,
+        'contextJson': contextJson,
+        'suspendedNodeId': suspendedNodeId,
+        'createdAt': createdAt.toIso8601String(),
+      };
+
+  @override
+  Map<String, dynamic> get indexFields => {
+        'projectId': projectId,
+        'blueprintId': blueprintId,
+        'status': status.value,
+        'createdAt': createdAt.toIso8601String(),
+      };
+
+  @override
+  Map<String, dynamic> get jsonSchema => kJsonSchema;
+
+  // ── LoggedStorable interface ────────────────────────────────────────────────
+
+  /// Отслеживаем изменения статуса, логов, контекста
+  @override
+  Set<String> get trackedFields => {
+        'status',
+        'logsJson',
+        'contextJson',
+        'suspendedNodeId',
+      };
+
+  // ── Factory ─────────────────────────────────────────────────────────────────
+
+  factory WorkflowRun.fromMap(Map<String, dynamic> m) {
+    return WorkflowRun(
+      id: m['id'] as String,
+      projectId: m['projectId'] as String,
+      blueprintId: m['blueprintId'] as String,
+      graphSnapshot: m['graphSnapshot'] as Map<String, dynamic>,
+      status: WorkflowRunStatus.fromString(m['status'] as String? ?? 'running'),
+      logsJson: m['logsJson'] as String? ?? '[]',
+      contextJson: m['contextJson'] as String?,
+      suspendedNodeId: m['suspendedNodeId'] as String?,
+      createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ?? DateTime.now(),
+    );
+  }
+
+  // ── copyWith ────────────────────────────────────────────────────────────────
+
+  WorkflowRun copyWith({
+    String? id,
+    String? projectId,
+    String? blueprintId,
+    Map<String, dynamic>? graphSnapshot,
+    WorkflowRunStatus? status,
+    String? logsJson,
+    String? contextJson,
+    String? suspendedNodeId,
+    DateTime? createdAt,
+  }) {
+    return WorkflowRun(
+      id: id ?? this.id,
+      projectId: projectId ?? this.projectId,
+      blueprintId: blueprintId ?? this.blueprintId,
+      graphSnapshot: graphSnapshot ?? this.graphSnapshot,
+      status: status ?? this.status,
+      logsJson: logsJson ?? this.logsJson,
+      contextJson: contextJson ?? this.contextJson,
+      suspendedNodeId: suspendedNodeId ?? this.suspendedNodeId,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/graph.dart` (строк:       29, размер:      953 байт)
 
 ```dart
 // Граф-домен пакета aq_schema.
@@ -2565,6 +3289,7 @@ export 'validation/graph_contract_validator.dart';
 export 'transport/messages/run_event.dart';
 export 'transport/messages/run_request.dart';
 export 'transport/messages/run_status.dart';
+export 'transport/messages/run_state.dart';
 export 'transport/messages/user_input_response.dart';
 export 'transport/interfaces/i_engine_transport.dart';
 ```
@@ -2900,7 +3625,7 @@ class SchemaValidationError {
 }
 ```
 
-### Файл: `./lib/graph/graphs/instruction_graph.dart` (строк:      267, размер:     7940 байт)
+### Файл: `./lib/graph/graphs/instruction_graph.dart` (строк:      308, размер:     9090 байт)
 
 ```dart
 import 'package:aq_schema/graph/core/graph_def.dart';
@@ -3016,9 +3741,28 @@ class InstructionEdge extends $Edge {
 class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
     implements VersionedStorable {
   static const kCollection = 'instruction_graphs';
+  static const kSchemaVersion = '1.0.0';
+  static const kJsonSchema = {
+    'type': 'object',
+    'properties': {
+      'id': {'type': 'string', 'format': 'uuid'},
+      'tenantId': {'type': 'string'},
+      'ownerId': {'type': 'string'},
+      'name': {'type': 'string'},
+      'nodes': {'type': 'array', 'items': {'type': 'object'}},
+      'edges': {'type': 'array', 'items': {'type': 'object'}},
+      'contract': {'type': 'object'},
+      'tests': {'type': 'array', 'items': {'type': 'object'}},
+      'accessGrants': {'type': 'array', 'items': {'type': 'object'}},
+    },
+    'required': ['id', 'tenantId', 'ownerId', 'name'],
+  };
 
   @override
   final String id;
+
+  @override
+  final String tenantId;
 
   @override
   final String ownerId; // projectId
@@ -3039,8 +3783,21 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
   @override
   String get collectionName => kCollection;
 
+  @override
+  String get schemaVersion => kSchemaVersion;
+
+  @override
+  List<Object> get migrations => const [];
+
+  @override
+  Map<String, dynamic> get jsonSchema => kJsonSchema;
+
+  @override
+  String get defaultSharingPolicy => 'tenant';
+
   const InstructionGraph({
     required this.id,
+    required this.tenantId,
     required this.ownerId,
     required this.name,
     super.nodes = const {},
@@ -3053,10 +3810,16 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
 
   factory InstructionGraph.empty({
     String id = 'id',
+    String tenantId = 'system',
     String projectId = 'id',
     String name = 'name',
   }) =>
-      InstructionGraph(id: id, ownerId: projectId, name: name);
+      InstructionGraph(
+        id: id,
+        tenantId: tenantId,
+        ownerId: projectId,
+        name: name,
+      );
 
   // ── $Graph ──────────────────────────────────────────────────────────────────
 
@@ -3090,6 +3853,7 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
   @override
   Map<String, dynamic> toMap() => {
         'id': id,
+        'tenantId': tenantId,
         'ownerId': ownerId,
         'name': name,
         'nodes': nodes.values.map((n) => n.toJson()).toList(),
@@ -3113,6 +3877,7 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
         .map((e) => InstructionEdge.fromJson(e as Map<String, dynamic>));
     return InstructionGraph(
       id: m['id'] as String,
+      tenantId: m['tenantId'] as String? ?? 'system',
       ownerId: m['ownerId'] as String? ?? '',
       name: m['name'] as String? ?? '',
       nodes: {for (var n in nList) n.id: n},
@@ -3157,6 +3922,7 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
   }) =>
       InstructionGraph(
         id: id,
+        tenantId: tenantId,
         ownerId: ownerId,
         name: name ?? this.name,
         nodes: nodes ?? this.nodes,
@@ -3172,7 +3938,7 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
 }
 ```
 
-### Файл: `./lib/graph/graphs/prompt_graph.dart` (строк:      214, размер:     5833 байт)
+### Файл: `./lib/graph/graphs/prompt_graph.dart` (строк:      253, размер:     6882 байт)
 
 ```dart
 import 'package:aq_schema/graph/core/graph_def.dart';
@@ -3278,9 +4044,26 @@ class PromptEdge extends $Edge {
 class PromptGraph extends $Graph<PromptNode, PromptEdge>
     implements VersionedStorable {
   static const kCollection = 'prompt_graphs';
+  static const kSchemaVersion = '1.0.0';
+  static const kJsonSchema = {
+    'type': 'object',
+    'properties': {
+      'id': {'type': 'string', 'format': 'uuid'},
+      'tenantId': {'type': 'string'},
+      'ownerId': {'type': 'string'},
+      'name': {'type': 'string'},
+      'nodes': {'type': 'array', 'items': {'type': 'object'}},
+      'edges': {'type': 'array', 'items': {'type': 'object'}},
+      'accessGrants': {'type': 'array', 'items': {'type': 'object'}},
+    },
+    'required': ['id', 'tenantId', 'ownerId', 'name'],
+  };
 
   @override
   final String id;
+
+  @override
+  final String tenantId;
 
   @override
   final String ownerId; // projectId
@@ -3293,8 +4076,21 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
   @override
   String get collectionName => kCollection;
 
+  @override
+  String get schemaVersion => kSchemaVersion;
+
+  @override
+  List<Object> get migrations => const [];
+
+  @override
+  Map<String, dynamic> get jsonSchema => kJsonSchema;
+
+  @override
+  String get defaultSharingPolicy => 'tenant';
+
   const PromptGraph({
     required this.id,
+    required this.tenantId,
     required this.ownerId,
     required this.name,
     super.nodes = const {},
@@ -3304,10 +4100,16 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
 
   factory PromptGraph.empty({
     String id = 'id',
+    String tenantId = 'system',
     String projectId = 'id',
     String name = 'name',
   }) =>
-      PromptGraph(id: id, ownerId: projectId, name: name);
+      PromptGraph(
+        id: id,
+        tenantId: tenantId,
+        ownerId: projectId,
+        name: name,
+      );
 
   // ── $Graph ──────────────────────────────────────────────────────────────────
 
@@ -3335,6 +4137,7 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
   @override
   Map<String, dynamic> toMap() => {
         'id': id,
+        'tenantId': tenantId,
         'ownerId': ownerId,
         'name': name,
         'nodes': nodes.values.map((n) => n.toJson()).toList(),
@@ -3355,6 +4158,7 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
         .map((e) => PromptEdge.fromJson(e as Map<String, dynamic>));
     return PromptGraph(
       id: m['id'] as String,
+      tenantId: m['tenantId'] as String? ?? 'system',
       ownerId: m['ownerId'] as String? ?? '',
       name: m['name'] as String? ?? '',
       nodes: {for (var n in nList) n.id: n},
@@ -3382,6 +4186,7 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
   }) =>
       PromptGraph(
         id: id,
+        tenantId: tenantId,
         ownerId: ownerId,
         name: name ?? this.name,
         nodes: nodes ?? this.nodes,
@@ -3391,12 +4196,18 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
 }
 ```
 
-### Файл: `./lib/graph/graphs/workflow_graph.dart` (строк:      245, размер:     6914 байт)
+### Файл: `./lib/graph/graphs/workflow_graph.dart` (строк:      341, размер:    10519 байт)
 
 ```dart
 import 'package:aq_schema/graph/core/graph_def.dart';
 import 'package:aq_schema/aq_schema.dart';
 
+// ============================================================================
+// DEPRECATED! НЕ ИСПОЛЬЗОВАТЬ!
+// Используй IWorkflowNode вместо enum
+// TODO: Удалить после полного перехода на типобезопасные узлы
+// ============================================================================
+@Deprecated('Используй IWorkflowNode вместо enum')
 enum WorkflowNodeType {
   llmAction,
   fileWrite,
@@ -3422,6 +4233,12 @@ enum WorkflowEdgeType {
   static WorkflowEdgeType fromJson(String json) => values.byName(json);
 }
 
+// ============================================================================
+// DEPRECATED! НЕ ИСПОЛЬЗОВАТЬ!
+// Используй IWorkflowNode вместо этого класса
+// TODO: Удалить после полного перехода на типобезопасные узлы
+// ============================================================================
+@Deprecated('Используй IWorkflowNode')
 class WorkflowNode extends $Node {
   @override
   final String id;
@@ -3473,6 +4290,14 @@ class WorkflowEdge extends $Edge {
   final WorkflowEdgeType type;
   final String? conditionExpression;
 
+  // Новые свойства из $Edge
+  @override
+  final int priority;
+  @override
+  final EdgeExecutionMode executionMode;
+  @override
+  final bool isExclusive;
+
   const WorkflowEdge({
     required this.id,
     required this.sourceId,
@@ -3480,7 +4305,13 @@ class WorkflowEdge extends $Edge {
     this.branchName = 'main',
     this.type = WorkflowEdgeType.onSuccess,
     this.conditionExpression,
-  });
+    this.priority = 50,
+    this.executionMode = EdgeExecutionMode.sequential,
+    bool? isExclusive,
+  }) : isExclusive = isExclusive ??
+            // По умолчанию onSuccess/onError ревнивые (взаимоисключающие)
+            (type == WorkflowEdgeType.onSuccess ||
+                type == WorkflowEdgeType.onError);
 
   @override
   WorkflowEdge copyWith({
@@ -3490,6 +4321,9 @@ class WorkflowEdge extends $Edge {
     String? branchName,
     WorkflowEdgeType? type,
     String? conditionExpression,
+    int? priority,
+    EdgeExecutionMode? executionMode,
+    bool? isExclusive,
   }) =>
       WorkflowEdge(
         id: id ?? this.id,
@@ -3498,6 +4332,9 @@ class WorkflowEdge extends $Edge {
         branchName: branchName ?? this.branchName,
         type: type ?? this.type,
         conditionExpression: conditionExpression ?? this.conditionExpression,
+        priority: priority ?? this.priority,
+        executionMode: executionMode ?? this.executionMode,
+        isExclusive: isExclusive ?? this.isExclusive,
       );
 
   Map<String, dynamic> toJson() => {
@@ -3507,6 +4344,9 @@ class WorkflowEdge extends $Edge {
         'branchName': branchName,
         'type': type.toJson(),
         'conditionExpression': conditionExpression,
+        'priority': priority,
+        'executionMode': executionMode.name,
+        'isExclusive': isExclusive,
       };
 
   factory WorkflowEdge.fromJson(Map<String, dynamic> json) => WorkflowEdge(
@@ -3516,19 +4356,58 @@ class WorkflowEdge extends $Edge {
         branchName: json['branchName'] as String? ?? 'main',
         type: WorkflowEdgeType.fromJson(json['type'] as String),
         conditionExpression: json['conditionExpression'] as String?,
+        priority: json['priority'] as int? ?? 50,
+        executionMode: json['executionMode'] != null
+            ? EdgeExecutionMode.values.byName(json['executionMode'] as String)
+            : EdgeExecutionMode.sequential,
+        isExclusive: json['isExclusive'] as bool?,
       );
 }
 
-/// Workflow graph — a project's automation flow.
-/// Implements [VersionedStorable]: every save creates a semver version.
-/// [ownerId] = projectId — the project this graph belongs to.
+// ============================================================================
+// DEPRECATED! НЕ ИСПОЛЬЗОВАТЬ!
+// Используй новый WorkflowGraph с IWorkflowNode (см. TypedWorkflowGraph в тестах)
+// TODO: Удалить после полного перехода на типобезопасные узлы
+// Этот класс - рудимент для старого UI прототипа
+// ============================================================================
+@Deprecated('Используй TypedWorkflowGraph с IWorkflowNode')
 class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
     implements VersionedStorable {
   /// Storage collection name — shared between client and server.
   static const kCollection = 'workflow_graphs';
 
+  /// Current schema version.
+  static const kSchemaVersion = '1.0.0';
+
+  /// JSON Schema for automatic table creation.
+  static const kJsonSchema = {
+    'type': 'object',
+    'properties': {
+      'id': {'type': 'string', 'format': 'uuid'},
+      'tenantId': {'type': 'string'},
+      'ownerId': {'type': 'string'},
+      'name': {'type': 'string'},
+      'nodes': {
+        'type': 'array',
+        'items': {'type': 'object'}
+      },
+      'edges': {
+        'type': 'array',
+        'items': {'type': 'object'}
+      },
+      'accessGrants': {
+        'type': 'array',
+        'items': {'type': 'object'}
+      },
+    },
+    'required': ['id', 'tenantId', 'ownerId', 'name'],
+  };
+
   @override
   final String id;
+
+  @override
+  final String tenantId;
 
   @override
   final String ownerId; // projectId
@@ -3542,8 +4421,21 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
   @override
   String get collectionName => kCollection;
 
+  @override
+  String get schemaVersion => kSchemaVersion;
+
+  @override
+  List<Object> get migrations => const [];
+
+  @override
+  Map<String, dynamic> get jsonSchema => kJsonSchema;
+
+  @override
+  String get defaultSharingPolicy => 'tenant';
+
   const WorkflowGraph({
     required this.id,
+    required this.tenantId,
     required this.ownerId,
     required this.name,
     super.nodes = const {},
@@ -3553,10 +4445,16 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
 
   factory WorkflowGraph.empty({
     String id = 'id',
+    String tenantId = 'system',
     String projectId = 'projectid',
     String name = 'projectName',
   }) =>
-      WorkflowGraph(id: id, ownerId: projectId, name: name);
+      WorkflowGraph(
+        id: id,
+        tenantId: tenantId,
+        ownerId: projectId,
+        name: name,
+      );
 
   // ── $Graph overrides ────────────────────────────────────────────────────────
 
@@ -3584,6 +4482,7 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
   @override
   Map<String, dynamic> toMap() => {
         'id': id,
+        'tenantId': tenantId,
         'ownerId': ownerId,
         'name': name,
         'nodes': nodes.values.map((n) => n.toJson()).toList(),
@@ -3605,6 +4504,7 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
         .map((e) => WorkflowEdge.fromJson(e as Map<String, dynamic>));
     return WorkflowGraph(
       id: m['id'] as String,
+      tenantId: m['tenantId'] as String? ?? 'system',
       ownerId: m['ownerId'] as String? ?? '',
       name: m['name'] as String? ?? '',
       nodes: {for (var n in nList) n.id: n},
@@ -3632,6 +4532,7 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
   }) =>
       WorkflowGraph(
         id: id,
+        tenantId: tenantId,
         ownerId: ownerId,
         name: name ?? this.name,
         nodes: nodes ?? this.nodes,
@@ -3809,6 +4710,2728 @@ class WorkflowEventLogger {
     if (value is Map) return '{${value.length} keys}';
     if (value is double) return value.toStringAsFixed(2);
     return value.toString();
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/base/automatic_node.dart` (строк:       61, размер:     2519 байт)
+
+```dart
+// Автоматический узел - выполняется без участия пользователя
+
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+import 'package:aq_schema/graph/engine/i_hand.dart';
+import 'package:aq_schema/graph/core/graph_def.dart';
+
+/// Автоматический узел - выполняется без участия пользователя
+///
+/// Примеры: LlmActionNode, FileReadNode, FileWriteNode, GitCommitNode
+///
+/// Автоматические узлы:
+/// - Выполняются сразу без ожидания UI
+/// - Используют IHand из ToolRegistry для действий
+/// - Сохраняют результат в RunContext
+abstract class AutomaticNode implements IWorkflowNode {
+  /// Выполнить действие через IHand из ToolRegistry
+  ///
+  /// Вспомогательный метод для вызова tools.getHand(handId).execute()
+  /// с проверкой существования hand
+  Future<dynamic> executeAction(
+    ToolRegistry tools,
+    String handId,
+    Map<String, dynamic> params,
+    RunContext context,
+  ) async {
+    final hand = tools.getHand(handId);
+    if (hand == null) {
+      throw Exception('Hand not found: $handId');
+    }
+    return await hand.execute(params, context);
+  }
+
+  /// Подстановка переменных в строку ({{varName}} → значение)
+  ///
+  /// Используется для компиляции промптов, путей к файлам, etc.
+  String substituteVariables(String template, RunContext context) {
+    final regex = RegExp(r'\{\{(.*?)\}\}');
+    return template.replaceAllMapped(regex, (match) {
+      final varName = match.group(1)?.trim();
+      final value = context.getVar(varName ?? '');
+      return value?.toString() ?? '[MISSING: $varName]';
+    });
+  }
+
+  // ── Реализации по умолчанию из IWorkflowNode ───────────────────────────────
+
+  @override
+  List<String>? selectOutgoingEdges(
+    List<$Edge> availableEdges,
+    dynamic executionResult,
+  ) =>
+      null; // Стандартная логика движка
+
+  @override
+  NodeJoinStrategy get joinStrategy => NodeJoinStrategy.firstCome;
+
+  @override
+  Map<String, int>? get incomingEdgePriorities => null;
+}
+```
+
+### Файл: `./lib/graph/nodes/base/composite_node.dart` (строк:       69, размер:     2690 байт)
+
+```dart
+// Композитный узел - содержит другой граф
+
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/core/graph_def.dart';
+
+/// Композитный узел - содержит другой граф
+///
+/// Примеры: SubGraphNode, RunInstructionNode
+///
+/// Композитные узлы:
+/// - Загружают вложенный граф (WorkflowGraph или InstructionGraph)
+/// - Выполняют его как подзадачу
+/// - Передают переменные через input/output mapping
+abstract class CompositeNode implements IWorkflowNode {
+  /// ID вложенного графа для загрузки
+  String get subGraphId;
+
+  /// Маппинг входных переменных
+  ///
+  /// Формат: { "subGraphVar": "parentVar" }
+  /// Пример: { "input": "llm_result" } - передать llm_result как input
+  Map<String, String> get inputMapping;
+
+  /// Маппинг выходных переменных
+  ///
+  /// Формат: { "parentVar": "subGraphVar" }
+  /// Пример: { "result": "output" } - сохранить output как result
+  Map<String, String> get outputMapping;
+
+  /// Применить input mapping - скопировать переменные из parent в sub context
+  void applyInputMapping(RunContext parentContext, RunContext subContext) {
+    for (final entry in inputMapping.entries) {
+      final subVar = entry.key;
+      final parentVar = entry.value;
+      final value = parentContext.getVar(parentVar);
+      if (value != null) {
+        subContext.setVar(subVar, value);
+      }
+    }
+  }
+
+  /// Применить output mapping - скопировать переменные из sub в parent context
+  void applyOutputMapping(RunContext subContext, RunContext parentContext) {
+    for (final entry in outputMapping.entries) {
+      final parentVar = entry.key;
+      final subVar = entry.value;
+      final value = subContext.getVar(subVar);
+      if (value != null) {
+        parentContext.setVar(parentVar, value);
+      }
+    }
+  }
+
+  // ── Реализации по умолчанию из IWorkflowNode ───────────────────────────────
+
+  @override
+  List<String>? selectOutgoingEdges(
+    List<$Edge> availableEdges,
+    dynamic executionResult,
+  ) =>
+      null; // Стандартная логика движка
+
+  @override
+  NodeJoinStrategy get joinStrategy => NodeJoinStrategy.firstCome;
+
+  @override
+  Map<String, int>? get incomingEdgePriorities => null;
+}
+```
+
+### Файл: `./lib/graph/nodes/base/i_instruction_node.dart` (строк:       38, размер:     1458 байт)
+
+```dart
+// Базовый интерфейс для узлов InstructionGraph
+
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Базовый интерфейс для узлов InstructionGraph
+///
+/// InstructionGraph - это граф-функция, которая:
+/// - Выполняется полностью без пауз (нет suspend/resume)
+/// - Работает в изолированном контексте
+/// - Принимает входные данные через input mapping
+/// - Возвращает результат через output mapping
+///
+/// Узлы инструкций НЕ могут быть интерактивными
+abstract class IInstructionNode {
+  /// Уникальный ID узла
+  String get id;
+
+  /// Тип узла (для сериализации)
+  String get nodeType;
+
+  /// Выполнить узел
+  ///
+  /// [context] - изолированный контекст инструкции
+  /// [tools] - реестр доступных инструментов
+  ///
+  /// Возвращает результат выполнения узла
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  );
+
+  /// Сериализация в JSON
+  Map<String, dynamic> toJson();
+
+  /// Создать копию узла с изменёнными полями
+  IInstructionNode copyWith();
+}
+```
+
+### Файл: `./lib/graph/nodes/base/i_prompt_node.dart` (строк:       32, размер:     1232 байт)
+
+```dart
+// Базовый интерфейс для узлов PromptGraph
+
+import 'package:aq_schema/graph/engine/run_context.dart';
+
+/// Базовый интерфейс для узлов PromptGraph
+///
+/// PromptGraph - это граф для построения промпта:
+/// - Компилирует текст промпта из частей
+/// - Подставляет переменные из контекста
+/// - Возвращает готовый текст промпта
+///
+/// Узлы промптов НЕ вызывают LLM, только строят текст
+abstract class IPromptNode {
+  /// Уникальный ID узла
+  String get id;
+
+  /// Тип узла (для сериализации)
+  String get nodeType;
+
+  /// Выполнить узел - вернуть часть промпта
+  ///
+  /// [context] - контекст с переменными для подстановки
+  ///
+  /// Возвращает строку - часть промпта
+  Future<String> execute(RunContext context);
+
+  /// Сериализация в JSON
+  Map<String, dynamic> toJson();
+
+  /// Создать копию узла с изменёнными полями
+  IPromptNode copyWith();
+}
+```
+
+### Файл: `./lib/graph/nodes/base/i_workflow_node.dart` (строк:       74, размер:     3476 байт)
+
+```dart
+// Базовый интерфейс для всех узлов Workflow графа
+// Заменяет enum-based подход на полиморфную иерархию
+
+import 'package:aq_schema/graph/core/graph_def.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Базовый интерфейс для всех узлов Workflow графа
+///
+/// Все конкретные узлы (LlmActionNode, FileReadNode, etc.) реализуют этот интерфейс.
+/// Это позволяет:
+/// - Типобезопасность (вместо Map<String, dynamic> config)
+/// - Расширяемость (добавить новый узел без изменения WorkflowRunner)
+/// - Полиморфизм (await node.execute() вместо гигантского switch)
+abstract class IWorkflowNode extends $Node {
+  @override
+  String get id;
+
+  /// Тип узла для сериализации (llmAction, fileRead, etc.)
+  /// Используется при сохранении в JSON
+  String get nodeType;
+
+  /// Выполнить узел
+  ///
+  /// [context] - контекст выполнения с переменными
+  /// [tools] - реестр IHand для выполнения действий
+  ///
+  /// Возвращает результат выполнения (может быть null)
+  ///
+  /// ПРИМЕЧАНИЕ: graphRepo передаётся через context или tools,
+  /// не добавляем в сигнатуру чтобы не создавать зависимость от движка
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  );
+
+  /// Сериализация в JSON
+  /// Формат: { "id": "...", "type": "...", "config": {...} }
+  Map<String, dynamic> toJson();
+
+  @override
+  IWorkflowNode copyWith();
+
+  // ── Управление исходящими рёбрами (из $Node) ───────────────────────────────
+
+  @override
+  List<String>? selectOutgoingEdges(
+    List<$Edge> availableEdges,
+    dynamic executionResult,
+  ) =>
+      null; // По умолчанию - стандартная логика движка
+
+  // ── Управление входящими рёбрами (из $Node) ────────────────────────────────
+
+  @override
+  NodeJoinStrategy get joinStrategy => NodeJoinStrategy.firstCome;
+
+  @override
+  Map<String, int>? get incomingEdgePriorities => null;
+
+  // ── Retry конфигурация ──────────────────────────────────────────────────────
+
+  /// Максимальное количество попыток выполнения (0 = без retry)
+  int get maxRetries => 0;
+
+  /// Начальная задержка между попытками (в миллисекундах)
+  int get retryDelayMs => 1000;
+
+  /// Использовать экспоненциальный backoff (задержка удваивается с каждой попыткой)
+  bool get useExponentialBackoff => true;
+
+  /// Типы ошибок, при которых нужно делать retry (null = retry для всех ошибок)
+  List<Type>? get retryableExceptions => null;
+}
+```
+
+### Файл: `./lib/graph/nodes/base/interactive_node.dart` (строк:       69, размер:     2769 байт)
+
+```dart
+// Интерактивный узел - требует ввода пользователя
+
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/core/graph_def.dart';
+
+/// Интерактивный узел - требует ввода пользователя
+///
+/// Примеры: UserInputNode, ManualReviewNode, FileUploadNode, CoCreationChatNode
+///
+/// Интерактивные узлы:
+/// - Приостанавливают выполнение графа
+/// - Ждут ввода пользователя через UI
+/// - Сохраняют состояние для resume
+abstract class InteractiveNode implements IWorkflowNode {
+  /// Проверить, есть ли уже ответ пользователя в контексте
+  ///
+  /// [targetVar] - имя переменной где должен быть ответ
+  /// Возвращает true если пользователь уже ответил (resume после suspend)
+  bool hasUserResponse(RunContext context, String targetVar) {
+    final value = context.getVar(targetVar);
+    return value != null;
+  }
+
+  /// UI конфигурация для отображения
+  ///
+  /// Возвращает Map с параметрами для UI:
+  /// - title: заголовок формы
+  /// - message: описание что нужно ввести
+  /// - type: тип UI (text_input, approval, file_upload, chat)
+  /// - etc.
+  Map<String, dynamic> getUiConfig();
+
+  /// Выбросить исключение для suspend
+  ///
+  /// Runner должен поймать это исключение и сохранить состояние
+  Never throwSuspendException(String nodeId, String reason) {
+    throw SuspendExecutionException(nodeId: nodeId, reason: reason);
+  }
+
+  // ── Реализации по умолчанию из IWorkflowNode ───────────────────────────────
+
+  @override
+  List<String>? selectOutgoingEdges(
+    List<$Edge> availableEdges,
+    dynamic executionResult,
+  ) =>
+      null; // Стандартная логика движка
+
+  @override
+  NodeJoinStrategy get joinStrategy => NodeJoinStrategy.firstCome;
+
+  @override
+  Map<String, int>? get incomingEdgePriorities => null;
+}
+
+/// Исключение для приостановки выполнения
+class SuspendExecutionException implements Exception {
+  final String nodeId;
+  final String reason;
+
+  SuspendExecutionException({
+    required this.nodeId,
+    this.reason = 'Waiting for user input',
+  });
+
+  @override
+  String toString() => 'SuspendExecutionException: $reason (node: $nodeId)';
+}
+```
+
+### Файл: `./lib/graph/nodes/instruction/condition_node.dart` (строк:      159, размер:     4857 байт)
+
+```dart
+// Condition Node - условное ветвление
+
+import 'package:aq_schema/graph/nodes/base/i_instruction_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для условного ветвления
+///
+/// Вычисляет условие и определяет следующий узел
+class ConditionNode implements IInstructionNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'condition';
+
+  /// Переменная для проверки
+  final String checkVar;
+
+  /// Оператор сравнения (==, !=, >, <, >=, <=, contains, isEmpty)
+  final String operator;
+
+  /// Значение для сравнения (может содержать {{variables}})
+  final dynamic compareValue;
+
+  /// Переменная для сохранения результата (true/false)
+  final String outputVar;
+
+  const ConditionNode({
+    required this.id,
+    required this.checkVar,
+    required this.operator,
+    this.compareValue,
+    required this.outputVar,
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    // Получить значение переменной
+    final value = context.getVar(checkVar);
+
+    // Вычислить условие
+    final result = _evaluateCondition(value, operator, compareValue, context);
+
+    // Сохранить результат
+    context.setVar(outputVar, result);
+
+    context.log(
+      'Condition evaluated: $checkVar $operator $compareValue = $result',
+      branch: context.currentBranch,
+    );
+
+    return result;
+  }
+
+  bool _evaluateCondition(
+    dynamic value,
+    String op,
+    dynamic compareValue,
+    RunContext context,
+  ) {
+    // Подставить переменные в compareValue если это строка
+    final resolvedCompareValue = compareValue is String && compareValue.contains('{{')
+        ? _substituteVariables(compareValue, context)
+        : compareValue;
+
+    switch (op) {
+      case '==':
+        return value == resolvedCompareValue;
+      case '!=':
+        return value != resolvedCompareValue;
+      case '>':
+        return _compareNumbers(value, resolvedCompareValue, (a, b) => a > b);
+      case '<':
+        return _compareNumbers(value, resolvedCompareValue, (a, b) => a < b);
+      case '>=':
+        return _compareNumbers(value, resolvedCompareValue, (a, b) => a >= b);
+      case '<=':
+        return _compareNumbers(value, resolvedCompareValue, (a, b) => a <= b);
+      case 'contains':
+        return value.toString().contains(resolvedCompareValue.toString());
+      case 'isEmpty':
+        return value == null || value.toString().isEmpty;
+      case 'isNotEmpty':
+        return value != null && value.toString().isNotEmpty;
+      default:
+        throw Exception('ConditionNode: unknown operator "$op"');
+    }
+  }
+
+  bool _compareNumbers(
+    dynamic a,
+    dynamic b,
+    bool Function(num, num) compare,
+  ) {
+    final numA = num.tryParse(a.toString());
+    final numB = num.tryParse(b.toString());
+    if (numA == null || numB == null) {
+      throw Exception('ConditionNode: cannot compare non-numeric values with $operator');
+    }
+    return compare(numA, numB);
+  }
+
+  String _substituteVariables(String template, RunContext context) {
+    var result = template;
+    final regex = RegExp(r'\{\{(\w+)\}\}');
+    for (final match in regex.allMatches(template)) {
+      final varName = match.group(1)!;
+      final value = context.getVar(varName);
+      if (value != null) {
+        result = result.replaceAll('{{$varName}}', value.toString());
+      }
+    }
+    return result;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'check_var': checkVar,
+          'operator': operator,
+          if (compareValue != null) 'compare_value': compareValue,
+          'output_var': outputVar,
+        },
+      };
+
+  factory ConditionNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return ConditionNode(
+      id: json['id'] as String,
+      checkVar: config['check_var'] as String? ?? '',
+      operator: config['operator'] as String? ?? '==',
+      compareValue: config['compare_value'],
+      outputVar: config['output_var'] as String? ?? 'condition_result',
+    );
+  }
+
+  @override
+  IInstructionNode copyWith({
+    String? id,
+    String? checkVar,
+    String? operator,
+    dynamic compareValue,
+    String? outputVar,
+  }) {
+    return ConditionNode(
+      id: id ?? this.id,
+      checkVar: checkVar ?? this.checkVar,
+      operator: operator ?? this.operator,
+      compareValue: compareValue ?? this.compareValue,
+      outputVar: outputVar ?? this.outputVar,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/instruction/llm_query_node.dart` (строк:      136, размер:     4228 байт)
+
+```dart
+// LLM Query Node - запрос к LLM
+
+import 'package:aq_schema/graph/nodes/base/i_instruction_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для запроса к LLM
+///
+/// Компилирует промпт и вызывает LLM
+class LlmQueryNode implements IInstructionNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'llmQuery';
+
+  /// ID PromptGraph для компиляции промпта
+  final String? promptBlueprintId;
+
+  /// Прямой текст промпта (если не используется PromptGraph)
+  final String? directPrompt;
+
+  /// Переменная для сохранения результата
+  final String outputVar;
+
+  /// Название модели (опционально)
+  final String? modelName;
+
+  const LlmQueryNode({
+    required this.id,
+    this.promptBlueprintId,
+    this.directPrompt,
+    required this.outputVar,
+    this.modelName,
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    // Получить промпт
+    String prompt;
+    if (promptBlueprintId != null && promptBlueprintId!.isNotEmpty) {
+      // Промпт будет скомпилирован через PromptRunner
+      final compiledPrompt = context.getVar('_compiled_prompt_$id');
+      if (compiledPrompt == null) {
+        throw Exception('LlmQueryNode: compiled prompt not found in context');
+      }
+      prompt = compiledPrompt.toString();
+    } else if (directPrompt != null && directPrompt!.isNotEmpty) {
+      // Использовать прямой промпт с подстановкой переменных
+      prompt = _substituteVariables(directPrompt!, context);
+    } else {
+      throw Exception('LlmQueryNode: either promptBlueprintId or directPrompt is required');
+    }
+
+    // Вызвать LLM через Tool
+    final tool = tools.getHand('llm_ask');
+    if (tool == null) {
+      throw Exception('LlmQueryNode: tool "llm_ask" not found');
+    }
+
+    final params = <String, dynamic>{
+      'prompt': prompt,
+    };
+    if (modelName != null) {
+      params['model_name'] = modelName;
+    }
+
+    final result = await tool.execute(params, context);
+
+    // Сохранить результат
+    context.setVar(outputVar, result);
+
+    context.log(
+      'LLM query executed (${result.toString().length} chars)',
+      branch: context.currentBranch,
+    );
+
+    return result;
+  }
+
+  String _substituteVariables(String template, RunContext context) {
+    var result = template;
+    final regex = RegExp(r'\{\{(\w+)\}\}');
+    for (final match in regex.allMatches(template)) {
+      final varName = match.group(1)!;
+      final value = context.getVar(varName);
+      if (value != null) {
+        result = result.replaceAll('{{$varName}}', value.toString());
+      }
+    }
+    return result;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          if (promptBlueprintId != null) 'prompt_blueprint_id': promptBlueprintId,
+          if (directPrompt != null) 'direct_prompt': directPrompt,
+          'output_var': outputVar,
+          if (modelName != null) 'model_name': modelName,
+        },
+      };
+
+  factory LlmQueryNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return LlmQueryNode(
+      id: json['id'] as String,
+      promptBlueprintId: config['prompt_blueprint_id'] as String?,
+      directPrompt: config['direct_prompt'] as String?,
+      outputVar: config['output_var'] as String? ?? 'llm_result',
+      modelName: config['model_name'] as String?,
+    );
+  }
+
+  @override
+  IInstructionNode copyWith({
+    String? id,
+    String? promptBlueprintId,
+    String? directPrompt,
+    String? outputVar,
+    String? modelName,
+  }) {
+    return LlmQueryNode(
+      id: id ?? this.id,
+      promptBlueprintId: promptBlueprintId ?? this.promptBlueprintId,
+      directPrompt: directPrompt ?? this.directPrompt,
+      outputVar: outputVar ?? this.outputVar,
+      modelName: modelName ?? this.modelName,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/instruction/tool_call_node.dart` (строк:      130, размер:     3668 байт)
+
+```dart
+// Tool Call Node - вызов инструмента
+
+import 'package:aq_schema/graph/nodes/base/i_instruction_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для вызова инструмента (Tool)
+///
+/// Вызывает любой зарегистрированный Tool с параметрами
+class ToolCallNode implements IInstructionNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'toolCall';
+
+  /// Название инструмента для вызова
+  final String toolName;
+
+  /// Параметры для инструмента (могут содержать {{variables}})
+  final Map<String, dynamic> params;
+
+  /// Переменная для сохранения результата
+  final String outputVar;
+
+  const ToolCallNode({
+    required this.id,
+    required this.toolName,
+    this.params = const {},
+    required this.outputVar,
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    if (toolName.isEmpty) {
+      throw Exception('ToolCallNode: toolName is required');
+    }
+
+    // Получить Tool из реестра
+    final tool = tools.getHand(toolName);
+    if (tool == null) {
+      throw Exception('ToolCallNode: tool "$toolName" not found');
+    }
+
+    // Подставить переменные в параметры
+    final resolvedParams = _resolveParams(params, context);
+
+    // Вызвать Tool
+    final result = await tool.execute(resolvedParams, context);
+
+    // Сохранить результат
+    context.setVar(outputVar, result);
+
+    context.log(
+      'Tool "$toolName" executed',
+      branch: context.currentBranch,
+    );
+
+    return result;
+  }
+
+  Map<String, dynamic> _resolveParams(
+    Map<String, dynamic> params,
+    RunContext context,
+  ) {
+    final resolved = <String, dynamic>{};
+    for (final entry in params.entries) {
+      final value = entry.value;
+      if (value is String && value.contains('{{')) {
+        // Подставить переменные
+        resolved[entry.key] = _substituteVariables(value, context);
+      } else {
+        resolved[entry.key] = value;
+      }
+    }
+    return resolved;
+  }
+
+  String _substituteVariables(String template, RunContext context) {
+    var result = template;
+    final regex = RegExp(r'\{\{(\w+)\}\}');
+    for (final match in regex.allMatches(template)) {
+      final varName = match.group(1)!;
+      final value = context.getVar(varName);
+      if (value != null) {
+        result = result.replaceAll('{{$varName}}', value.toString());
+      }
+    }
+    return result;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'tool_name': toolName,
+          'params': params,
+          'output_var': outputVar,
+        },
+      };
+
+  factory ToolCallNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return ToolCallNode(
+      id: json['id'] as String,
+      toolName: config['tool_name'] as String? ?? '',
+      params: config['params'] as Map<String, dynamic>? ?? {},
+      outputVar: config['output_var'] as String? ?? 'tool_result',
+    );
+  }
+
+  @override
+  IInstructionNode copyWith({
+    String? id,
+    String? toolName,
+    Map<String, dynamic>? params,
+    String? outputVar,
+  }) {
+    return ToolCallNode(
+      id: id ?? this.id,
+      toolName: toolName ?? this.toolName,
+      params: params ?? this.params,
+      outputVar: outputVar ?? this.outputVar,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/instruction/transform_node.dart` (строк:      183, размер:     5596 байт)
+
+```dart
+// Transform Node - преобразование данных
+
+import 'package:aq_schema/graph/nodes/base/i_instruction_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для преобразования данных
+///
+/// Применяет трансформацию к данным из переменной
+class TransformNode implements IInstructionNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'transform';
+
+  /// Переменная с исходными данными
+  final String inputVar;
+
+  /// Тип трансформации (extract, format, parse, concat, split)
+  final String transformType;
+
+  /// Параметры трансформации
+  final Map<String, dynamic> params;
+
+  /// Переменная для сохранения результата
+  final String outputVar;
+
+  const TransformNode({
+    required this.id,
+    required this.inputVar,
+    required this.transformType,
+    this.params = const {},
+    required this.outputVar,
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    // Получить исходные данные
+    final input = context.getVar(inputVar);
+    if (input == null) {
+      throw Exception('TransformNode: variable $inputVar not found');
+    }
+
+    // Применить трансформацию
+    final result = _applyTransform(input, transformType, params, context);
+
+    // Сохранить результат
+    context.setVar(outputVar, result);
+
+    context.log(
+      'Transform "$transformType" applied to $inputVar',
+      branch: context.currentBranch,
+    );
+
+    return result;
+  }
+
+  dynamic _applyTransform(
+    dynamic input,
+    String type,
+    Map<String, dynamic> params,
+    RunContext context,
+  ) {
+    switch (type) {
+      case 'extract':
+        // Извлечь часть строки по regex
+        final pattern = params['pattern'] as String?;
+        if (pattern == null) {
+          throw Exception('TransformNode: extract requires "pattern" param');
+        }
+        final regex = RegExp(pattern);
+        final match = regex.firstMatch(input.toString());
+        return match?.group(params['group'] as int? ?? 0) ?? '';
+
+      case 'format':
+        // Форматировать строку с подстановкой переменных
+        final template = params['template'] as String?;
+        if (template == null) {
+          throw Exception('TransformNode: format requires "template" param');
+        }
+        return _substituteVariables(template, context);
+
+      case 'parse':
+        // Парсить JSON
+        if (params['type'] == 'json') {
+          // В реальности здесь будет json.decode
+          return input.toString();
+        }
+        return input;
+
+      case 'concat':
+        // Объединить с другими переменными
+        final parts = params['parts'] as List<dynamic>? ?? [];
+        final buffer = StringBuffer(input.toString());
+        for (final part in parts) {
+          if (part is String && part.startsWith('{{')) {
+            final varName = part.replaceAll(RegExp(r'[{}]'), '');
+            final value = context.getVar(varName);
+            if (value != null) {
+              buffer.write(value.toString());
+            }
+          } else {
+            buffer.write(part.toString());
+          }
+        }
+        return buffer.toString();
+
+      case 'split':
+        // Разделить строку
+        final separator = params['separator'] as String? ?? ',';
+        return input.toString().split(separator);
+
+      case 'trim':
+        return input.toString().trim();
+
+      case 'toLowerCase':
+        return input.toString().toLowerCase();
+
+      case 'toUpperCase':
+        return input.toString().toUpperCase();
+
+      default:
+        throw Exception('TransformNode: unknown transform type "$type"');
+    }
+  }
+
+  String _substituteVariables(String template, RunContext context) {
+    var result = template;
+    final regex = RegExp(r'\{\{(\w+)\}\}');
+    for (final match in regex.allMatches(template)) {
+      final varName = match.group(1)!;
+      final value = context.getVar(varName);
+      if (value != null) {
+        result = result.replaceAll('{{$varName}}', value.toString());
+      }
+    }
+    return result;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'input_var': inputVar,
+          'transform_type': transformType,
+          'params': params,
+          'output_var': outputVar,
+        },
+      };
+
+  factory TransformNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return TransformNode(
+      id: json['id'] as String,
+      inputVar: config['input_var'] as String? ?? '',
+      transformType: config['transform_type'] as String? ?? 'format',
+      params: config['params'] as Map<String, dynamic>? ?? {},
+      outputVar: config['output_var'] as String? ?? 'transform_result',
+    );
+  }
+
+  @override
+  IInstructionNode copyWith({
+    String? id,
+    String? inputVar,
+    String? transformType,
+    Map<String, dynamic>? params,
+    String? outputVar,
+  }) {
+    return TransformNode(
+      id: id ?? this.id,
+      inputVar: inputVar ?? this.inputVar,
+      transformType: transformType ?? this.transformType,
+      params: params ?? this.params,
+      outputVar: outputVar ?? this.outputVar,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/nodes.dart` (строк:       37, размер:     1466 байт)
+
+```dart
+// Экспорт всех узлов графов
+
+// Базовые интерфейсы
+export 'nodes/base/$node.dart';
+export 'nodes/base/i_workflow_node.dart';
+export 'nodes/base/i_instruction_node.dart';
+export 'nodes/base/i_prompt_node.dart';
+export 'nodes/base/automatic_node.dart';
+export 'nodes/base/interactive_node.dart';
+export 'nodes/base/composite_node.dart';
+
+// WorkflowGraph узлы - Automatic
+export 'nodes/workflow/automatic/llm_action_node.dart';
+export 'nodes/workflow/automatic/file_read_node.dart';
+export 'nodes/workflow/automatic/file_write_node.dart';
+export 'nodes/workflow/automatic/git_commit_node.dart';
+
+// WorkflowGraph узлы - Interactive
+export 'nodes/workflow/interactive/user_input_node.dart';
+export 'nodes/workflow/interactive/manual_review_node.dart';
+export 'nodes/workflow/interactive/file_upload_node.dart';
+export 'nodes/workflow/interactive/co_creation_chat_node.dart';
+
+// WorkflowGraph узлы - Composite
+export 'nodes/workflow/composite/sub_graph_node.dart';
+export 'nodes/workflow/composite/run_instruction_node.dart';
+
+// InstructionGraph узлы
+export 'nodes/instruction/tool_call_node.dart';
+export 'nodes/instruction/llm_query_node.dart';
+export 'nodes/instruction/condition_node.dart';
+export 'nodes/instruction/transform_node.dart';
+
+// PromptGraph узлы
+export 'nodes/prompt/text_block_node.dart';
+export 'nodes/prompt/variable_insert_node.dart';
+export 'nodes/prompt/conditional_block_node.dart';
+```
+
+### Файл: `./lib/graph/nodes/prompt/conditional_block_node.dart` (строк:      137, размер:     4177 байт)
+
+```dart
+// Conditional Block Node - условный блок текста
+
+import 'package:aq_schema/graph/nodes/base/i_prompt_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+
+/// Узел для условного блока текста
+///
+/// Возвращает текст только если условие выполнено
+class ConditionalBlockNode implements IPromptNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'conditionalBlock';
+
+  /// Переменная для проверки
+  final String checkVar;
+
+  /// Оператор сравнения (==, !=, isEmpty, isNotEmpty, exists)
+  final String operator;
+
+  /// Значение для сравнения (опционально)
+  final dynamic compareValue;
+
+  /// Текст если условие true (может содержать {{variables}})
+  final String textIfTrue;
+
+  /// Текст если условие false (опционально)
+  final String? textIfFalse;
+
+  const ConditionalBlockNode({
+    required this.id,
+    required this.checkVar,
+    required this.operator,
+    this.compareValue,
+    required this.textIfTrue,
+    this.textIfFalse,
+  });
+
+  @override
+  Future<String> execute(RunContext context) async {
+    // Получить значение переменной
+    final value = context.getVar(checkVar);
+
+    // Вычислить условие
+    final condition = _evaluateCondition(value, operator, compareValue);
+
+    // Выбрать текст
+    final text = condition ? textIfTrue : (textIfFalse ?? '');
+
+    // Подставить переменные
+    final result = _substituteVariables(text, context);
+
+    context.log(
+      'Conditional block: $checkVar $operator $compareValue = $condition',
+      branch: context.currentBranch,
+    );
+
+    return result;
+  }
+
+  bool _evaluateCondition(dynamic value, String op, dynamic compareValue) {
+    switch (op) {
+      case '==':
+        return value == compareValue;
+      case '!=':
+        return value != compareValue;
+      case 'isEmpty':
+        return value == null || value.toString().isEmpty;
+      case 'isNotEmpty':
+        return value != null && value.toString().isNotEmpty;
+      case 'exists':
+        return value != null;
+      case 'notExists':
+        return value == null;
+      default:
+        throw Exception('ConditionalBlockNode: unknown operator "$op"');
+    }
+  }
+
+  String _substituteVariables(String template, RunContext context) {
+    var result = template;
+    final regex = RegExp(r'\{\{(\w+)\}\}');
+    for (final match in regex.allMatches(template)) {
+      final varName = match.group(1)!;
+      final value = context.getVar(varName);
+      if (value != null) {
+        result = result.replaceAll('{{$varName}}', value.toString());
+      }
+    }
+    return result;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'check_var': checkVar,
+          'operator': operator,
+          if (compareValue != null) 'compare_value': compareValue,
+          'text_if_true': textIfTrue,
+          if (textIfFalse != null) 'text_if_false': textIfFalse,
+        },
+      };
+
+  factory ConditionalBlockNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return ConditionalBlockNode(
+      id: json['id'] as String,
+      checkVar: config['check_var'] as String? ?? '',
+      operator: config['operator'] as String? ?? 'exists',
+      compareValue: config['compare_value'],
+      textIfTrue: config['text_if_true'] as String? ?? '',
+      textIfFalse: config['text_if_false'] as String?,
+    );
+  }
+
+  @override
+  IPromptNode copyWith({
+    String? id,
+    String? checkVar,
+    String? operator,
+    dynamic compareValue,
+    String? textIfTrue,
+    String? textIfFalse,
+  }) {
+    return ConditionalBlockNode(
+      id: id ?? this.id,
+      checkVar: checkVar ?? this.checkVar,
+      operator: operator ?? this.operator,
+      compareValue: compareValue ?? this.compareValue,
+      textIfTrue: textIfTrue ?? this.textIfTrue,
+      textIfFalse: textIfFalse ?? this.textIfFalse,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/prompt/text_block_node.dart` (строк:       77, размер:     1962 байт)
+
+```dart
+// Text Block Node - статический текстовый блок
+
+import 'package:aq_schema/graph/nodes/base/i_prompt_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+
+/// Узел для статического текстового блока
+///
+/// Возвращает текст с подстановкой переменных
+class TextBlockNode implements IPromptNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'textBlock';
+
+  /// Текст блока (может содержать {{variables}})
+  final String text;
+
+  const TextBlockNode({
+    required this.id,
+    required this.text,
+  });
+
+  @override
+  Future<String> execute(RunContext context) async {
+    // Подставить переменные
+    final result = _substituteVariables(text, context);
+
+    context.log(
+      'Text block compiled (${result.length} chars)',
+      branch: context.currentBranch,
+    );
+
+    return result;
+  }
+
+  String _substituteVariables(String template, RunContext context) {
+    var result = template;
+    final regex = RegExp(r'\{\{(\w+)\}\}');
+    for (final match in regex.allMatches(template)) {
+      final varName = match.group(1)!;
+      final value = context.getVar(varName);
+      if (value != null) {
+        result = result.replaceAll('{{$varName}}', value.toString());
+      }
+    }
+    return result;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'text': text,
+        },
+      };
+
+  factory TextBlockNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return TextBlockNode(
+      id: json['id'] as String,
+      text: config['text'] as String? ?? '',
+    );
+  }
+
+  @override
+  IPromptNode copyWith({
+    String? id,
+    String? text,
+  }) {
+    return TextBlockNode(
+      id: id ?? this.id,
+      text: text ?? this.text,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/prompt/variable_insert_node.dart` (строк:      108, размер:     3098 байт)
+
+```dart
+// Variable Insert Node - вставка переменной
+
+import 'package:aq_schema/graph/nodes/base/i_prompt_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+
+/// Узел для вставки переменной в промпт
+///
+/// Получает значение переменной из контекста и возвращает как строку
+class VariableInsertNode implements IPromptNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'variableInsert';
+
+  /// Имя переменной для вставки
+  final String varName;
+
+  /// Префикс перед значением (опционально)
+  final String? prefix;
+
+  /// Суффикс после значения (опционально)
+  final String? suffix;
+
+  /// Значение по умолчанию если переменная не найдена
+  final String? defaultValue;
+
+  const VariableInsertNode({
+    required this.id,
+    required this.varName,
+    this.prefix,
+    this.suffix,
+    this.defaultValue,
+  });
+
+  @override
+  Future<String> execute(RunContext context) async {
+    // Получить значение переменной
+    final value = context.getVar(varName);
+    final valueStr = value?.toString() ?? defaultValue ?? '';
+
+    if (valueStr.isEmpty && defaultValue == null) {
+      context.log(
+        'Warning: variable $varName not found and no default value',
+        branch: context.currentBranch,
+      );
+    }
+
+    // Собрать результат с prefix/suffix
+    final buffer = StringBuffer();
+    if (prefix != null && valueStr.isNotEmpty) {
+      buffer.write(prefix);
+    }
+    buffer.write(valueStr);
+    if (suffix != null && valueStr.isNotEmpty) {
+      buffer.write(suffix);
+    }
+
+    final result = buffer.toString();
+
+    context.log(
+      'Variable "$varName" inserted (${result.length} chars)',
+      branch: context.currentBranch,
+    );
+
+    return result;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'var_name': varName,
+          if (prefix != null) 'prefix': prefix,
+          if (suffix != null) 'suffix': suffix,
+          if (defaultValue != null) 'default_value': defaultValue,
+        },
+      };
+
+  factory VariableInsertNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return VariableInsertNode(
+      id: json['id'] as String,
+      varName: config['var_name'] as String? ?? '',
+      prefix: config['prefix'] as String?,
+      suffix: config['suffix'] as String?,
+      defaultValue: config['default_value'] as String?,
+    );
+  }
+
+  @override
+  IPromptNode copyWith({
+    String? id,
+    String? varName,
+    String? prefix,
+    String? suffix,
+    String? defaultValue,
+  }) {
+    return VariableInsertNode(
+      id: id ?? this.id,
+      varName: varName ?? this.varName,
+      prefix: prefix ?? this.prefix,
+      suffix: suffix ?? this.suffix,
+      defaultValue: defaultValue ?? this.defaultValue,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/workflow/automatic/file_read_node.dart` (строк:      174, размер:     5721 байт)
+
+```dart
+// File Read Node - чтение файла через Tool
+
+import 'package:aq_schema/graph/nodes/base/automatic_node.dart';
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для чтения файла
+///
+/// Читает файл через Tool 'fs_read_file'
+class FileReadNode extends AutomaticNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'fileRead';
+
+  /// Путь к файлу (может содержать {{variables}})
+  final String filePath;
+
+  /// Переменная для сохранения содержимого
+  final String outputVar;
+
+  FileReadNode({
+    required this.id,
+    required this.filePath,
+    required this.outputVar,
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    // Подставить переменные в путь
+    final resolvedPath = substituteVariables(filePath, context);
+
+    if (resolvedPath.trim().isEmpty) {
+      throw Exception('FileReadNode: file path is empty');
+    }
+
+    // ИСПРАВЛЕНИЕ: Валидация пути для защиты от injection и path traversal
+    _validateFilePath(resolvedPath, context);
+
+    // Прочитать файл через Tool
+    final content = await executeAction(
+      tools,
+      'fs_read_file',
+      {'file_path': resolvedPath},
+      context,
+    );
+
+    // Сохранить результат
+    context.setVar(outputVar, content);
+    context.setVar('current_file_path', resolvedPath);
+
+    context.log(
+      'File read: $resolvedPath (${content.toString().length} chars)',
+      branch: context.currentBranch,
+    );
+
+    return content;
+  }
+
+  /// ИСПРАВЛЕНИЕ: Валидация пути файла
+  /// Защита от: path traversal, command injection, доступа к системным файлам
+  void _validateFilePath(String path, RunContext context) {
+    // 1. Проверка на command injection
+    final dangerousChars = [';', '|', '&', '`', '\$', '\n', '\r'];
+    for (final char in dangerousChars) {
+      if (path.contains(char)) {
+        throw Exception(
+            'FileReadNode: недопустимый символ "$char" в пути файла (command injection)');
+      }
+    }
+
+    // 2. Проверка на path traversal
+    if (path.contains('..')) {
+      throw Exception(
+          'FileReadNode: path traversal запрещён (содержит "..")');
+    }
+
+    // 3. Проверка на доступ к системным файлам
+    final systemPaths = [
+      '/etc/',
+      '/root/',
+      '/sys/',
+      '/proc/',
+      'C:\\Windows\\',
+      'C:\\Program Files\\',
+    ];
+
+    for (final systemPath in systemPaths) {
+      if (path.startsWith(systemPath)) {
+        throw Exception(
+            'FileReadNode: доступ к системным файлам запрещён ($systemPath)');
+      }
+    }
+
+    // 4. КРИТИЧНО: Проверка что файл внутри projectPath
+    // Это защищает от доступа к файлам чужих проектов
+    final projectPath = context.projectPath;
+
+    // Нормализуем пути для сравнения
+    final normalizedPath = _normalizePath(path);
+    final normalizedProjectPath = _normalizePath(projectPath);
+
+    // Если путь абсолютный - проверяем что он внутри projectPath
+    if (_isAbsolutePath(normalizedPath)) {
+      if (!normalizedPath.startsWith(normalizedProjectPath)) {
+        throw Exception(
+            'FileReadNode: доступ запрещён - файл вне projectPath. '
+            'Файл: $normalizedPath, Проект: $normalizedProjectPath');
+      }
+    }
+    // Если путь относительный - он будет разрешён относительно projectPath
+    // (это безопасно, т.к. мы уже проверили на "..")
+  }
+
+  /// Нормализует путь (убирает лишние слеши, приводит к lowercase на Windows)
+  String _normalizePath(String path) {
+    var normalized = path.replaceAll('\\', '/');
+    // На Windows пути case-insensitive
+    if (path.contains(':\\')) {
+      normalized = normalized.toLowerCase();
+    }
+    // Убираем trailing slash
+    if (normalized.endsWith('/')) {
+      normalized = normalized.substring(0, normalized.length - 1);
+    }
+    return normalized;
+  }
+
+  /// Проверяет является ли путь абсолютным
+  bool _isAbsolutePath(String path) {
+    // Unix: начинается с /
+    if (path.startsWith('/')) return true;
+    // Windows: содержит C:\ или подобное
+    if (path.contains(':\\')) return true;
+    return false;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'file_path': filePath,
+          'output_var': outputVar,
+        },
+      };
+
+  factory FileReadNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return FileReadNode(
+      id: json['id'] as String,
+      filePath: config['file_path'] as String? ?? '',
+      outputVar: config['output_var'] as String? ?? 'source_code',
+    );
+  }
+
+  @override
+  IWorkflowNode copyWith({
+    String? id,
+    String? filePath,
+    String? outputVar,
+  }) {
+    return FileReadNode(
+      id: id ?? this.id,
+      filePath: filePath ?? this.filePath,
+      outputVar: outputVar ?? this.outputVar,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/workflow/automatic/file_write_node.dart` (строк:      166, размер:     4886 байт)
+
+```dart
+// File Write Node - запись файла через Tool
+
+import 'package:aq_schema/graph/nodes/base/automatic_node.dart';
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для записи файла
+///
+/// Записывает файл через Tool 'fs_write_file'
+class FileWriteNode extends AutomaticNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'fileWrite';
+
+  /// Путь к файлу (может содержать {{variables}})
+  final String filePath;
+
+  /// Переменная с содержимым для записи
+  final String inputVar;
+
+  FileWriteNode({
+    required this.id,
+    required this.filePath,
+    required this.inputVar,
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    // Подставить переменные в путь
+    final resolvedPath = substituteVariables(filePath, context);
+
+    if (resolvedPath.trim().isEmpty) {
+      throw Exception('FileWriteNode: file path is empty');
+    }
+
+    // ИСПРАВЛЕНИЕ: Валидация пути для защиты от injection и path traversal
+    _validateFilePath(resolvedPath, context);
+
+    // Получить содержимое из контекста
+    final content = context.getVar(inputVar);
+    if (content == null) {
+      throw Exception('FileWriteNode: variable $inputVar not found in context');
+    }
+
+    // Записать файл через Tool
+    await executeAction(
+      tools,
+      'fs_write_file',
+      {
+        'file_path': resolvedPath,
+        'content': content,
+      },
+      context,
+    );
+
+    context.log(
+      'File written: $resolvedPath',
+      branch: context.currentBranch,
+    );
+
+    return null;
+  }
+
+  /// ИСПРАВЛЕНИЕ: Валидация пути файла (та же логика что в FileReadNode)
+  void _validateFilePath(String path, RunContext context) {
+    // 1. Проверка на command injection
+    final dangerousChars = [';', '|', '&', '`', '\$', '\n', '\r'];
+    for (final char in dangerousChars) {
+      if (path.contains(char)) {
+        throw Exception(
+            'FileWriteNode: недопустимый символ "$char" в пути файла (command injection)');
+      }
+    }
+
+    // 2. Проверка на path traversal
+    if (path.contains('..')) {
+      throw Exception(
+          'FileWriteNode: path traversal запрещён (содержит "..")');
+    }
+
+    // 3. Проверка на доступ к системным файлам
+    final systemPaths = [
+      '/etc/',
+      '/root/',
+      '/sys/',
+      '/proc/',
+      'C:\\Windows\\',
+      'C:\\Program Files\\',
+    ];
+
+    for (final systemPath in systemPaths) {
+      if (path.startsWith(systemPath)) {
+        throw Exception(
+            'FileWriteNode: доступ к системным файлам запрещён ($systemPath)');
+      }
+    }
+
+    // 4. КРИТИЧНО: Проверка что файл внутри projectPath
+    final projectPath = context.projectPath;
+    final normalizedPath = _normalizePath(path);
+    final normalizedProjectPath = _normalizePath(projectPath);
+
+    if (_isAbsolutePath(normalizedPath)) {
+      if (!normalizedPath.startsWith(normalizedProjectPath)) {
+        throw Exception(
+            'FileWriteNode: доступ запрещён - файл вне projectPath. '
+            'Файл: $normalizedPath, Проект: $normalizedProjectPath');
+      }
+    }
+  }
+
+  String _normalizePath(String path) {
+    var normalized = path.replaceAll('\\', '/');
+    if (path.contains(':\\')) {
+      normalized = normalized.toLowerCase();
+    }
+    if (normalized.endsWith('/')) {
+      normalized = normalized.substring(0, normalized.length - 1);
+    }
+    return normalized;
+  }
+
+  bool _isAbsolutePath(String path) {
+    if (path.startsWith('/')) return true;
+    if (path.contains(':\\')) return true;
+    return false;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'file_path': filePath,
+          'input_var': inputVar,
+        },
+      };
+
+  factory FileWriteNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return FileWriteNode(
+      id: json['id'] as String,
+      filePath: config['file_path'] as String? ?? '',
+      inputVar: config['input_var'] as String? ?? 'llm_result',
+    );
+  }
+
+  @override
+  IWorkflowNode copyWith({
+    String? id,
+    String? filePath,
+    String? inputVar,
+  }) {
+    return FileWriteNode(
+      id: id ?? this.id,
+      filePath: filePath ?? this.filePath,
+      inputVar: inputVar ?? this.inputVar,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/workflow/automatic/git_commit_node.dart` (строк:      167, размер:     4953 байт)
+
+```dart
+// Git Commit Node - коммит через Tool
+
+import 'package:aq_schema/graph/nodes/base/automatic_node.dart';
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для Git коммита
+///
+/// Выполняет git commit через Tool 'git_commit'
+class GitCommitNode extends AutomaticNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'gitCommit';
+
+  /// Сообщение коммита (может содержать {{variables}})
+  final String message;
+
+  /// Переменная с путями файлов для добавления (опционально)
+  final String? filesVar;
+
+  GitCommitNode({
+    required this.id,
+    required this.message,
+    this.filesVar,
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    // Подставить переменные в сообщение
+    final resolvedMessage = substituteVariables(message, context);
+
+    if (resolvedMessage.trim().isEmpty) {
+      throw Exception('GitCommitNode: commit message is empty');
+    }
+
+    // ИСПРАВЛЕНИЕ: Валидация сообщения для защиты от command injection
+    _validateCommitMessage(resolvedMessage);
+
+    // Получить список файлов если указан
+    final params = <String, dynamic>{
+      'message': resolvedMessage,
+    };
+
+    if (filesVar != null) {
+      final files = context.getVar(filesVar!);
+      if (files != null) {
+        // ИСПРАВЛЕНИЕ: Валидация путей файлов
+        if (files is List) {
+          for (final file in files) {
+            if (file is String) {
+              _validateFilePath(file, context);
+            }
+          }
+        }
+        params['files'] = files;
+      }
+    }
+
+    // Выполнить коммит через Tool
+    final result = await executeAction(
+      tools,
+      'git_commit',
+      params,
+      context,
+    );
+
+    context.log(
+      'Git commit: $resolvedMessage',
+      branch: context.currentBranch,
+    );
+
+    return result;
+  }
+
+  /// ИСПРАВЛЕНИЕ: Валидация commit message для защиты от command injection
+  void _validateCommitMessage(String message) {
+    // Проверка на опасные символы для command injection
+    final dangerousChars = [';', '|', '&', '`', '\$', '\n', '\r'];
+    for (final char in dangerousChars) {
+      if (message.contains(char)) {
+        throw Exception(
+            'GitCommitNode: недопустимый символ "$char" в commit message (command injection)');
+      }
+    }
+
+    // Проверка на опасные команды в сообщении
+    final dangerousPatterns = [
+      'rm -rf',
+      'dd if=',
+      ':(){ :|:& };:', // fork bomb
+      'curl',
+      'wget',
+      'nc ',
+      'netcat',
+    ];
+
+    final lowerMessage = message.toLowerCase();
+    for (final pattern in dangerousPatterns) {
+      if (lowerMessage.contains(pattern.toLowerCase())) {
+        throw Exception(
+            'GitCommitNode: опасная команда "$pattern" в commit message');
+      }
+    }
+  }
+
+  /// Валидация путей файлов
+  void _validateFilePath(String path, RunContext context) {
+    // Проверка на command injection
+    final dangerousChars = [';', '|', '&', '`', '\$'];
+    for (final char in dangerousChars) {
+      if (path.contains(char)) {
+        throw Exception(
+            'GitCommitNode: недопустимый символ "$char" в пути файла');
+      }
+    }
+
+    // Проверка на path traversal
+    if (path.contains('..')) {
+      throw Exception('GitCommitNode: path traversal запрещён');
+    }
+
+    // Проверка что файл внутри projectPath
+    final projectPath = context.projectPath;
+    if (path.startsWith('/') && !path.startsWith(projectPath)) {
+      throw Exception(
+          'GitCommitNode: файл вне projectPath ($path не в $projectPath)');
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'message': message,
+          if (filesVar != null) 'files_var': filesVar,
+        },
+      };
+
+  factory GitCommitNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return GitCommitNode(
+      id: json['id'] as String,
+      message: config['message'] as String? ?? '',
+      filesVar: config['files_var'] as String?,
+    );
+  }
+
+  @override
+  IWorkflowNode copyWith({
+    String? id,
+    String? message,
+    String? filesVar,
+  }) {
+    return GitCommitNode(
+      id: id ?? this.id,
+      message: message ?? this.message,
+      filesVar: filesVar ?? this.filesVar,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/workflow/automatic/llm_action_node.dart` (строк:      107, размер:     3234 байт)
+
+```dart
+// LLM Action Node - вызов LLM через Tool
+
+import 'package:aq_schema/graph/nodes/base/automatic_node.dart';
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для вызова LLM
+///
+/// Загружает PromptGraph, компилирует промпт, вызывает LLM через Tool
+class LlmActionNode extends AutomaticNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'llmAction';
+
+  /// ID PromptGraph для компиляции промпта
+  final String? promptBlueprintId;
+
+  /// Переменная для сохранения результата
+  final String outputVar;
+
+  /// Название модели (опционально)
+  final String? modelName;
+
+  LlmActionNode({
+    required this.id,
+    this.promptBlueprintId,
+    required this.outputVar,
+    this.modelName,
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    if (promptBlueprintId == null || promptBlueprintId!.isEmpty) {
+      throw Exception('LlmActionNode: promptBlueprintId is required');
+    }
+
+    // Промпт будет скомпилирован через PromptRunner в движке
+    // Здесь мы просто вызываем Tool с уже скомпилированным промптом
+    // который должен быть в контексте
+    final compiledPrompt = context.getVar('_compiled_prompt_$id');
+    if (compiledPrompt == null) {
+      throw Exception('LlmActionNode: compiled prompt not found in context');
+    }
+
+    // Вызвать LLM через Tool
+    final params = <String, dynamic>{
+      'prompt': compiledPrompt,
+    };
+    if (modelName != null) {
+      params['model_name'] = modelName;
+    }
+
+    final result = await executeAction(tools, 'llm_ask', params, context);
+
+    // Сохранить результат
+    context.setVar(outputVar, result);
+
+    context.log(
+      'LLM generated ${result.toString().length} chars',
+      branch: context.currentBranch,
+    );
+
+    return result;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'prompt_blueprint_id': promptBlueprintId,
+          'output_var': outputVar,
+          if (modelName != null) 'model_name': modelName,
+        },
+      };
+
+  factory LlmActionNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return LlmActionNode(
+      id: json['id'] as String,
+      promptBlueprintId: config['prompt_blueprint_id'] as String?,
+      outputVar: config['output_var'] as String? ?? 'llm_result',
+      modelName: config['model_name'] as String?,
+    );
+  }
+
+  @override
+  IWorkflowNode copyWith({
+    String? id,
+    String? promptBlueprintId,
+    String? outputVar,
+    String? modelName,
+  }) {
+    return LlmActionNode(
+      id: id ?? this.id,
+      promptBlueprintId: promptBlueprintId ?? this.promptBlueprintId,
+      outputVar: outputVar ?? this.outputVar,
+      modelName: modelName ?? this.modelName,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/workflow/composite/run_instruction_node.dart` (строк:      116, размер:     3773 байт)
+
+```dart
+// Run Instruction Node - выполнение InstructionGraph
+
+import 'package:aq_schema/graph/nodes/base/composite_node.dart';
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для выполнения InstructionGraph
+///
+/// Загружает InstructionGraph и выполняет его как функцию
+/// Инструкция работает в изолированном контексте без suspend/resume
+class RunInstructionNode extends CompositeNode {
+  static int _executionCounter = 0;
+
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'runInstruction';
+
+  @override
+  final String subGraphId;
+
+  @override
+  final Map<String, String> inputMapping;
+
+  @override
+  final Map<String, String> outputMapping;
+
+  RunInstructionNode({
+    required this.id,
+    required this.subGraphId,
+    this.inputMapping = const {},
+    this.outputMapping = const {},
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    if (subGraphId.isEmpty) {
+      throw Exception('RunInstructionNode: subGraphId (instructionId) is required');
+    }
+
+    // ИСПРАВЛЕНО: Создать изолированный контекст для инструкции
+    // Используем правильные параметры RunContext
+    // Добавлен счётчик для уникальности runId
+    final executionId = _executionCounter++;
+    final instructionContext = RunContext(
+      runId: '${context.runId}_instr_${id}_$executionId',
+      projectId: context.projectId,
+      projectPath: context.projectPath,
+      log: context.log,
+      currentBranch: '${context.currentBranch}_instr',
+      sandbox: context.sandbox,
+    );
+
+    // Применить input mapping
+    applyInputMapping(context, instructionContext);
+
+    context.log(
+      'Starting instruction: $subGraphId',
+      branch: context.currentBranch,
+    );
+
+    // Выполнение инструкции будет делать InstructionRunner
+    // Инструкция выполняется полностью без пауз
+    // Результат выполнения будет в instructionContext
+
+    // После выполнения применить output mapping
+    // (это будет делать Runner после завершения инструкции)
+
+    return instructionContext;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'instruction_id': subGraphId,
+          'input_mapping': inputMapping,
+          'output_mapping': outputMapping,
+        },
+      };
+
+  factory RunInstructionNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return RunInstructionNode(
+      id: json['id'] as String,
+      subGraphId: config['instruction_id'] as String? ?? '',
+      inputMapping: (config['input_mapping'] as Map<String, dynamic>?)
+              ?.map((k, v) => MapEntry(k, v.toString())) ??
+          {},
+      outputMapping: (config['output_mapping'] as Map<String, dynamic>?)
+              ?.map((k, v) => MapEntry(k, v.toString())) ??
+          {},
+    );
+  }
+
+  @override
+  IWorkflowNode copyWith({
+    String? id,
+    String? subGraphId,
+    Map<String, String>? inputMapping,
+    Map<String, String>? outputMapping,
+  }) {
+    return RunInstructionNode(
+      id: id ?? this.id,
+      subGraphId: subGraphId ?? this.subGraphId,
+      inputMapping: inputMapping ?? this.inputMapping,
+      outputMapping: outputMapping ?? this.outputMapping,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/workflow/composite/sub_graph_node.dart` (строк:      115, размер:     3601 байт)
+
+```dart
+// SubGraph Node - выполнение вложенного WorkflowGraph
+
+import 'package:aq_schema/graph/nodes/base/composite_node.dart';
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для выполнения вложенного WorkflowGraph
+///
+/// Загружает другой WorkflowGraph и выполняет его как подзадачу
+class SubGraphNode extends CompositeNode {
+  static int _executionCounter = 0;
+
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'subGraph';
+
+  @override
+  final String subGraphId;
+
+  @override
+  final Map<String, String> inputMapping;
+
+  @override
+  final Map<String, String> outputMapping;
+
+  SubGraphNode({
+    required this.id,
+    required this.subGraphId,
+    this.inputMapping = const {},
+    this.outputMapping = const {},
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    if (subGraphId.isEmpty) {
+      throw Exception('SubGraphNode: subGraphId is required');
+    }
+
+    // ИСПРАВЛЕНО: Создать изолированный контекст для подграфа
+    // Используем правильные параметры RunContext
+    // Добавлен счётчик для уникальности runId
+    final executionId = _executionCounter++;
+    final subContext = RunContext(
+      runId: '${context.runId}_sub_${id}_$executionId',
+      projectId: context.projectId,
+      projectPath: context.projectPath,
+      log: context.log,
+      currentBranch: '${context.currentBranch}_sub',
+      sandbox: context.sandbox,
+    );
+
+    // Применить input mapping
+    applyInputMapping(context, subContext);
+
+    context.log(
+      'Starting subgraph: $subGraphId',
+      branch: context.currentBranch,
+    );
+
+    // Выполнение подграфа будет делать WorkflowRunner
+    // Здесь мы только подготавливаем контекст и маппинг
+    // Результат выполнения будет в subContext
+
+    // После выполнения применить output mapping
+    // (это будет делать Runner после завершения подграфа)
+
+    return subContext;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'sub_graph_id': subGraphId,
+          'input_mapping': inputMapping,
+          'output_mapping': outputMapping,
+        },
+      };
+
+  factory SubGraphNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return SubGraphNode(
+      id: json['id'] as String,
+      subGraphId: config['sub_graph_id'] as String? ?? '',
+      inputMapping: (config['input_mapping'] as Map<String, dynamic>?)
+              ?.map((k, v) => MapEntry(k, v.toString())) ??
+          {},
+      outputMapping: (config['output_mapping'] as Map<String, dynamic>?)
+              ?.map((k, v) => MapEntry(k, v.toString())) ??
+          {},
+    );
+  }
+
+  @override
+  IWorkflowNode copyWith({
+    String? id,
+    String? subGraphId,
+    Map<String, String>? inputMapping,
+    Map<String, String>? outputMapping,
+  }) {
+    return SubGraphNode(
+      id: id ?? this.id,
+      subGraphId: subGraphId ?? this.subGraphId,
+      inputMapping: inputMapping ?? this.inputMapping,
+      outputMapping: outputMapping ?? this.outputMapping,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/workflow/interactive/co_creation_chat_node.dart` (строк:      121, размер:     3924 байт)
+
+```dart
+// Co-Creation Chat Node - интерактивный чат с пользователем
+
+import 'package:aq_schema/graph/nodes/base/interactive_node.dart';
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для интерактивного чата с пользователем
+///
+/// Позволяет вести диалог с пользователем в процессе выполнения
+class CoCreationChatNode extends InteractiveNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'coCreationChat';
+
+  /// Заголовок чата
+  final String title;
+
+  /// Начальное сообщение от системы
+  final String initialMessage;
+
+  /// Переменная для сохранения истории чата
+  final String chatHistoryVar;
+
+  /// Переменная для сохранения последнего ответа пользователя
+  final String outputVar;
+
+  CoCreationChatNode({
+    required this.id,
+    required this.title,
+    required this.initialMessage,
+    required this.chatHistoryVar,
+    required this.outputVar,
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    // Проверить, есть ли уже ответ пользователя (resume после suspend)
+    if (hasUserResponse(context, outputVar)) {
+      final userMessage = context.getVar(outputVar);
+
+      // Добавить в историю чата
+      final existingHistory = context.getVar(chatHistoryVar) as List<dynamic>? ?? [];
+      final history = List<Map<String, dynamic>>.from(
+        existingHistory.map((e) => Map<String, dynamic>.from(e as Map)),
+      );
+      history.add({'role': 'user', 'content': userMessage});
+      context.setVar(chatHistoryVar, history);
+
+      context.log(
+        'Chat message received from user',
+        branch: context.currentBranch,
+      );
+      return userMessage;
+    }
+
+    // Инициализировать историю чата если её нет
+    if (context.getVar(chatHistoryVar) == null) {
+      context.setVar(chatHistoryVar, [
+        {'role': 'system', 'content': initialMessage}
+      ]);
+    }
+
+    // Нет ответа - приостановить выполнение
+    throwSuspendException(id, 'Waiting for user message in chat: $title');
+  }
+
+  @override
+  Map<String, dynamic> getUiConfig() => {
+        'title': title,
+        'message': initialMessage,
+        'type': 'chat',
+        'chat_history_var': chatHistoryVar,
+        'output_var': outputVar,
+      };
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'title': title,
+          'initial_message': initialMessage,
+          'chat_history_var': chatHistoryVar,
+          'output_var': outputVar,
+        },
+      };
+
+  factory CoCreationChatNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return CoCreationChatNode(
+      id: json['id'] as String,
+      title: config['title'] as String? ?? '',
+      initialMessage: config['initial_message'] as String? ?? '',
+      chatHistoryVar: config['chat_history_var'] as String? ?? 'chat_history',
+      outputVar: config['output_var'] as String? ?? 'user_message',
+    );
+  }
+
+  @override
+  IWorkflowNode copyWith({
+    String? id,
+    String? title,
+    String? initialMessage,
+    String? chatHistoryVar,
+    String? outputVar,
+  }) {
+    return CoCreationChatNode(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      initialMessage: initialMessage ?? this.initialMessage,
+      chatHistoryVar: chatHistoryVar ?? this.chatHistoryVar,
+      outputVar: outputVar ?? this.outputVar,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/workflow/interactive/file_upload_node.dart` (строк:      108, размер:     3247 байт)
+
+```dart
+// File Upload Node - загрузка файла пользователем
+
+import 'package:aq_schema/graph/nodes/base/interactive_node.dart';
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для загрузки файла пользователем
+///
+/// Приостанавливает выполнение и ждет загрузки файла через UI
+class FileUploadNode extends InteractiveNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'fileUpload';
+
+  /// Заголовок формы загрузки
+  final String title;
+
+  /// Описание какой файл нужен
+  final String message;
+
+  /// Переменная для сохранения пути к файлу
+  final String outputVar;
+
+  /// Допустимые расширения файлов (например: ['.txt', '.md'])
+  final List<String> allowedExtensions;
+
+  FileUploadNode({
+    required this.id,
+    required this.title,
+    required this.message,
+    required this.outputVar,
+    this.allowedExtensions = const [],
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    // Проверить, есть ли уже загруженный файл (resume после suspend)
+    if (hasUserResponse(context, outputVar)) {
+      final filePath = context.getVar(outputVar);
+      context.log(
+        'File uploaded: $filePath',
+        branch: context.currentBranch,
+      );
+      return filePath;
+    }
+
+    // Нет файла - приостановить выполнение
+    throwSuspendException(id, 'Waiting for file upload: $title');
+  }
+
+  @override
+  Map<String, dynamic> getUiConfig() => {
+        'title': title,
+        'message': message,
+        'type': 'file_upload',
+        'output_var': outputVar,
+        'allowed_extensions': allowedExtensions,
+      };
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'title': title,
+          'message': message,
+          'output_var': outputVar,
+          'allowed_extensions': allowedExtensions,
+        },
+      };
+
+  factory FileUploadNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return FileUploadNode(
+      id: json['id'] as String,
+      title: config['title'] as String? ?? '',
+      message: config['message'] as String? ?? '',
+      outputVar: config['output_var'] as String? ?? 'uploaded_file',
+      allowedExtensions: (config['allowed_extensions'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+    );
+  }
+
+  @override
+  IWorkflowNode copyWith({
+    String? id,
+    String? title,
+    String? message,
+    String? outputVar,
+    List<String>? allowedExtensions,
+  }) {
+    return FileUploadNode(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      message: message ?? this.message,
+      outputVar: outputVar ?? this.outputVar,
+      allowedExtensions: allowedExtensions ?? this.allowedExtensions,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/workflow/interactive/manual_review_node.dart` (строк:      111, размер:     3258 байт)
+
+```dart
+// Manual Review Node - ручная проверка и одобрение
+
+import 'package:aq_schema/graph/nodes/base/interactive_node.dart';
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для ручной проверки и одобрения
+///
+/// Показывает данные для проверки и ждет approve/reject
+class ManualReviewNode extends InteractiveNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'manualReview';
+
+  /// Заголовок формы проверки
+  final String title;
+
+  /// Описание что нужно проверить
+  final String message;
+
+  /// Переменная с данными для проверки
+  final String reviewVar;
+
+  /// Переменная для сохранения решения (approved/rejected)
+  final String outputVar;
+
+  ManualReviewNode({
+    required this.id,
+    required this.title,
+    required this.message,
+    required this.reviewVar,
+    required this.outputVar,
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    // Проверить, есть ли уже решение (resume после suspend)
+    if (hasUserResponse(context, outputVar)) {
+      final decision = context.getVar(outputVar);
+      context.log(
+        'Manual review decision: $decision',
+        branch: context.currentBranch,
+      );
+      return decision;
+    }
+
+    // Получить данные для проверки
+    final reviewData = context.getVar(reviewVar);
+    if (reviewData == null) {
+      throw Exception('ManualReviewNode: variable $reviewVar not found');
+    }
+
+    // Нет решения - приостановить выполнение
+    throwSuspendException(id, 'Waiting for manual review: $title');
+  }
+
+  @override
+  Map<String, dynamic> getUiConfig() => {
+        'title': title,
+        'message': message,
+        'type': 'approval',
+        'review_var': reviewVar,
+        'output_var': outputVar,
+      };
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'title': title,
+          'message': message,
+          'review_var': reviewVar,
+          'output_var': outputVar,
+        },
+      };
+
+  factory ManualReviewNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return ManualReviewNode(
+      id: json['id'] as String,
+      title: config['title'] as String? ?? '',
+      message: config['message'] as String? ?? '',
+      reviewVar: config['review_var'] as String? ?? 'review_data',
+      outputVar: config['output_var'] as String? ?? 'review_decision',
+    );
+  }
+
+  @override
+  IWorkflowNode copyWith({
+    String? id,
+    String? title,
+    String? message,
+    String? reviewVar,
+    String? outputVar,
+  }) {
+    return ManualReviewNode(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      message: message ?? this.message,
+      reviewVar: reviewVar ?? this.reviewVar,
+      outputVar: outputVar ?? this.outputVar,
+    );
+  }
+}
+```
+
+### Файл: `./lib/graph/nodes/workflow/interactive/user_input_node.dart` (строк:      107, размер:     3077 байт)
+
+```dart
+// User Input Node - запрос ввода от пользователя
+
+import 'package:aq_schema/graph/nodes/base/interactive_node.dart';
+import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
+import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/engine/tool_registry.dart';
+
+/// Узел для запроса ввода от пользователя
+///
+/// Приостанавливает выполнение и ждет ввода через UI
+class UserInputNode extends InteractiveNode {
+  @override
+  final String id;
+
+  @override
+  final String nodeType = 'userInput';
+
+  /// Заголовок формы ввода
+  final String title;
+
+  /// Описание что нужно ввести
+  final String message;
+
+  /// Переменная для сохранения ответа
+  final String outputVar;
+
+  /// Тип ввода (text, number, multiline)
+  final String inputType;
+
+  UserInputNode({
+    required this.id,
+    required this.title,
+    required this.message,
+    required this.outputVar,
+    this.inputType = 'text',
+  });
+
+  @override
+  Future<dynamic> execute(
+    RunContext context,
+    ToolRegistry tools,
+  ) async {
+    // Проверить, есть ли уже ответ (resume после suspend)
+    if (hasUserResponse(context, outputVar)) {
+      final value = context.getVar(outputVar);
+      final valueStr = value.toString();
+      final preview = valueStr.length > 50 ? '${valueStr.substring(0, 50)}...' : valueStr;
+      context.log(
+        'User input received: $preview',
+        branch: context.currentBranch,
+      );
+      return value;
+    }
+
+    // Нет ответа - приостановить выполнение
+    throwSuspendException(id, 'Waiting for user input: $title');
+  }
+
+  @override
+  Map<String, dynamic> getUiConfig() => {
+        'title': title,
+        'message': message,
+        'type': 'text_input',
+        'input_type': inputType,
+        'output_var': outputVar,
+      };
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': nodeType,
+        'config': {
+          'title': title,
+          'message': message,
+          'output_var': outputVar,
+          'input_type': inputType,
+        },
+      };
+
+  factory UserInputNode.fromJson(Map<String, dynamic> json) {
+    final config = json['config'] as Map<String, dynamic>? ?? {};
+    return UserInputNode(
+      id: json['id'] as String,
+      title: config['title'] as String? ?? '',
+      message: config['message'] as String? ?? '',
+      outputVar: config['output_var'] as String? ?? 'user_input',
+      inputType: config['input_type'] as String? ?? 'text',
+    );
+  }
+
+  @override
+  IWorkflowNode copyWith({
+    String? id,
+    String? title,
+    String? message,
+    String? outputVar,
+    String? inputType,
+  }) {
+    return UserInputNode(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      message: message ?? this.message,
+      outputVar: outputVar ?? this.outputVar,
+      inputType: inputType ?? this.inputType,
+    );
   }
 }
 ```
@@ -3993,14 +7616,15 @@ class GraphRunEvent {
 }
 ```
 
-### Файл: `./lib/graph/transport/messages/run_request.dart` (строк:       61, размер:     2236 байт)
+### Файл: `./lib/graph/transport/messages/run_request.dart` (строк:       62, размер:     2266 байт)
 
 ```dart
-// Запрос на запуск графа.
-// Клиент (Flutter-приложение) отправляет это движку чтобы начать выполнение.
+// Запрос на запуск графа (внутренняя модель для движка).
+// HTTP API использует упрощённый формат {projectId, workflowName, payload},
+// который сервер преобразует в этот.
 
 class GraphRunRequest {
-  /// Уникальный ID этого запуска (генерирует клиент, например uuid v4)
+  /// Уникальный ID этого запуска
   final String runId;
 
   /// ID проекта
@@ -4056,6 +7680,145 @@ class GraphRunRequest {
       resumeFromNodeId: json['resumeFromNodeId'] as String?,
     );
   }
+}
+```
+
+### Файл: `./lib/graph/transport/messages/run_state.dart` (строк:      134, размер:     4251 байт)
+
+```dart
+// Модель состояния выполнения графа для персистентности
+
+import '../../../data_layer/storable/direct_storable.dart';
+import 'run_status.dart';
+
+/// Состояние выполнения графа
+///
+/// Используется для сохранения и восстановления состояния runs
+/// между graph_engine_server и data_service
+class GraphRunState implements DirectStorable {
+  @override
+  final String id; // runId используется как id
+
+  final String runId;
+  final String blueprintId;
+  final String projectId;
+  final GraphRunStatus status;
+  final String? currentNodeId;
+  final Map<String, dynamic> variables;
+  final DateTime startedAt;
+  final DateTime? completedAt;
+  final String? error;
+
+  const GraphRunState({
+    required this.runId,
+    required this.blueprintId,
+    required this.projectId,
+    required this.status,
+    this.currentNodeId,
+    this.variables = const {},
+    required this.startedAt,
+    this.completedAt,
+    this.error,
+  }) : id = runId;
+
+  @override
+  String get collectionName => 'graph_run_states';
+
+  @override
+  Map<String, dynamic> toMap() => toJson();
+
+  @override
+  Map<String, dynamic> get indexFields => {
+        'blueprintId': blueprintId,
+        'projectId': projectId,
+        'status': status.name,
+        'startedAt': startedAt.toIso8601String(),
+      };
+
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'properties': {
+          'id': {'type': 'string'},
+          'runId': {'type': 'string'},
+          'blueprintId': {'type': 'string'},
+          'projectId': {'type': 'string'},
+          'status': {'type': 'string'},
+          'currentNodeId': {'type': 'string'},
+          'variables': {'type': 'object'},
+          'startedAt': {'type': 'string', 'format': 'date-time'},
+          'completedAt': {'type': 'string', 'format': 'date-time'},
+          'error': {'type': 'string'},
+        },
+        'required': ['id', 'runId', 'blueprintId', 'projectId', 'status', 'startedAt'],
+      };
+
+  /// Создать копию с изменениями
+  GraphRunState copyWith({
+    GraphRunStatus? status,
+    String? currentNodeId,
+    Map<String, dynamic>? variables,
+    DateTime? completedAt,
+    String? error,
+  }) {
+    return GraphRunState(
+      runId: runId,
+      blueprintId: blueprintId,
+      projectId: projectId,
+      status: status ?? this.status,
+      currentNodeId: currentNodeId ?? this.currentNodeId,
+      variables: variables ?? this.variables,
+      startedAt: startedAt,
+      completedAt: completedAt ?? this.completedAt,
+      error: error ?? this.error,
+    );
+  }
+
+  /// Сериализация в JSON
+  Map<String, dynamic> toJson() => {
+    'runId': runId,
+    'blueprintId': blueprintId,
+    'projectId': projectId,
+    'status': status.toJson(),
+    'currentNodeId': currentNodeId,
+    'variables': variables,
+    'startedAt': startedAt.toIso8601String(),
+    'completedAt': completedAt?.toIso8601String(),
+    'error': error,
+  };
+
+  /// Десериализация из JSON
+  factory GraphRunState.fromJson(Map<String, dynamic> json) {
+    return GraphRunState(
+      runId: json['runId'] as String,
+      blueprintId: json['blueprintId'] as String,
+      projectId: json['projectId'] as String,
+      status: GraphRunStatus.fromJson(json['status'] as String),
+      currentNodeId: json['currentNodeId'] as String?,
+      variables: (json['variables'] as Map<String, dynamic>?) ?? {},
+      startedAt: DateTime.parse(json['startedAt'] as String),
+      completedAt: json['completedAt'] != null
+          ? DateTime.parse(json['completedAt'] as String)
+          : null,
+      error: json['error'] as String?,
+    );
+  }
+
+  @override
+  String toString() => 'GraphRunState(runId: $runId, status: $status)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GraphRunState &&
+          runtimeType == other.runtimeType &&
+          runId == other.runId &&
+          blueprintId == other.blueprintId &&
+          projectId == other.projectId &&
+          status == other.status;
+
+  @override
+  int get hashCode => Object.hash(runId, blueprintId, projectId, status);
 }
 ```
 
@@ -4200,6 +7963,779 @@ class GraphContractValidator {
     required Map<String, dynamic> schema,
   }) async {
     return (await validate(data: data, schema: schema)).isEmpty;
+  }
+}
+```
+
+### Файл: `./lib/graph/validation/graph_validator.dart` (строк:      284, размер:     9053 байт)
+
+```dart
+// Валидатор структуры графов
+// ИСПРАВЛЕНИЕ: Добавлена валидация графа перед выполнением
+
+import '../graphs/workflow_graph.dart';
+import '../graphs/instruction_graph.dart';
+
+/// Результат валидации графа
+class GraphValidationResult {
+  final bool isValid;
+  final List<String> errors;
+  final List<String> warnings;
+
+  const GraphValidationResult({
+    required this.isValid,
+    this.errors = const [],
+    this.warnings = const [],
+  });
+
+  factory GraphValidationResult.valid() =>
+      const GraphValidationResult(isValid: true);
+
+  factory GraphValidationResult.invalid(List<String> errors,
+          [List<String> warnings = const []]) =>
+      GraphValidationResult(
+        isValid: false,
+        errors: errors,
+        warnings: warnings,
+      );
+}
+
+/// Валидатор графов
+class GraphValidator {
+  /// Валидирует WorkflowGraph
+  static GraphValidationResult validateWorkflowGraph(WorkflowGraph graph) {
+    final errors = <String>[];
+    final warnings = <String>[];
+
+    // 1. Граф должен содержать хотя бы один узел
+    if (graph.nodes.isEmpty) {
+      errors.add('Граф не содержит узлов');
+      return GraphValidationResult.invalid(errors, warnings);
+    }
+
+    // 2. Все edges должны ссылаться на существующие узлы
+    final nodeIds = graph.nodes.keys.toSet();
+    for (final edge in graph.edges.values) {
+      if (!nodeIds.contains(edge.sourceId)) {
+        errors.add('Edge ${edge.id}: sourceId "${edge.sourceId}" не существует');
+      }
+      if (!nodeIds.contains(edge.targetId)) {
+        errors.add('Edge ${edge.id}: targetId "${edge.targetId}" не существует');
+      }
+    }
+
+    if (errors.isNotEmpty) {
+      return GraphValidationResult.invalid(errors, warnings);
+    }
+
+    // 3. Граф не должен содержать циклы
+    if (_hasCycle(graph)) {
+      errors.add('Граф содержит цикл');
+    }
+
+    // 4. Граф должен иметь ровно один start node
+    final startNodes = _findStartNodes(graph);
+    if (startNodes.isEmpty) {
+      errors.add('Граф не имеет start node (узла без входящих edges)');
+    } else if (startNodes.length > 1) {
+      warnings.add(
+          'Граф имеет ${startNodes.length} start nodes: ${startNodes.join(", ")}');
+    }
+
+    // 5. Граф должен иметь хотя бы один end node
+    final endNodes = _findEndNodes(graph);
+    if (endNodes.isEmpty) {
+      warnings.add('Граф не имеет end node (узла без исходящих edges)');
+    }
+
+    if (errors.isNotEmpty) {
+      return GraphValidationResult.invalid(errors, warnings);
+    }
+
+    return GraphValidationResult(
+      isValid: true,
+      errors: [],
+      warnings: warnings,
+    );
+  }
+
+  /// Валидирует InstructionGraph
+  static GraphValidationResult validateInstructionGraph(
+      InstructionGraph graph) {
+    final errors = <String>[];
+    final warnings = <String>[];
+
+    // 1. Базовая валидация структуры
+    final baseResult = validateWorkflowGraph(WorkflowGraph(
+      id: graph.id,
+      tenantId: graph.tenantId,
+      ownerId: graph.ownerId,
+      name: graph.name,
+      nodes: graph.nodes,
+      edges: graph.edges,
+    ));
+
+    errors.addAll(baseResult.errors);
+    warnings.addAll(baseResult.warnings);
+
+    if (errors.isNotEmpty) {
+      return GraphValidationResult.invalid(errors, warnings);
+    }
+
+    // 2. Валидация contract
+    final contractResult = _validateContract(graph.contract);
+    errors.addAll(contractResult.errors);
+    warnings.addAll(contractResult.warnings);
+
+    if (errors.isNotEmpty) {
+      return GraphValidationResult.invalid(errors, warnings);
+    }
+
+    return GraphValidationResult(
+      isValid: true,
+      errors: [],
+      warnings: warnings,
+    );
+  }
+
+  /// Валидирует contract
+  static GraphValidationResult _validateContract(Map<String, dynamic> contract) {
+    final errors = <String>[];
+    final warnings = <String>[];
+
+    // Contract должен иметь inputs
+    final inputs = contract['inputs'] as Map<String, dynamic>?;
+    if (inputs == null || inputs.isEmpty) {
+      warnings.add('Contract не содержит inputs');
+    }
+
+    // Валидация типов в inputs
+    if (inputs != null) {
+      final validTypes = {'string', 'number', 'boolean', 'object', 'array'};
+      for (final entry in inputs.entries) {
+        final inputDef = entry.value as Map<String, dynamic>;
+        final type = inputDef['type'] as String?;
+
+        if (type == null) {
+          errors.add('Input "${entry.key}": отсутствует тип');
+        } else if (!validTypes.contains(type)) {
+          errors.add('Input "${entry.key}": невалидный тип "$type"');
+        }
+      }
+    }
+
+    // Contract должен иметь outputs
+    final outputs = contract['outputs'] as Map<String, dynamic>?;
+    if (outputs == null || outputs.isEmpty) {
+      warnings.add('Contract не содержит outputs');
+    }
+
+    return GraphValidationResult(
+      isValid: errors.isEmpty,
+      errors: errors,
+      warnings: warnings,
+    );
+  }
+
+  /// Валидирует параметры вызова instruction
+  static GraphValidationResult validateInstructionCall(
+    InstructionGraph graph,
+    Map<String, dynamic> providedInputs,
+  ) {
+    final errors = <String>[];
+    final warnings = <String>[];
+
+    final inputs = graph.contract['inputs'] as Map<String, dynamic>?;
+    if (inputs == null) {
+      return GraphValidationResult.valid();
+    }
+
+    // Проверка required параметров
+    for (final entry in inputs.entries) {
+      final inputDef = entry.value as Map<String, dynamic>;
+      final isRequired = inputDef['required'] == true;
+
+      if (isRequired && !providedInputs.containsKey(entry.key)) {
+        errors.add('Отсутствует обязательный параметр "${entry.key}"');
+      }
+    }
+
+    // Проверка типов параметров
+    for (final entry in providedInputs.entries) {
+      final inputDef = inputs[entry.key] as Map<String, dynamic>?;
+      if (inputDef == null) {
+        warnings.add('Неизвестный параметр "${entry.key}"');
+        continue;
+      }
+
+      final expectedType = inputDef['type'] as String;
+      final value = entry.value;
+
+      final actualType = _getValueType(value);
+      if (actualType != expectedType) {
+        errors.add(
+            'Параметр "${entry.key}": ожидается тип "$expectedType", получен "$actualType"');
+      }
+    }
+
+    return GraphValidationResult(
+      isValid: errors.isEmpty,
+      errors: errors,
+      warnings: warnings,
+    );
+  }
+
+  /// Определяет тип значения
+  static String _getValueType(dynamic value) {
+    if (value is String) return 'string';
+    if (value is num) return 'number';
+    if (value is bool) return 'boolean';
+    if (value is List) return 'array';
+    if (value is Map) return 'object';
+    return 'unknown';
+  }
+
+  /// Находит start nodes (узлы без входящих edges)
+  static List<String> _findStartNodes(WorkflowGraph graph) {
+    final nodesWithIncomingEdges =
+        graph.edges.values.map((e) => e.targetId).toSet();
+    return graph.nodes.keys
+        .where((nodeId) => !nodesWithIncomingEdges.contains(nodeId))
+        .toList();
+  }
+
+  /// Находит end nodes (узлы без исходящих edges)
+  static List<String> _findEndNodes(WorkflowGraph graph) {
+    final nodesWithOutgoingEdges =
+        graph.edges.values.map((e) => e.sourceId).toSet();
+    return graph.nodes.keys
+        .where((nodeId) => !nodesWithOutgoingEdges.contains(nodeId))
+        .toList();
+  }
+
+  /// Проверяет наличие циклов в графе (DFS)
+  static bool _hasCycle(WorkflowGraph graph) {
+    final visited = <String>{};
+    final recursionStack = <String>{};
+
+    bool dfs(String nodeId) {
+      if (recursionStack.contains(nodeId)) {
+        return true; // Цикл обнаружен
+      }
+      if (visited.contains(nodeId)) {
+        return false; // Уже проверяли
+      }
+
+      visited.add(nodeId);
+      recursionStack.add(nodeId);
+
+      // Проверяем все исходящие edges
+      final outgoingEdges =
+          graph.edges.values.where((e) => e.sourceId == nodeId);
+      for (final edge in outgoingEdges) {
+        if (dfs(edge.targetId)) {
+          return true;
+        }
+      }
+
+      recursionStack.remove(nodeId);
+      return false;
+    }
+
+    // Проверяем все узлы (граф может быть несвязным)
+    for (final nodeId in graph.nodes.keys) {
+      if (!visited.contains(nodeId)) {
+        if (dfs(nodeId)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+}
+```
+
+### Файл: `./lib/http/error_codes.dart` (строк:       44, размер:     1879 байт)
+
+```dart
+// Стандартные коды ошибок для всех сервисов AQ
+
+/// Стандартные коды ошибок
+///
+/// Используются во всех сервисах для единообразной обработки ошибок
+class ErrorCodes {
+  // Authentication & Authorization
+  static const String authRequired = 'AUTH_REQUIRED';
+  static const String authFailed = 'AUTH_FAILED';
+  static const String insufficientPermissions = 'INSUFFICIENT_PERMISSIONS';
+  static const String tokenExpired = 'TOKEN_EXPIRED';
+  static const String tokenInvalid = 'TOKEN_INVALID';
+
+  // Validation
+  static const String validationError = 'VALIDATION_ERROR';
+  static const String requiredFieldMissing = 'REQUIRED_FIELD_MISSING';
+  static const String invalidType = 'INVALID_TYPE';
+  static const String invalidFormat = 'INVALID_FORMAT';
+  static const String invalidContentType = 'INVALID_CONTENT_TYPE';
+  static const String invalidJson = 'INVALID_JSON';
+  static const String missingBody = 'MISSING_BODY';
+
+  // Resources
+  static const String notFound = 'NOT_FOUND';
+  static const String alreadyExists = 'ALREADY_EXISTS';
+  static const String conflict = 'CONFLICT';
+
+  // Rate Limiting
+  static const String rateLimitExceeded = 'RATE_LIMIT_EXCEEDED';
+  static const String tooManyRequests = 'TOO_MANY_REQUESTS';
+
+  // Server Errors
+  static const String internalError = 'INTERNAL_ERROR';
+  static const String serviceUnavailable = 'SERVICE_UNAVAILABLE';
+  static const String timeout = 'TIMEOUT';
+  static const String badGateway = 'BAD_GATEWAY';
+
+  // Business Logic
+  static const String operationFailed = 'OPERATION_FAILED';
+  static const String invalidState = 'INVALID_STATE';
+  static const String preconditionFailed = 'PRECONDITION_FAILED';
+
+  ErrorCodes._(); // Приватный конструктор - только константы
+}
+```
+
+### Файл: `./lib/http/response_builder.dart` (строк:      204, размер:     4894 байт)
+
+```dart
+// Стандартный builder для HTTP ответов
+// Используется во всех сервисах для единообразного формата
+
+import 'dart:convert';
+import 'package:shelf/shelf.dart';
+import 'responses/error_response.dart';
+import 'error_codes.dart';
+
+/// Утилита для построения стандартных HTTP ответов
+///
+/// Используется во всех сервисах AQ для единообразия:
+/// - graph_engine_server
+/// - aq_auth_service
+/// - aq_studio_data_service
+/// - aq_graph_worker
+class ResponseBuilder {
+  /// JSON ответ с кодом 200
+  static Response ok(Map<String, dynamic> data, {Map<String, String>? headers}) {
+    return Response.ok(
+      jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        ...?headers,
+      },
+    );
+  }
+
+  /// JSON ответ с кодом 201 (Created)
+  static Response created(Map<String, dynamic> data, {Map<String, String>? headers}) {
+    return Response(
+      201,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        ...?headers,
+      },
+    );
+  }
+
+  /// JSON ответ с кодом 204 (No Content)
+  static Response noContent({Map<String, String>? headers}) {
+    return Response(
+      204,
+      headers: headers,
+    );
+  }
+
+  /// Ошибка с кодом 400 (Bad Request)
+  static Response badRequest(
+    String error, {
+    String? message,
+    String? code,
+    Map<String, dynamic>? details,
+    String? requestId,
+  }) {
+    return _errorResponse(
+      400,
+      error,
+      message: message,
+      code: code ?? ErrorCodes.validationError,
+      details: details,
+      requestId: requestId,
+    );
+  }
+
+  /// Ошибка с кодом 401 (Unauthorized)
+  static Response unauthorized(
+    String error, {
+    String? message,
+    String? requestId,
+  }) {
+    return _errorResponse(
+      401,
+      error,
+      message: message,
+      code: ErrorCodes.authRequired,
+      requestId: requestId,
+    );
+  }
+
+  /// Ошибка с кодом 403 (Forbidden)
+  static Response forbidden(
+    String error, {
+    String? message,
+    String? requestId,
+  }) {
+    return _errorResponse(
+      403,
+      error,
+      message: message,
+      code: ErrorCodes.insufficientPermissions,
+      requestId: requestId,
+    );
+  }
+
+  /// Ошибка с кодом 404 (Not Found)
+  static Response notFound(
+    String error, {
+    String? message,
+    String? requestId,
+  }) {
+    return _errorResponse(
+      404,
+      error,
+      message: message,
+      code: ErrorCodes.notFound,
+      requestId: requestId,
+    );
+  }
+
+  /// Ошибка с кодом 409 (Conflict)
+  static Response conflict(
+    String error, {
+    String? message,
+    String? requestId,
+  }) {
+    return _errorResponse(
+      409,
+      error,
+      message: message,
+      code: ErrorCodes.conflict,
+      requestId: requestId,
+    );
+  }
+
+  /// Ошибка с кодом 429 (Too Many Requests)
+  static Response tooManyRequests(
+    String error, {
+    String? message,
+    int? retryAfter,
+    String? requestId,
+  }) {
+    return _errorResponse(
+      429,
+      error,
+      message: message,
+      code: ErrorCodes.rateLimitExceeded,
+      requestId: requestId,
+      extraHeaders: retryAfter != null ? {'Retry-After': '$retryAfter'} : null,
+    );
+  }
+
+  /// Ошибка с кодом 500 (Internal Server Error)
+  static Response internalError(
+    String error, {
+    String? message,
+    String? requestId,
+  }) {
+    return _errorResponse(
+      500,
+      error,
+      message: message,
+      code: ErrorCodes.internalError,
+      requestId: requestId,
+    );
+  }
+
+  /// Ошибка с кодом 503 (Service Unavailable)
+  static Response serviceUnavailable(
+    String error, {
+    String? message,
+    String? requestId,
+  }) {
+    return _errorResponse(
+      503,
+      error,
+      message: message,
+      code: ErrorCodes.serviceUnavailable,
+      requestId: requestId,
+    );
+  }
+
+  /// Базовый метод для создания error response
+  static Response _errorResponse(
+    int statusCode,
+    String error, {
+    String? message,
+    String? code,
+    Map<String, dynamic>? details,
+    String? requestId,
+    Map<String, String>? extraHeaders,
+  }) {
+    final errorResponse = ErrorResponse(
+      error: error,
+      message: message,
+      code: code,
+      details: details,
+      requestId: requestId,
+      timestamp: DateTime.now(),
+    );
+
+    return Response(
+      statusCode,
+      body: jsonEncode(errorResponse.toJson()),
+      headers: {
+        'Content-Type': 'application/json',
+        if (requestId != null) 'X-Request-ID': requestId,
+        ...?extraHeaders,
+      },
+    );
+  }
+
+  ResponseBuilder._(); // Приватный конструктор - только статические методы
+}
+```
+
+### Файл: `./lib/http/responses/error_response.dart` (строк:       64, размер:     1994 байт)
+
+```dart
+// Стандартный формат ответа с ошибкой для всех сервисов
+// Используется во всех HTTP API для единообразия
+
+/// Structured error response
+///
+/// Единый формат ошибок для всех сервисов AQ:
+/// - graph_engine_server
+/// - aq_auth_service
+/// - aq_studio_data_service
+/// - aq_graph_worker
+/// - и т.д.
+class ErrorResponse {
+  /// Краткое описание ошибки
+  final String error;
+
+  /// Детальное сообщение (опционально)
+  final String? message;
+
+  /// Код ошибки для программной обработки
+  final String? code;
+
+  /// Дополнительные детали (например, validation errors)
+  final Map<String, dynamic>? details;
+
+  /// ID запроса для трейсинга
+  final String? requestId;
+
+  /// Временная метка
+  final DateTime timestamp;
+
+  const ErrorResponse({
+    required this.error,
+    this.message,
+    this.code,
+    this.details,
+    this.requestId,
+    required this.timestamp,
+  });
+
+  /// Сериализация в JSON
+  Map<String, dynamic> toJson() => {
+        'error': error,
+        if (message != null) 'message': message,
+        if (code != null) 'code': code,
+        if (details != null) 'details': details,
+        if (requestId != null) 'requestId': requestId,
+        'timestamp': timestamp.toIso8601String(),
+      };
+
+  /// Десериализация из JSON
+  factory ErrorResponse.fromJson(Map<String, dynamic> json) {
+    return ErrorResponse(
+      error: json['error'] as String,
+      message: json['message'] as String?,
+      code: json['code'] as String?,
+      details: json['details'] as Map<String, dynamic>?,
+      requestId: json['requestId'] as String?,
+      timestamp: DateTime.parse(json['timestamp'] as String),
+    );
+  }
+
+  @override
+  String toString() => 'ErrorResponse(error: $error, code: $code)';
+}
+```
+
+### Файл: `./lib/http/responses/validation_field_error.dart` (строк:       34, размер:      884 байт)
+
+```dart
+// Ошибка валидации поля
+// Используется в ValidationError для описания проблем с конкретными полями
+
+/// Ошибка валидации одного поля
+class ValidationFieldError {
+  /// Имя поля
+  final String field;
+
+  /// Сообщение об ошибке
+  final String message;
+
+  /// Код ошибки
+  final String code;
+
+  const ValidationFieldError({
+    required this.field,
+    required this.message,
+    required this.code,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'field': field,
+        'message': message,
+        'code': code,
+      };
+
+  factory ValidationFieldError.fromJson(Map<String, dynamic> json) {
+    return ValidationFieldError(
+      field: json['field'] as String,
+      message: json['message'] as String,
+      code: json['code'] as String,
+    );
+  }
+}
+```
+
+### Файл: `./lib/http/validation/field_type.dart` (строк:       10, размер:      186 байт)
+
+```dart
+// Типы полей для валидации запросов
+
+/// Типы полей для валидации
+enum FieldType {
+  string,
+  number,
+  boolean,
+  object,
+  array,
+}
+```
+
+### Файл: `./lib/http/validation/request_schema.dart` (строк:       98, размер:     2758 байт)
+
+```dart
+// Схема валидации запроса
+
+import 'field_type.dart';
+import '../responses/validation_field_error.dart';
+
+/// Схема валидации для HTTP запроса
+class RequestSchema {
+  final Map<String, FieldType> requiredFields;
+  final Map<String, FieldType> optionalFields;
+  final Map<String, String? Function(dynamic)> customValidators;
+
+  const RequestSchema({
+    this.requiredFields = const {},
+    this.optionalFields = const {},
+    this.customValidators = const {},
+  });
+
+  /// Валидировать body
+  List<ValidationFieldError> validate(Map<String, dynamic> body) {
+    final errors = <ValidationFieldError>[];
+
+    // Проверяем required fields
+    for (final entry in requiredFields.entries) {
+      final field = entry.key;
+      final type = entry.value;
+
+      if (!body.containsKey(field)) {
+        errors.add(ValidationFieldError(
+          field: field,
+          message: 'Required field missing',
+          code: 'REQUIRED_FIELD_MISSING',
+        ));
+        continue;
+      }
+
+      final value = body[field];
+      if (!_checkType(value, type)) {
+        errors.add(ValidationFieldError(
+          field: field,
+          message: 'Expected ${type.name}, got ${value.runtimeType}',
+          code: 'INVALID_TYPE',
+        ));
+      }
+    }
+
+    // Проверяем optional fields (если присутствуют)
+    for (final entry in optionalFields.entries) {
+      final field = entry.key;
+      final type = entry.value;
+
+      if (body.containsKey(field)) {
+        final value = body[field];
+        if (value != null && !_checkType(value, type)) {
+          errors.add(ValidationFieldError(
+            field: field,
+            message: 'Expected ${type.name}, got ${value.runtimeType}',
+            code: 'INVALID_TYPE',
+          ));
+        }
+      }
+    }
+
+    // Кастомные валидаторы
+    for (final entry in customValidators.entries) {
+      final field = entry.key;
+      final validator = entry.value;
+
+      if (body.containsKey(field)) {
+        final error = validator(body[field]);
+        if (error != null) {
+          errors.add(ValidationFieldError(
+            field: field,
+            message: error,
+            code: 'CUSTOM_VALIDATION_FAILED',
+          ));
+        }
+      }
+    }
+
+    return errors;
+  }
+
+  /// Проверить тип значения
+  bool _checkType(dynamic value, FieldType type) {
+    switch (type) {
+      case FieldType.string:
+        return value is String;
+      case FieldType.number:
+        return value is num;
+      case FieldType.boolean:
+        return value is bool;
+      case FieldType.object:
+        return value is Map;
+      case FieldType.array:
+        return value is List;
+    }
   }
 }
 ```
@@ -6780,13 +11316,14 @@ abstract interface class IRoleRepository {
 }
 ```
 
-### Файл: `./lib/security/models/aq_api_key.dart` (строк:      255, размер:     7717 байт)
+### Файл: `./lib/security/models/aq_api_key.dart` (строк:      217, размер:     6597 байт)
 
 ```dart
 import 'aq_user.dart';
 import 'aq_session.dart';
 import 'aq_tenant.dart';
 import 'aq_token_claims.dart';
+import 'credentials.dart';
 
 // pkgs/aq_schema/lib/security/models/aq_api_key.dart
 //
@@ -6869,60 +11406,21 @@ final class AqApiKey {
 // Auth request / response DTOs
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Incoming auth request. Discriminated by [provider].
+/// Incoming auth request with credentials.
 final class AuthRequest {
-  const AuthRequest({
-    required this.provider,
-    this.googleCode,
-    this.googleRedirectUri,
-    this.email,
-    this.password,
-    this.apiKey,
-  });
+  const AuthRequest({required this.credentials});
 
-  final AuthProvider provider;
-
-  // Google OAuth2 code exchange
-  final String? googleCode;
-  final String? googleRedirectUri;
-
-  // Email/password (future)
-  final String? email;
-  final String? password;
-
-  // API key (service accounts)
-  final String? apiKey;
-
-  factory AuthRequest.google({
-    required String code,
-    required String redirectUri,
-  }) =>
-      AuthRequest(
-        provider: AuthProvider.google,
-        googleCode: code,
-        googleRedirectUri: redirectUri,
-      );
-
-  factory AuthRequest.apiKey(String key) =>
-      AuthRequest(provider: AuthProvider.apiKey, apiKey: key);
+  final Credentials credentials;
 
   factory AuthRequest.fromJson(Map<String, dynamic> json) => AuthRequest(
-        provider: AuthProvider.fromString(json['provider'] as String),
-        googleCode: json['googleCode'] as String?,
-        googleRedirectUri: json['googleRedirectUri'] as String?,
-        email: json['email'] as String?,
-        password: json['password'] as String?,
-        apiKey: json['apiKey'] as String?,
+        credentials: Credentials.fromJson(
+          json['credentials'] as Map<String, dynamic>,
+        ),
       );
 
-  Map<String, dynamic> toJson() {
-    final m = <String, dynamic>{'provider': provider.value};
-    if (googleCode != null) m['googleCode'] = googleCode;
-    if (googleRedirectUri != null) m['googleRedirectUri'] = googleRedirectUri;
-    if (email != null) m['email'] = email;
-    if (apiKey != null) m['apiKey'] = apiKey;
-    return m;
-  }
+  Map<String, dynamic> toJson() => {
+        'credentials': credentials.toJson(),
+      };
 }
 
 /// Successful auth response.
@@ -7628,7 +12126,7 @@ final class TokenPair {
 }
 ```
 
-### Файл: `./lib/security/models/aq_user.dart` (строк:      137, размер:     3956 байт)
+### Файл: `./lib/security/models/aq_user.dart` (строк:      138, размер:     3976 байт)
 
 ```dart
 // pkgs/aq_schema/lib/security/models/aq_user.dart
@@ -7653,6 +12151,7 @@ enum UserType {
 /// Which identity provider authenticated this user.
 enum AuthProvider {
   google('google'),
+  github('github'),
   emailPassword('email_password'),
   apiKey('api_key'),
   mock('mock');
@@ -7770,7 +12269,1311 @@ final class AqUser {
 }
 ```
 
-### Файл: `./lib/security/security.dart` (строк:       32, размер:     1654 байт)
+### Файл: `./lib/security/models/credentials.dart` (строк:      152, размер:     6053 байт)
+
+```dart
+// pkgs/aq_schema/lib/security/models/credentials.dart
+//
+// Единый носитель учетных данных для авторизации.
+// Сервер получает знакомую сущность, классифицирует по типу и передает обработчику.
+
+/// Базовый носитель учетных данных для авторизации
+abstract class Credentials {
+  /// Тип учетных данных (discriminator для JSON)
+  String get type;
+
+  Map<String, dynamic> toJson();
+
+  /// Фабрика для десериализации
+  factory Credentials.fromJson(Map<String, dynamic> json) {
+    final type = json['type'] as String;
+    return switch (type) {
+      'google_oauth' => GoogleOAuthCredentials.fromJson(json),
+      'email_password' => EmailPasswordCredentials.fromJson(json),
+      'api_key' => ApiKeyCredentials.fromJson(json),
+      'service_token' => ServiceTokenCredentials.fromJson(json),
+      _ => throw Exception('Unknown credentials type: $type'),
+    };
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  Google OAuth2 authorization code
+// ═════════════════════════════════════════════════════════════════════════════
+
+/// Google OAuth2 authorization code exchange
+class GoogleOAuthCredentials implements Credentials {
+  const GoogleOAuthCredentials({
+    required this.code,
+    required this.redirectUri,
+  });
+
+  final String code;
+  final String redirectUri;
+
+  @override
+  String get type => 'google_oauth';
+
+  factory GoogleOAuthCredentials.fromJson(Map<String, dynamic> json) =>
+      GoogleOAuthCredentials(
+        code: json['code'] as String,
+        redirectUri: json['redirectUri'] as String,
+      );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'code': code,
+        'redirectUri': redirectUri,
+      };
+
+  @override
+  String toString() => 'GoogleOAuthCredentials(code: ${code.substring(0, 8)}...)';
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  Email + Password (для будущего)
+// ═════════════════════════════════════════════════════════════════════════════
+
+/// Email + Password authentication
+class EmailPasswordCredentials implements Credentials {
+  const EmailPasswordCredentials({
+    required this.email,
+    required this.password,
+  });
+
+  final String email;
+  final String password;
+
+  @override
+  String get type => 'email_password';
+
+  factory EmailPasswordCredentials.fromJson(Map<String, dynamic> json) =>
+      EmailPasswordCredentials(
+        email: json['email'] as String,
+        password: json['password'] as String,
+      );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'email': email,
+        'password': password,
+      };
+
+  @override
+  String toString() => 'EmailPasswordCredentials(email: $email)';
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  API ключ (для workers)
+// ═════════════════════════════════════════════════════════════════════════════
+
+/// API key authentication (для workers и service accounts)
+class ApiKeyCredentials implements Credentials {
+  const ApiKeyCredentials({required this.apiKey});
+
+  final String apiKey;
+
+  @override
+  String get type => 'api_key';
+
+  factory ApiKeyCredentials.fromJson(Map<String, dynamic> json) =>
+      ApiKeyCredentials(apiKey: json['apiKey'] as String);
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'apiKey': apiKey,
+      };
+
+  @override
+  String toString() {
+    final prefix = apiKey.length > 12 ? apiKey.substring(0, 12) : apiKey;
+    return 'ApiKeyCredentials(key: $prefix...)';
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  Service account token (для нечеловеков)
+// ═════════════════════════════════════════════════════════════════════════════
+
+/// Service account token (токен владельца/правообладателя)
+/// Используется для создания service accounts (AI agents, workers, enterprises)
+class ServiceTokenCredentials implements Credentials {
+  const ServiceTokenCredentials({required this.token});
+
+  /// JWT токен владельца/правообладателя
+  final String token;
+
+  @override
+  String get type => 'service_token';
+
+  factory ServiceTokenCredentials.fromJson(Map<String, dynamic> json) =>
+      ServiceTokenCredentials(token: json['token'] as String);
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'token': token,
+      };
+
+  @override
+  String toString() {
+    final prefix = token.length > 12 ? token.substring(0, 12) : token;
+    return 'ServiceTokenCredentials(token: $prefix...)';
+  }
+}
+```
+
+### Файл: `./lib/security/rbac.dart` (строк:       10, размер:      234 байт)
+
+```dart
+// pkgs/aq_schema/lib/security/rbac.dart
+//
+// Экспорт всех RBAC моделей.
+
+library rbac;
+
+export 'rbac/aq_role.dart';
+export 'rbac/aq_permission.dart';
+export 'rbac/aq_policy.dart';
+export 'rbac/aq_access_log.dart';
+```
+
+### Файл: `./lib/security/rbac/aq_access_log.dart` (строк:      332, размер:     9490 байт)
+
+```dart
+// pkgs/aq_schema/lib/security/rbac/aq_access_log.dart
+//
+// Модель логов доступа для аудита и мониторинга.
+
+/// Лог проверки доступа.
+/// Используется для аудита, мониторинга и аналитики.
+class AqAccessLog {
+  AqAccessLog({
+    required this.id,
+    required this.userId,
+    required this.resource,
+    required this.action,
+    required this.scope,
+    required this.allowed,
+    this.denialReason,
+    this.context = const {},
+    this.durationMs,
+    required this.timestamp,
+  });
+
+  /// Уникальный идентификатор лога.
+  final String id;
+
+  /// ID пользователя.
+  final String userId;
+
+  /// Ресурс.
+  final String resource;
+
+  /// Действие.
+  final String action;
+
+  /// Область видимости.
+  final String scope;
+
+  /// Разрешён ли доступ.
+  final bool allowed;
+
+  /// Причина отказа (если allowed = false).
+  final String? denialReason;
+
+  /// Контекст запроса (IP, user agent, etc.).
+  final Map<String, dynamic> context;
+
+  /// Длительность проверки в миллисекундах.
+  final int? durationMs;
+
+  /// Timestamp проверки.
+  final int timestamp;
+
+  factory AqAccessLog.fromJson(Map<String, dynamic> json) {
+    return AqAccessLog(
+      id: json['id'] as String,
+      userId: json['userId'] as String,
+      resource: json['resource'] as String,
+      action: json['action'] as String,
+      scope: json['scope'] as String,
+      allowed: json['allowed'] as bool,
+      denialReason: json['denialReason'] as String?,
+      context: (json['context'] as Map<String, dynamic>?) ?? {},
+      durationMs: json['durationMs'] as int?,
+      timestamp: json['timestamp'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'resource': resource,
+      'action': action,
+      'scope': scope,
+      'allowed': allowed,
+      if (denialReason != null) 'denialReason': denialReason,
+      'context': context,
+      if (durationMs != null) 'durationMs': durationMs,
+      'timestamp': timestamp,
+    };
+  }
+
+  static const String kCollection = 'rbac_access_logs';
+
+  /// Полное право в формате "resource:action:scope".
+  String get permission => '$resource:$action:$scope';
+
+  @override
+  String toString() => 'AqAccessLog(user: $userId, permission: $permission, allowed: $allowed)';
+}
+
+/// Метрики RBAC системы.
+class RBACMetrics {
+  RBACMetrics({
+    required this.totalChecks,
+    required this.cacheHits,
+    required this.cacheMisses,
+    required this.avgCheckDuration,
+    required this.checksByResource,
+    required this.checksByAction,
+    required this.checksByUser,
+    required this.totalDenials,
+    required this.denialsByReason,
+    required this.denialsByResource,
+    required this.roleUsage,
+    required this.permissionUsage,
+    required this.policyTriggers,
+    required this.policyDenials,
+    required this.periodStart,
+    required this.periodEnd,
+  });
+
+  // Performance метрики
+  final int totalChecks;
+  final int cacheHits;
+  final int cacheMisses;
+  final double avgCheckDuration;
+
+  // Access patterns
+  final Map<String, int> checksByResource;
+  final Map<String, int> checksByAction;
+  final Map<String, int> checksByUser;
+
+  // Denials
+  final int totalDenials;
+  final Map<String, int> denialsByReason;
+  final Map<String, int> denialsByResource;
+
+  // Roles & Permissions
+  final Map<String, int> roleUsage;
+  final Map<String, int> permissionUsage;
+
+  // Policies
+  final Map<String, int> policyTriggers;
+  final Map<String, int> policyDenials;
+
+  // Период
+  final int periodStart;
+  final int periodEnd;
+
+  factory RBACMetrics.fromJson(Map<String, dynamic> json) {
+    return RBACMetrics(
+      totalChecks: json['totalChecks'] as int,
+      cacheHits: json['cacheHits'] as int,
+      cacheMisses: json['cacheMisses'] as int,
+      avgCheckDuration: (json['avgCheckDuration'] as num).toDouble(),
+      checksByResource: (json['checksByResource'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, v as int),
+      ),
+      checksByAction: (json['checksByAction'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, v as int),
+      ),
+      checksByUser: (json['checksByUser'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, v as int),
+      ),
+      totalDenials: json['totalDenials'] as int,
+      denialsByReason: (json['denialsByReason'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, v as int),
+      ),
+      denialsByResource: (json['denialsByResource'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, v as int),
+      ),
+      roleUsage: (json['roleUsage'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, v as int),
+      ),
+      permissionUsage: (json['permissionUsage'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, v as int),
+      ),
+      policyTriggers: (json['policyTriggers'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, v as int),
+      ),
+      policyDenials: (json['policyDenials'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, v as int),
+      ),
+      periodStart: json['periodStart'] as int,
+      periodEnd: json['periodEnd'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'totalChecks': totalChecks,
+      'cacheHits': cacheHits,
+      'cacheMisses': cacheMisses,
+      'avgCheckDuration': avgCheckDuration,
+      'checksByResource': checksByResource,
+      'checksByAction': checksByAction,
+      'checksByUser': checksByUser,
+      'totalDenials': totalDenials,
+      'denialsByReason': denialsByReason,
+      'denialsByResource': denialsByResource,
+      'roleUsage': roleUsage,
+      'permissionUsage': permissionUsage,
+      'policyTriggers': policyTriggers,
+      'policyDenials': policyDenials,
+      'periodStart': periodStart,
+      'periodEnd': periodEnd,
+    };
+  }
+
+  /// Cache hit rate (0.0 - 1.0).
+  double get cacheHitRate {
+    final total = cacheHits + cacheMisses;
+    if (total == 0) return 0.0;
+    return cacheHits / total;
+  }
+
+  /// Denial rate (0.0 - 1.0).
+  double get denialRate {
+    if (totalChecks == 0) return 0.0;
+    return totalDenials / totalChecks;
+  }
+}
+
+/// Оповещение о событии безопасности.
+class AccessAlert {
+  AccessAlert({
+    required this.id,
+    required this.type,
+    required this.severity,
+    required this.userId,
+    required this.resource,
+    required this.description,
+    required this.timestamp,
+    this.acknowledged = false,
+    this.acknowledgedBy,
+    this.acknowledgedAt,
+  });
+
+  /// Уникальный идентификатор оповещения.
+  final String id;
+
+  /// Тип оповещения.
+  final AlertType type;
+
+  /// Серьёзность.
+  final AlertSeverity severity;
+
+  /// ID пользователя.
+  final String userId;
+
+  /// Ресурс.
+  final String resource;
+
+  /// Описание.
+  final String description;
+
+  /// Timestamp события.
+  final int timestamp;
+
+  /// Подтверждено ли оповещение.
+  final bool acknowledged;
+
+  /// Кем подтверждено.
+  final String? acknowledgedBy;
+
+  /// Когда подтверждено.
+  final int? acknowledgedAt;
+
+  factory AccessAlert.fromJson(Map<String, dynamic> json) {
+    return AccessAlert(
+      id: json['id'] as String,
+      type: AlertType.values.firstWhere((e) => e.name == json['type']),
+      severity: AlertSeverity.values.firstWhere((e) => e.name == json['severity']),
+      userId: json['userId'] as String,
+      resource: json['resource'] as String,
+      description: json['description'] as String,
+      timestamp: json['timestamp'] as int,
+      acknowledged: json['acknowledged'] as bool? ?? false,
+      acknowledgedBy: json['acknowledgedBy'] as String?,
+      acknowledgedAt: json['acknowledgedAt'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'type': type.name,
+      'severity': severity.name,
+      'userId': userId,
+      'resource': resource,
+      'description': description,
+      'timestamp': timestamp,
+      'acknowledged': acknowledged,
+      if (acknowledgedBy != null) 'acknowledgedBy': acknowledgedBy,
+      if (acknowledgedAt != null) 'acknowledgedAt': acknowledgedAt,
+    };
+  }
+
+  static const String kCollection = 'rbac_alerts';
+
+  AccessAlert copyWith({
+    String? id,
+    AlertType? type,
+    AlertSeverity? severity,
+    String? userId,
+    String? resource,
+    String? description,
+    int? timestamp,
+    bool? acknowledged,
+    String? acknowledgedBy,
+    int? acknowledgedAt,
+  }) {
+    return AccessAlert(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      severity: severity ?? this.severity,
+      userId: userId ?? this.userId,
+      resource: resource ?? this.resource,
+      description: description ?? this.description,
+      timestamp: timestamp ?? this.timestamp,
+      acknowledged: acknowledged ?? this.acknowledged,
+      acknowledgedBy: acknowledgedBy ?? this.acknowledgedBy,
+      acknowledgedAt: acknowledgedAt ?? this.acknowledgedAt,
+    );
+  }
+}
+
+/// Тип оповещения.
+enum AlertType {
+  suspicious,
+  policyViolation,
+  rateLimit,
+  escalation,
+  roleExpiring,
+}
+
+/// Серьёзность оповещения.
+enum AlertSeverity {
+  low,
+  medium,
+  high,
+  critical,
+}
+```
+
+### Файл: `./lib/security/rbac/aq_permission.dart` (строк:      211, размер:     5871 байт)
+
+```dart
+// pkgs/aq_schema/lib/security/rbac/aq_permission.dart
+//
+// Модель прав доступа (permissions) в RBAC системе.
+
+/// Право доступа в формате "resource:action:scope".
+class AqPermission {
+  AqPermission({
+    required this.resource,
+    required this.action,
+    required this.scope,
+  });
+
+  /// Тип ресурса (projects, users, workflows, etc.).
+  final String resource;
+
+  /// Действие (read, write, delete, manage, etc.).
+  final String action;
+
+  /// Область видимости (*, tenant, team, own, etc.).
+  final String scope;
+
+  /// Парсинг из строки формата "resource:action:scope".
+  factory AqPermission.parse(String permission) {
+    final parts = permission.split(':');
+    if (parts.length != 3) {
+      throw FormatException('Invalid permission format: $permission. Expected "resource:action:scope"');
+    }
+    return AqPermission(
+      resource: parts[0],
+      action: parts[1],
+      scope: parts[2],
+    );
+  }
+
+  /// Преобразование в строку.
+  @override
+  String toString() => '$resource:$action:$scope';
+
+  /// Проверка, является ли право wildcard.
+  bool get isWildcard => resource == '*' || action == '*' || scope == '*';
+
+  /// Проверка, является ли право полным wildcard (*:*:*).
+  bool get isFullWildcard => resource == '*' && action == '*' && scope == '*';
+
+  /// Проверка совпадения с другим правом (с учётом wildcards).
+  bool matches(AqPermission other) {
+    return _matchesPart(resource, other.resource) &&
+        _matchesPart(action, other.action) &&
+        _matchesPart(scope, other.scope);
+  }
+
+  bool _matchesPart(String pattern, String value) {
+    if (pattern == '*') return true;
+    if (value == '*') return true;
+    return pattern == value;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AqPermission &&
+          runtimeType == other.runtimeType &&
+          resource == other.resource &&
+          action == other.action &&
+          scope == other.scope;
+
+  @override
+  int get hashCode => resource.hashCode ^ action.hashCode ^ scope.hashCode;
+}
+
+/// Типы ресурсов в системе.
+class ResourceType {
+  static const String projects = 'projects';
+  static const String workflows = 'workflows';
+  static const String instructions = 'instructions';
+  static const String blueprints = 'blueprints';
+  static const String users = 'users';
+  static const String teams = 'teams';
+  static const String tenants = 'tenants';
+  static const String apiKeys = 'apiKeys';
+  static const String sessions = 'sessions';
+  static const String billing = 'billing';
+  static const String settings = 'settings';
+  static const String audit = 'audit';
+  static const String roles = 'roles';
+  static const String permissions = 'permissions';
+
+  /// Все типы ресурсов.
+  static const List<String> all = [
+    projects,
+    workflows,
+    instructions,
+    blueprints,
+    users,
+    teams,
+    tenants,
+    apiKeys,
+    sessions,
+    billing,
+    settings,
+    audit,
+    roles,
+    permissions,
+  ];
+}
+
+/// Типы действий в системе.
+class ActionType {
+  static const String create = 'create';
+  static const String read = 'read';
+  static const String update = 'update';
+  static const String delete = 'delete';
+  static const String execute = 'execute';
+  static const String manage = 'manage';
+  static const String share = 'share';
+  static const String export = 'export';
+  static const String import = 'import';
+
+  /// Все типы действий.
+  static const List<String> all = [
+    create,
+    read,
+    update,
+    delete,
+    execute,
+    manage,
+    share,
+    export,
+    import,
+  ];
+}
+
+/// Области видимости (scopes).
+class ScopeType {
+  static const String all = '*';
+  static const String tenant = 'tenant';
+  static const String team = 'team';
+  static const String own = 'own';
+  static const String shared = 'shared';
+  static const String public = 'public';
+
+  /// Все области видимости.
+  static const List<String> allScopes = [
+    all,
+    tenant,
+    team,
+    own,
+    shared,
+    public,
+  ];
+}
+
+/// Предопределённые наборы прав для типичных ролей.
+class PermissionPresets {
+  /// Полный доступ ко всему (super admin).
+  static const List<String> superAdmin = ['*:*:*'];
+
+  /// Администратор tenant.
+  static const List<String> tenantAdmin = [
+    'projects:*:tenant',
+    'workflows:*:tenant',
+    'instructions:*:tenant',
+    'blueprints:*:tenant',
+    'users:manage:tenant',
+    'teams:manage:tenant',
+    'settings:manage:tenant',
+    'billing:view:tenant',
+  ];
+
+  /// Администратор проекта.
+  static const List<String> projectAdmin = [
+    'projects:*:own',
+    'workflows:*:own',
+    'instructions:*:own',
+    'blueprints:*:own',
+    'users:manage:team',
+  ];
+
+  /// Редактор проекта.
+  static const List<String> projectEditor = [
+    'projects:read:tenant',
+    'projects:update:own',
+    'workflows:*:own',
+    'instructions:*:own',
+    'blueprints:*:own',
+  ];
+
+  /// Просмотр проекта.
+  static const List<String> projectViewer = [
+    'projects:read:tenant',
+    'workflows:read:tenant',
+    'instructions:read:tenant',
+    'blueprints:read:tenant',
+  ];
+
+  /// Менеджер пользователей.
+  static const List<String> userManager = [
+    'users:read:tenant',
+    'users:create:tenant',
+    'users:update:tenant',
+    'roles:read:tenant',
+    'roles:assign:tenant',
+  ];
+
+  /// Аудитор.
+  static const List<String> auditor = [
+    'audit:read:tenant',
+    'sessions:read:tenant',
+    'apiKeys:read:tenant',
+  ];
+}
+```
+
+### Файл: `./lib/security/rbac/aq_policy.dart` (строк:      340, размер:     8739 байт)
+
+```dart
+// pkgs/aq_schema/lib/security/rbac/aq_policy.dart
+//
+// Модель политик доступа с условиями.
+
+/// Политика доступа с условиями.
+/// Позволяет задавать дополнительные правила для проверки доступа.
+class AqAccessPolicy {
+  AqAccessPolicy({
+    required this.id,
+    required this.name,
+    this.description,
+    required this.conditions,
+    required this.effect,
+    required this.priority,
+    this.enabled = true,
+    required this.tenantId,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  /// Уникальный идентификатор политики.
+  final String id;
+
+  /// Название политики.
+  final String name;
+
+  /// Описание политики.
+  final String? description;
+
+  /// Условия политики.
+  final List<PolicyCondition> conditions;
+
+  /// Эффект политики (allow/deny).
+  final PolicyEffect effect;
+
+  /// Приоритет (больше = выше приоритет).
+  /// Используется для разрешения конфликтов между политиками.
+  final int priority;
+
+  /// Включена ли политика.
+  final bool enabled;
+
+  /// ID tenant.
+  final String tenantId;
+
+  /// Timestamp создания.
+  final int createdAt;
+
+  /// Timestamp обновления.
+  final int updatedAt;
+
+  factory AqAccessPolicy.fromJson(Map<String, dynamic> json) {
+    return AqAccessPolicy(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String?,
+      conditions: (json['conditions'] as List<dynamic>)
+          .map((e) => PolicyCondition.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      effect: PolicyEffect.values.firstWhere((e) => e.name == json['effect']),
+      priority: json['priority'] as int,
+      enabled: json['enabled'] as bool? ?? true,
+      tenantId: json['tenantId'] as String,
+      createdAt: json['createdAt'] as int,
+      updatedAt: json['updatedAt'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      if (description != null) 'description': description,
+      'conditions': conditions.map((c) => c.toJson()).toList(),
+      'effect': effect.name,
+      'priority': priority,
+      'enabled': enabled,
+      'tenantId': tenantId,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
+  }
+
+  static const String kCollection = 'rbac_policies';
+
+  AqAccessPolicy copyWith({
+    String? id,
+    String? name,
+    String? description,
+    List<PolicyCondition>? conditions,
+    PolicyEffect? effect,
+    int? priority,
+    bool? enabled,
+    String? tenantId,
+    int? createdAt,
+    int? updatedAt,
+  }) {
+    return AqAccessPolicy(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      conditions: conditions ?? this.conditions,
+      effect: effect ?? this.effect,
+      priority: priority ?? this.priority,
+      enabled: enabled ?? this.enabled,
+      tenantId: tenantId ?? this.tenantId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+}
+
+/// Эффект политики.
+enum PolicyEffect {
+  allow,
+  deny,
+}
+
+/// Условие политики.
+class PolicyCondition {
+  PolicyCondition({
+    required this.type,
+    required this.params,
+  });
+
+  /// Тип условия (time, ip, mfa, resource_state, etc.).
+  final String type;
+
+  /// Параметры условия.
+  final Map<String, dynamic> params;
+
+  factory PolicyCondition.fromJson(Map<String, dynamic> json) {
+    return PolicyCondition(
+      type: json['type'] as String,
+      params: json['params'] as Map<String, dynamic>,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'params': params,
+    };
+  }
+
+  /// Создать временное условие.
+  factory PolicyCondition.time({
+    List<int>? daysOfWeek,
+    int? startHour,
+    int? endHour,
+    String? timezone,
+  }) {
+    return PolicyCondition(
+      type: 'time',
+      params: {
+        if (daysOfWeek != null) 'daysOfWeek': daysOfWeek,
+        if (startHour != null) 'startHour': startHour,
+        if (endHour != null) 'endHour': endHour,
+        if (timezone != null) 'timezone': timezone,
+      },
+    );
+  }
+
+  /// Создать IP условие.
+  factory PolicyCondition.ip({
+    List<String>? whitelist,
+    List<String>? blacklist,
+  }) {
+    return PolicyCondition(
+      type: 'ip',
+      params: {
+        if (whitelist != null) 'whitelist': whitelist,
+        if (blacklist != null) 'blacklist': blacklist,
+      },
+    );
+  }
+
+  /// Создать MFA условие.
+  factory PolicyCondition.mfa({
+    required bool required,
+  }) {
+    return PolicyCondition(
+      type: 'mfa',
+      params: {'required': required},
+    );
+  }
+
+  /// Создать условие по действию.
+  factory PolicyCondition.action({
+    required List<String> actions,
+  }) {
+    return PolicyCondition(
+      type: 'action',
+      params: {'actions': actions},
+    );
+  }
+
+  /// Создать условие по ресурсу.
+  factory PolicyCondition.resource({
+    required List<String> resources,
+  }) {
+    return PolicyCondition(
+      type: 'resource',
+      params: {'resources': resources},
+    );
+  }
+
+  /// Создать условие по состоянию ресурса.
+  factory PolicyCondition.resourceState({
+    required String state,
+  }) {
+    return PolicyCondition(
+      type: 'resource_state',
+      params: {'state': state},
+    );
+  }
+}
+
+/// Контекст для проверки доступа.
+class AccessContext {
+  AccessContext({
+    required this.userId,
+    required this.resource,
+    required this.action,
+    required this.scope,
+    this.ip,
+    this.userAgent,
+    this.mfaVerified = false,
+    this.resourceState,
+    this.timestamp,
+    this.metadata = const {},
+  });
+
+  /// ID пользователя.
+  final String userId;
+
+  /// Ресурс.
+  final String resource;
+
+  /// Действие.
+  final String action;
+
+  /// Область видимости.
+  final String scope;
+
+  /// IP адрес.
+  final String? ip;
+
+  /// User agent.
+  final String? userAgent;
+
+  /// MFA подтверждён.
+  final bool mfaVerified;
+
+  /// Состояние ресурса.
+  final String? resourceState;
+
+  /// Timestamp запроса.
+  final DateTime? timestamp;
+
+  /// Дополнительные метаданные.
+  final Map<String, dynamic> metadata;
+
+  AccessContext copyWith({
+    String? userId,
+    String? resource,
+    String? action,
+    String? scope,
+    String? ip,
+    String? userAgent,
+    bool? mfaVerified,
+    String? resourceState,
+    DateTime? timestamp,
+    Map<String, dynamic>? metadata,
+  }) {
+    return AccessContext(
+      userId: userId ?? this.userId,
+      resource: resource ?? this.resource,
+      action: action ?? this.action,
+      scope: scope ?? this.scope,
+      ip: ip ?? this.ip,
+      userAgent: userAgent ?? this.userAgent,
+      mfaVerified: mfaVerified ?? this.mfaVerified,
+      resourceState: resourceState ?? this.resourceState,
+      timestamp: timestamp ?? this.timestamp,
+      metadata: metadata ?? this.metadata,
+    );
+  }
+}
+
+/// Результат проверки доступа.
+class AccessDecision {
+  AccessDecision({
+    required this.allowed,
+    this.reason,
+    this.appliedPolicies = const [],
+    this.effectivePermissions = const [],
+  });
+
+  /// Разрешён ли доступ.
+  final bool allowed;
+
+  /// Причина решения (особенно важна при denied).
+  final String? reason;
+
+  /// Применённые политики.
+  final List<String> appliedPolicies;
+
+  /// Эффективные права (с учётом иерархии).
+  final List<String> effectivePermissions;
+
+  /// Создать разрешающее решение.
+  factory AccessDecision.allow({
+    String? reason,
+    List<String>? appliedPolicies,
+    List<String>? effectivePermissions,
+  }) {
+    return AccessDecision(
+      allowed: true,
+      reason: reason,
+      appliedPolicies: appliedPolicies ?? [],
+      effectivePermissions: effectivePermissions ?? [],
+    );
+  }
+
+  /// Создать запрещающее решение.
+  factory AccessDecision.deny({
+    required String reason,
+    List<String>? appliedPolicies,
+  }) {
+    return AccessDecision(
+      allowed: false,
+      reason: reason,
+      appliedPolicies: appliedPolicies ?? [],
+    );
+  }
+
+  @override
+  String toString() => 'AccessDecision(allowed: $allowed, reason: $reason)';
+}
+```
+
+### Файл: `./lib/security/rbac/aq_role.dart` (строк:      229, размер:     6696 байт)
+
+```dart
+// pkgs/aq_schema/lib/security/rbac/aq_role.dart
+//
+// Модель роли в RBAC системе.
+
+/// Роль в системе RBAC.
+/// Содержит набор прав и может наследовать права от других ролей.
+class AqRole {
+  AqRole({
+    required this.id,
+    required this.name,
+    this.description,
+    required this.permissions,
+    this.inheritsFrom = const [],
+    required this.tenantId,
+    this.metadata = const {},
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  /// Уникальный идентификатор роли.
+  final String id;
+
+  /// Название роли (например, "Project Admin").
+  final String name;
+
+  /// Описание роли.
+  final String? description;
+
+  /// Прямые права роли (без учёта наследования).
+  /// Формат: "resource:action:scope"
+  /// Примеры: "projects:read:*", "users:manage:team"
+  final List<String> permissions;
+
+  /// ID ролей, от которых наследуются права.
+  /// Поддерживает иерархию ролей.
+  final List<String> inheritsFrom;
+
+  /// ID tenant, к которому принадлежит роль.
+  /// Системные роли имеют tenantId = "system".
+  final String tenantId;
+
+  /// Дополнительные метаданные роли.
+  final Map<String, dynamic> metadata;
+
+  /// Timestamp создания (milliseconds since epoch).
+  final int createdAt;
+
+  /// Timestamp последнего обновления (milliseconds since epoch).
+  final int updatedAt;
+
+  // JSON serialization (ручная)
+  factory AqRole.fromJson(Map<String, dynamic> json) {
+    return AqRole(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String?,
+      permissions: (json['permissions'] as List<dynamic>).cast<String>(),
+      inheritsFrom: (json['inheritsFrom'] as List<dynamic>?)?.cast<String>() ?? [],
+      tenantId: json['tenantId'] as String,
+      metadata: (json['metadata'] as Map<String, dynamic>?) ?? {},
+      createdAt: json['createdAt'] as int,
+      updatedAt: json['updatedAt'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      if (description != null) 'description': description,
+      'permissions': permissions,
+      'inheritsFrom': inheritsFrom,
+      'tenantId': tenantId,
+      'metadata': metadata,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
+  }
+
+  // Collection name для Vault
+  static const String kCollection = 'rbac_roles';
+
+  // Копирование с изменениями
+  AqRole copyWith({
+    String? id,
+    String? name,
+    String? description,
+    List<String>? permissions,
+    List<String>? inheritsFrom,
+    String? tenantId,
+    Map<String, dynamic>? metadata,
+    int? createdAt,
+    int? updatedAt,
+  }) {
+    return AqRole(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      permissions: permissions ?? this.permissions,
+      inheritsFrom: inheritsFrom ?? this.inheritsFrom,
+      tenantId: tenantId ?? this.tenantId,
+      metadata: metadata ?? this.metadata,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AqRole && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  String toString() => 'AqRole(id: $id, name: $name, permissions: ${permissions.length})';
+}
+
+/// Назначение роли пользователю.
+class AqUserRole {
+  AqUserRole({
+    required this.id,
+    required this.userId,
+    required this.roleId,
+    required this.tenantId,
+    this.grantedBy,
+    required this.grantedAt,
+    this.expiresAt,
+    this.reason,
+  });
+
+  /// Уникальный идентификатор назначения.
+  final String id;
+
+  /// ID пользователя.
+  final String userId;
+
+  /// ID роли.
+  final String roleId;
+
+  /// ID tenant.
+  final String tenantId;
+
+  /// ID пользователя, который назначил роль.
+  final String? grantedBy;
+
+  /// Timestamp назначения (milliseconds since epoch).
+  final int grantedAt;
+
+  /// Timestamp истечения (для временных ролей).
+  /// null = бессрочная роль.
+  final int? expiresAt;
+
+  /// Причина назначения роли.
+  final String? reason;
+
+  // JSON serialization (ручная)
+  factory AqUserRole.fromJson(Map<String, dynamic> json) {
+    return AqUserRole(
+      id: json['id'] as String,
+      userId: json['userId'] as String,
+      roleId: json['roleId'] as String,
+      tenantId: json['tenantId'] as String,
+      grantedBy: json['grantedBy'] as String?,
+      grantedAt: json['grantedAt'] as int,
+      expiresAt: json['expiresAt'] as int?,
+      reason: json['reason'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'roleId': roleId,
+      'tenantId': tenantId,
+      if (grantedBy != null) 'grantedBy': grantedBy,
+      'grantedAt': grantedAt,
+      if (expiresAt != null) 'expiresAt': expiresAt,
+      if (reason != null) 'reason': reason,
+    };
+  }
+
+  // Collection name для Vault
+  static const String kCollection = 'rbac_user_roles';
+
+  /// Проверка, истекла ли роль.
+  bool get isExpired {
+    if (expiresAt == null) return false;
+    return DateTime.now().millisecondsSinceEpoch > expiresAt!;
+  }
+
+  /// Проверка, является ли роль временной.
+  bool get isTemporary => expiresAt != null;
+
+  AqUserRole copyWith({
+    String? id,
+    String? userId,
+    String? roleId,
+    String? tenantId,
+    String? grantedBy,
+    int? grantedAt,
+    int? expiresAt,
+    String? reason,
+  }) {
+    return AqUserRole(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      roleId: roleId ?? this.roleId,
+      tenantId: tenantId ?? this.tenantId,
+      grantedBy: grantedBy ?? this.grantedBy,
+      grantedAt: grantedAt ?? this.grantedAt,
+      expiresAt: expiresAt ?? this.expiresAt,
+      reason: reason ?? this.reason,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AqUserRole && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  String toString() => 'AqUserRole(userId: $userId, roleId: $roleId, expires: $expiresAt)';
+}
+```
+
+### Файл: `./lib/security/security.dart` (строк:       33, размер:     1688 байт)
 
 ```dart
 // pkgs/aq_schema/lib/security/security.dart
@@ -7783,6 +13586,7 @@ export 'models/aq_profile.dart';
 export 'models/aq_role.dart';
 export 'models/aq_session.dart';
 export 'models/aq_token_claims.dart';
+export 'models/credentials.dart';
 export 'models/aq_api_key.dart'
     show
         AqApiKey,
@@ -7807,7 +13611,7 @@ export 'storable/security_storables.dart';
 export 'storable/security_domains.dart';
 ```
 
-### Файл: `./lib/security/storable/security_domains.dart` (строк:       92, размер:     4338 байт)
+### Файл: `./lib/security/storable/security_domains.dart` (строк:      152, размер:     7486 байт)
 
 ```dart
 // pkgs/aq_schema/lib/security/storable/security_domains.dart
@@ -7821,6 +13625,9 @@ export 'storable/security_domains.dart';
 
 import 'package:aq_schema/aq_schema.dart';
 import 'security_storables.dart';
+import '../rbac/aq_role.dart' as rbac;
+import '../rbac/aq_policy.dart';
+import '../rbac/aq_access_log.dart';
 
 /// Все security домены — единый источник истины.
 /// Сервер и клиент читают этот список.
@@ -7900,11 +13707,68 @@ class AqSecurityDomains {
         VaultIndex(name: 'idx_sec_apikey_active', field: 'isActive'),
       ],
     ),
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // RBAC Collections
+    // ══════════════════════════════════════════════════════════════════════════
+
+    // ── RBAC Roles (Direct) ──────────────────────────────────────────────────
+    DomainDescriptor.direct(
+      collection: rbac.AqRole.kCollection,
+      fromMap: StorableAqRole.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_rbac_roles_name', field: 'name'),
+        VaultIndex(name: 'idx_rbac_roles_tenant', field: 'tenantId'),
+      ],
+    ),
+
+    // ── RBAC User Roles (Direct) ─────────────────────────────────────────────
+    DomainDescriptor.direct(
+      collection: rbac.AqUserRole.kCollection,
+      fromMap: StorableAqUserRole.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_rbac_ur_user', field: 'userId'),
+        VaultIndex(name: 'idx_rbac_ur_role', field: 'roleId'),
+        VaultIndex(name: 'idx_rbac_ur_tenant', field: 'tenantId'),
+      ],
+    ),
+
+    // ── RBAC Policies (Direct) ───────────────────────────────────────────────
+    DomainDescriptor.direct(
+      collection: AqAccessPolicy.kCollection,
+      fromMap: StorableAqAccessPolicy.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_rbac_policies_tenant', field: 'tenantId'),
+        VaultIndex(name: 'idx_rbac_policies_active', field: 'isActive'),
+      ],
+    ),
+
+    // ── RBAC Access Logs (Logged) ────────────────────────────────────────────
+    DomainDescriptor.logged(
+      collection: AqAccessLog.kCollection,
+      fromMap: StorableAqAccessLog.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_rbac_logs_user', field: 'userId'),
+        VaultIndex(name: 'idx_rbac_logs_resource', field: 'resource'),
+        VaultIndex(name: 'idx_rbac_logs_timestamp', field: 'timestamp'),
+      ],
+    ),
+
+    // ── RBAC Alerts (Logged) ─────────────────────────────────────────────────
+    DomainDescriptor.logged(
+      collection: AccessAlert.kCollection,
+      fromMap: StorableAccessAlert.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_rbac_alerts_severity', field: 'severity'),
+        VaultIndex(name: 'idx_rbac_alerts_timestamp', field: 'timestamp'),
+        VaultIndex(name: 'idx_rbac_alerts_resolved', field: 'isResolved'),
+      ],
+    ),
   ];
 }
 ```
 
-### Файл: `./lib/security/storable/security_storables.dart` (строк:      237, размер:     7413 байт)
+### Файл: `./lib/security/storable/security_storables.dart` (строк:      312, размер:     9682 байт)
 
 ```dart
 // pkgs/aq_schema/lib/security/storable/security_storables.dart
@@ -7926,6 +13790,8 @@ class AqSecurityDomains {
 
 import 'package:aq_schema/data_layer/storable/direct_storable.dart';
 import 'package:aq_schema/data_layer/storable/logged_storable.dart';
+
+export 'storable_rbac.dart';
 
 import '../models/aq_user.dart';
 import '../models/aq_tenant.dart';
@@ -7977,11 +13843,24 @@ final class StorableUser implements DirectStorable {
         'userType': _user.userType.value,
         'isActive': _user.isActive,
       };
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'properties': {
+          'id': {'type': 'string'},
+          'email': {'type': 'string', 'format': 'email'},
+          'tenantId': {'type': 'string'},
+          'authProvider': {'type': 'string'},
+          'providerUserId': {'type': 'string'},
+          'userType': {'type': 'string'},
+          'isActive': {'type': 'boolean'},
+        },
+        'required': ['id', 'email', 'tenantId'],
+      };
   static StorableUser fromMap(Map<String, dynamic> m) =>
       StorableUser(AqUser.fromJson(m));
 
   @override
-  // TODO: implement collectionName
   String get collectionName => SecurityCollections.users;
 }
 
@@ -8001,11 +13880,22 @@ final class StorableTenant implements DirectStorable {
         'isActive': _t.isActive,
         'ownerId': _t.ownerId ?? '',
       };
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'properties': {
+          'id': {'type': 'string'},
+          'slug': {'type': 'string'},
+          'plan': {'type': 'string'},
+          'isActive': {'type': 'boolean'},
+          'ownerId': {'type': 'string'},
+        },
+        'required': ['id', 'slug'],
+      };
   static StorableTenant fromMap(Map<String, dynamic> m) =>
       StorableTenant(AqTenant.fromJson(m));
 
   @override
-  // TODO: implement collectionName
   String get collectionName => SecurityCollections.tenants;
 }
 
@@ -8023,11 +13913,19 @@ final class StorableProfile implements DirectStorable {
         'userId': _p.userId,
         'locale': _p.locale ?? '',
       };
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'properties': {
+          'userId': {'type': 'string'},
+          'locale': {'type': 'string'},
+        },
+        'required': ['userId'],
+      };
   static StorableProfile fromMap(Map<String, dynamic> m) =>
       StorableProfile(AqProfile.fromJson(m));
 
   @override
-  // TODO: implement collectionName
   String get collectionName => SecurityCollections.profiles;
 }
 
@@ -8046,11 +13944,21 @@ final class StorableRole implements DirectStorable {
         'tenantId': _r.tenantId ?? '',
         'isSystem': _r.isSystem,
       };
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'properties': {
+          'id': {'type': 'string'},
+          'name': {'type': 'string'},
+          'tenantId': {'type': 'string'},
+          'isSystem': {'type': 'boolean'},
+        },
+        'required': ['id', 'name'],
+      };
   static StorableRole fromMap(Map<String, dynamic> m) =>
       StorableRole(AqRole.fromJson(m));
 
   @override
-  // TODO: implement collectionName
   String get collectionName => SecurityCollections.roles;
 }
 
@@ -8070,11 +13978,20 @@ final class StorableUserRole implements DirectStorable {
         'roleId': _ur.roleId,
         'tenantId': _ur.tenantId,
       };
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'properties': {
+          'userId': {'type': 'string'},
+          'roleId': {'type': 'string'},
+          'tenantId': {'type': 'string'},
+        },
+        'required': ['userId', 'roleId', 'tenantId'],
+      };
   static StorableUserRole fromMap(Map<String, dynamic> m) =>
       StorableUserRole(AqUserRole.fromJson(m));
 
   @override
-  // TODO: implement collectionName
   String get collectionName => SecurityCollections.userRoles;
 }
 
@@ -8109,11 +14026,22 @@ final class StorableSession implements LoggedStorable {
         'status': _s.status.value,
         'expiresAt': _s.expiresAt,
       };
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'properties': {
+          'id': {'type': 'string'},
+          'userId': {'type': 'string'},
+          'tenantId': {'type': 'string'},
+          'status': {'type': 'string'},
+          'expiresAt': {'type': 'string', 'format': 'date-time'},
+        },
+        'required': ['id', 'userId', 'tenantId'],
+      };
   static StorableSession fromMap(Map<String, dynamic> m) =>
       StorableSession(AqSession.fromJson(m));
 
   @override
-  // TODO: implement collectionName
   String get collectionName => SecurityCollections.sessions;
 }
 
@@ -8137,12 +14065,290 @@ final class StorableApiKey implements LoggedStorable {
         'keyHash': _k.keyHash,
         'isActive': _k.isActive,
       };
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'properties': {
+          'id': {'type': 'string'},
+          'userId': {'type': 'string'},
+          'tenantId': {'type': 'string'},
+          'keyHash': {'type': 'string'},
+          'isActive': {'type': 'boolean'},
+        },
+        'required': ['id', 'userId', 'tenantId', 'keyHash'],
+      };
   static StorableApiKey fromMap(Map<String, dynamic> m) =>
       StorableApiKey(AqApiKey.fromJson(m));
 
   @override
-  // TODO: implement collectionName
   String get collectionName => SecurityCollections.apiKeys;
+}
+```
+
+### Файл: `./lib/security/storable/storable_rbac.dart` (строк:      262, размер:     9985 байт)
+
+```dart
+// pkgs/aq_schema/lib/security/storable/storable_rbac.dart
+//
+// Storable обёртки для RBAC моделей.
+// Позволяют использовать RBAC модели с VaultRegistry и DomainDescriptor.
+
+import 'package:aq_schema/aq_schema.dart';
+import '../rbac/aq_role.dart';
+import '../rbac/aq_policy.dart';
+import '../rbac/aq_access_log.dart';
+
+// ══════════════════════════════════════════════════════════════════════════════
+// StorableAqRole - обёртка для AqRole
+// ══════════════════════════════════════════════════════════════════════════════
+
+/// Storable обёртка для AqRole (RBAC роль).
+final class StorableAqRole implements DirectStorable {
+  StorableAqRole(this._role);
+  final AqRole _role;
+  AqRole get domain => _role;
+
+  @override
+  String get id => _role.id;
+
+  @override
+  Map<String, dynamic> toMap() => _role.toJson();
+
+  @override
+  Map<String, dynamic> get indexFields => {
+        'name': _role.name,
+        'tenantId': _role.tenantId,
+      };
+
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'required': ['id', 'name', 'tenantId', 'permissions', 'createdAt', 'updatedAt'],
+        'properties': {
+          'id': {'type': 'string'},
+          'name': {'type': 'string'},
+          'description': {'type': 'string'},
+          'permissions': {
+            'type': 'array',
+            'items': {'type': 'string'},
+          },
+          'inheritsFrom': {
+            'type': 'array',
+            'items': {'type': 'string'},
+          },
+          'tenantId': {'type': 'string'},
+          'metadata': {'type': 'object'},
+          'createdAt': {'type': 'integer'},
+          'updatedAt': {'type': 'integer'},
+        },
+      };
+
+  @override
+  String get collectionName => AqRole.kCollection;
+
+  static StorableAqRole fromMap(Map<String, dynamic> map) =>
+      StorableAqRole(AqRole.fromJson(map));
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// StorableAqUserRole - обёртка для AqUserRole
+// ══════════════════════════════════════════════════════════════════════════════
+
+/// Storable обёртка для AqUserRole (назначение роли пользователю).
+final class StorableAqUserRole implements DirectStorable {
+  StorableAqUserRole(this._userRole);
+  final AqUserRole _userRole;
+  AqUserRole get domain => _userRole;
+
+  @override
+  String get id => _userRole.id;
+
+  @override
+  Map<String, dynamic> toMap() => _userRole.toJson();
+
+  @override
+  Map<String, dynamic> get indexFields => {
+        'userId': _userRole.userId,
+        'roleId': _userRole.roleId,
+        'tenantId': _userRole.tenantId,
+      };
+
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'required': ['id', 'userId', 'roleId', 'tenantId', 'grantedAt'],
+        'properties': {
+          'id': {'type': 'string'},
+          'userId': {'type': 'string'},
+          'roleId': {'type': 'string'},
+          'tenantId': {'type': 'string'},
+          'grantedBy': {'type': ['string', 'null']},
+          'grantedAt': {'type': 'integer'},
+          'expiresAt': {'type': ['integer', 'null']},
+          'metadata': {'type': 'object'},
+        },
+      };
+
+  @override
+  String get collectionName => AqUserRole.kCollection;
+
+  static StorableAqUserRole fromMap(Map<String, dynamic> map) =>
+      StorableAqUserRole(AqUserRole.fromJson(map));
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// StorableAqAccessPolicy - обёртка для AqAccessPolicy
+// ══════════════════════════════════════════════════════════════════════════════
+
+/// Storable обёртка для AqAccessPolicy (политика доступа).
+final class StorableAqAccessPolicy implements DirectStorable {
+  StorableAqAccessPolicy(this._policy);
+  final AqAccessPolicy _policy;
+  AqAccessPolicy get domain => _policy;
+
+  @override
+  String get id => _policy.id;
+
+  @override
+  Map<String, dynamic> toMap() => _policy.toJson();
+
+  @override
+  Map<String, dynamic> get indexFields => {
+        'tenantId': _policy.tenantId,
+        'enabled': _policy.enabled,
+      };
+
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'required': ['id', 'name', 'effect', 'tenantId', 'isActive', 'createdAt', 'updatedAt'],
+        'properties': {
+          'id': {'type': 'string'},
+          'name': {'type': 'string'},
+          'description': {'type': 'string'},
+          'effect': {'type': 'string', 'enum': ['allow', 'deny']},
+          'conditions': {
+            'type': 'array',
+            'items': {'type': 'object'},
+          },
+          'tenantId': {'type': 'string'},
+          'isActive': {'type': 'boolean'},
+          'createdAt': {'type': 'integer'},
+          'updatedAt': {'type': 'integer'},
+        },
+      };
+
+  @override
+  String get collectionName => AqAccessPolicy.kCollection;
+
+  static StorableAqAccessPolicy fromMap(Map<String, dynamic> map) =>
+      StorableAqAccessPolicy(AqAccessPolicy.fromJson(map));
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// StorableAqAccessLog - обёртка для AqAccessLog
+// ══════════════════════════════════════════════════════════════════════════════
+
+/// Storable обёртка для AqAccessLog (лог проверки доступа).
+final class StorableAqAccessLog implements LoggedStorable {
+  StorableAqAccessLog(this._log);
+  final AqAccessLog _log;
+  AqAccessLog get domain => _log;
+
+  @override
+  String get id => _log.id;
+
+  @override
+  Map<String, dynamic> toMap() => _log.toJson();
+
+  @override
+  Set<String> get trackedFields => {
+        'allowed',
+        'reason',
+      };
+
+  @override
+  Map<String, dynamic> get indexFields => {
+        'userId': _log.userId,
+        'resource': _log.resource,
+        'timestamp': _log.timestamp,
+      };
+
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'required': ['id', 'userId', 'resource', 'action', 'allowed', 'timestamp'],
+        'properties': {
+          'id': {'type': 'string'},
+          'userId': {'type': 'string'},
+          'resource': {'type': 'string'},
+          'action': {'type': 'string'},
+          'scope': {'type': ['string', 'null']},
+          'allowed': {'type': 'boolean'},
+          'reason': {'type': ['string', 'null']},
+          'timestamp': {'type': 'integer'},
+          'ip': {'type': ['string', 'null']},
+          'userAgent': {'type': ['string', 'null']},
+        },
+      };
+
+  @override
+  String get collectionName => AqAccessLog.kCollection;
+
+  static StorableAqAccessLog fromMap(Map<String, dynamic> map) =>
+      StorableAqAccessLog(AqAccessLog.fromJson(map));
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// StorableAccessAlert - обёртка для AccessAlert
+// ══════════════════════════════════════════════════════════════════════════════
+
+/// Storable обёртка для AccessAlert (алерт безопасности).
+final class StorableAccessAlert implements LoggedStorable {
+  StorableAccessAlert(this._alert);
+  final AccessAlert _alert;
+  AccessAlert get domain => _alert;
+
+  @override
+  String get id => _alert.id;
+
+  @override
+  Map<String, dynamic> toMap() => _alert.toJson();
+
+  @override
+  Set<String> get trackedFields => {
+        'acknowledged',
+      };
+
+  @override
+  Map<String, dynamic> get indexFields => {
+        'severity': _alert.severity.name,
+        'timestamp': _alert.timestamp,
+        'acknowledged': _alert.acknowledged,
+      };
+
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'required': ['id', 'type', 'severity', 'message', 'timestamp'],
+        'properties': {
+          'id': {'type': 'string'},
+          'type': {'type': 'string'},
+          'severity': {'type': 'string', 'enum': ['low', 'medium', 'high', 'critical']},
+          'message': {'type': 'string'},
+          'userId': {'type': ['string', 'null']},
+          'resource': {'type': ['string', 'null']},
+          'timestamp': {'type': 'integer'},
+          'isResolved': {'type': 'boolean'},
+          'metadata': {'type': 'object'},
+        },
+      };
+
+  @override
+  String get collectionName => AccessAlert.kCollection;
+
+  static StorableAccessAlert fromMap(Map<String, dynamic> map) =>
+      StorableAccessAlert(AccessAlert.fromJson(map));
 }
 ```
 
@@ -8375,21 +14581,53 @@ final class TokenValidator {
 }
 ```
 
-### Файл: `./lib/studio_project/aq_studio_project.dart` (строк:       77, размер:     1946 байт)
+### Файл: `./lib/studio_project/aq_studio_project.dart` (строк:      121, размер:     3164 байт)
 
 ```dart
 import 'package:aq_schema/aq_schema.dart';
 
 /// AQ Studio project — top-level container.
 /// DirectStorable: plain CRUD, no versioning needed.
-class AqStudioProject implements DirectStorable {
+class AqStudioProject implements DirectStorable, Sharable, Versionable {
   static const kCollection = 'projects';
+  static const kSchemaVersion = '1.0.0';
+  static const kJsonSchema = {
+    'type': 'object',
+    'properties': {
+      'id': {'type': 'string', 'format': 'uuid'},
+      'tenantId': {'type': 'string'},
+      'ownerId': {'type': 'string'},
+      'name': {'type': 'string'},
+      'path': {'type': 'string'},
+      'projectType': {'type': 'string'},
+      'lastOpened': {'type': 'string', 'format': 'date-time'},
+    },
+    'required': ['id', 'tenantId', 'ownerId', 'name', 'projectType'],
+  };
 
   @override
   final String id;
 
   @override
+  final String tenantId;
+
+  @override
+  final String ownerId;
+
+  @override
   String get collectionName => kCollection;
+
+  @override
+  String get schemaVersion => kSchemaVersion;
+
+  @override
+  List<Object> get migrations => const [];
+
+  @override
+  Map<String, dynamic> get jsonSchema => kJsonSchema;
+
+  @override
+  String get defaultSharingPolicy => 'private';
 
   final String name;
   final String path;
@@ -8398,6 +14636,8 @@ class AqStudioProject implements DirectStorable {
 
   const AqStudioProject({
     required this.id,
+    required this.tenantId,
+    required this.ownerId,
     required this.name,
     required this.path,
     required this.projectType,
@@ -8406,11 +14646,15 @@ class AqStudioProject implements DirectStorable {
 
   factory AqStudioProject.create({
     required String id,
+    required String tenantId,
+    required String ownerId,
     required String name,
     required String projectType,
   }) =>
       AqStudioProject(
         id: id,
+        tenantId: tenantId,
+        ownerId: ownerId,
         name: name,
         path: '',
         projectType: projectType,
@@ -8420,6 +14664,8 @@ class AqStudioProject implements DirectStorable {
   @override
   Map<String, dynamic> toMap() => {
         'id': id,
+        'tenantId': tenantId,
+        'ownerId': ownerId,
         'name': name,
         'path': path,
         'projectType': projectType,
@@ -8434,6 +14680,8 @@ class AqStudioProject implements DirectStorable {
 
   static AqStudioProject fromMap(Map<String, dynamic> m) => AqStudioProject(
         id: m['id'] as String,
+        tenantId: m['tenantId'] as String? ?? 'system',
+        ownerId: m['ownerId'] as String? ?? '',
         name: m['name'] as String? ?? '',
         path: m['path'] as String? ?? '',
         projectType: m['projectType'] as String? ?? 'coder',
@@ -8449,6 +14697,8 @@ class AqStudioProject implements DirectStorable {
   }) =>
       AqStudioProject(
         id: id,
+        tenantId: tenantId,
+        ownerId: ownerId,
         name: name ?? this.name,
         path: path ?? this.path,
         projectType: projectType ?? this.projectType,
@@ -9233,5 +15483,5 @@ in `lib/`, and example unit test in `test/`.
 ```
 
 ---
-**Суммарно строк в включённых файлах:** 8589
-**Суммарный размер включённых файлов:** 290596 байт (~283 КБ)
+**Суммарно строк в включённых файлах:** 14572
+**Суммарный размер включённых файлов:** 483051 байт (~471 КБ)

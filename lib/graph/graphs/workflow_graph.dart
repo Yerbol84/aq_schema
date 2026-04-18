@@ -1,6 +1,12 @@
 import 'package:aq_schema/graph/core/graph_def.dart';
 import 'package:aq_schema/aq_schema.dart';
 
+// ============================================================================
+// DEPRECATED! НЕ ИСПОЛЬЗОВАТЬ!
+// Используй IWorkflowNode вместо enum
+// TODO: Удалить после полного перехода на типобезопасные узлы
+// ============================================================================
+@Deprecated('Используй IWorkflowNode вместо enum')
 enum WorkflowNodeType {
   llmAction,
   fileWrite,
@@ -26,6 +32,12 @@ enum WorkflowEdgeType {
   static WorkflowEdgeType fromJson(String json) => values.byName(json);
 }
 
+// ============================================================================
+// DEPRECATED! НЕ ИСПОЛЬЗОВАТЬ!
+// Используй IWorkflowNode вместо этого класса
+// TODO: Удалить после полного перехода на типобезопасные узлы
+// ============================================================================
+@Deprecated('Используй IWorkflowNode')
 class WorkflowNode extends $Node {
   @override
   final String id;
@@ -77,6 +89,14 @@ class WorkflowEdge extends $Edge {
   final WorkflowEdgeType type;
   final String? conditionExpression;
 
+  // Новые свойства из $Edge
+  @override
+  final int priority;
+  @override
+  final EdgeExecutionMode executionMode;
+  @override
+  final bool isExclusive;
+
   const WorkflowEdge({
     required this.id,
     required this.sourceId,
@@ -84,7 +104,13 @@ class WorkflowEdge extends $Edge {
     this.branchName = 'main',
     this.type = WorkflowEdgeType.onSuccess,
     this.conditionExpression,
-  });
+    this.priority = 50,
+    this.executionMode = EdgeExecutionMode.sequential,
+    bool? isExclusive,
+  }) : isExclusive = isExclusive ??
+            // По умолчанию onSuccess/onError ревнивые (взаимоисключающие)
+            (type == WorkflowEdgeType.onSuccess ||
+                type == WorkflowEdgeType.onError);
 
   @override
   WorkflowEdge copyWith({
@@ -94,6 +120,9 @@ class WorkflowEdge extends $Edge {
     String? branchName,
     WorkflowEdgeType? type,
     String? conditionExpression,
+    int? priority,
+    EdgeExecutionMode? executionMode,
+    bool? isExclusive,
   }) =>
       WorkflowEdge(
         id: id ?? this.id,
@@ -102,6 +131,9 @@ class WorkflowEdge extends $Edge {
         branchName: branchName ?? this.branchName,
         type: type ?? this.type,
         conditionExpression: conditionExpression ?? this.conditionExpression,
+        priority: priority ?? this.priority,
+        executionMode: executionMode ?? this.executionMode,
+        isExclusive: isExclusive ?? this.isExclusive,
       );
 
   Map<String, dynamic> toJson() => {
@@ -111,6 +143,9 @@ class WorkflowEdge extends $Edge {
         'branchName': branchName,
         'type': type.toJson(),
         'conditionExpression': conditionExpression,
+        'priority': priority,
+        'executionMode': executionMode.name,
+        'isExclusive': isExclusive,
       };
 
   factory WorkflowEdge.fromJson(Map<String, dynamic> json) => WorkflowEdge(
@@ -120,12 +155,21 @@ class WorkflowEdge extends $Edge {
         branchName: json['branchName'] as String? ?? 'main',
         type: WorkflowEdgeType.fromJson(json['type'] as String),
         conditionExpression: json['conditionExpression'] as String?,
+        priority: json['priority'] as int? ?? 50,
+        executionMode: json['executionMode'] != null
+            ? EdgeExecutionMode.values.byName(json['executionMode'] as String)
+            : EdgeExecutionMode.sequential,
+        isExclusive: json['isExclusive'] as bool?,
       );
 }
 
-/// Workflow graph — a project's automation flow.
-/// Implements [VersionedStorable]: every save creates a semver version.
-/// [ownerId] = projectId — the project this graph belongs to.
+// ============================================================================
+// DEPRECATED! НЕ ИСПОЛЬЗОВАТЬ!
+// Используй новый WorkflowGraph с IWorkflowNode (см. TypedWorkflowGraph в тестах)
+// TODO: Удалить после полного перехода на типобезопасные узлы
+// Этот класс - рудимент для старого UI прототипа
+// ============================================================================
+@Deprecated('Используй TypedWorkflowGraph с IWorkflowNode')
 class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
     implements VersionedStorable {
   /// Storage collection name — shared between client and server.
@@ -150,10 +194,6 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
         'type': 'array',
         'items': {'type': 'object'}
       },
-      'accessGrants': {
-        'type': 'array',
-        'items': {'type': 'object'}
-      },
     },
     'required': ['id', 'tenantId', 'ownerId', 'name'],
   };
@@ -166,9 +206,6 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
 
   @override
   final String ownerId; // projectId
-
-  @override
-  final List<AccessGrant> accessGrants;
 
   /// Human-readable name shown in the project panel.
   final String name;
@@ -195,7 +232,6 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
     required this.name,
     super.nodes = const {},
     super.edges = const {},
-    this.accessGrants = const [],
   });
 
   factory WorkflowGraph.empty({
@@ -242,7 +278,6 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
         'name': name,
         'nodes': nodes.values.map((n) => n.toJson()).toList(),
         'edges': edges.values.map((e) => e.toJson()).toList(),
-        'accessGrants': accessGrants.map((g) => g.toMap()).toList(),
       };
 
   @override
@@ -264,10 +299,6 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
       name: m['name'] as String? ?? '',
       nodes: {for (var n in nList) n.id: n},
       edges: {for (var e in eList) e.id: e},
-      accessGrants: ((m['accessGrants'] as List?) ?? [])
-          .whereType<Map<String, dynamic>>()
-          .map(AccessGrant.fromMap)
-          .toList(),
     );
   }
 
@@ -275,15 +306,13 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
     String? name,
     Map<String, WorkflowNode>? nodes,
     Map<String, WorkflowEdge>? edges,
-    List<AccessGrant>? accessGrants,
   }) =>
-      _copy(name: name, nodes: nodes, edges: edges, accessGrants: accessGrants);
+      _copy(name: name, nodes: nodes, edges: edges);
 
   WorkflowGraph _copy({
     String? name,
     Map<String, WorkflowNode>? nodes,
     Map<String, WorkflowEdge>? edges,
-    List<AccessGrant>? accessGrants,
   }) =>
       WorkflowGraph(
         id: id,
@@ -292,6 +321,5 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
         name: name ?? this.name,
         nodes: nodes ?? this.nodes,
         edges: edges ?? this.edges,
-        accessGrants: accessGrants ?? this.accessGrants,
       );
 }

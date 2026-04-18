@@ -123,7 +123,6 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
       'edges': {'type': 'array', 'items': {'type': 'object'}},
       'contract': {'type': 'object'},
       'tests': {'type': 'array', 'items': {'type': 'object'}},
-      'accessGrants': {'type': 'array', 'items': {'type': 'object'}},
     },
     'required': ['id', 'tenantId', 'ownerId', 'name'],
   };
@@ -136,9 +135,6 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
 
   @override
   final String ownerId; // projectId
-
-  @override
-  final List<AccessGrant> accessGrants;
 
   final String name;
 
@@ -175,7 +171,6 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
     this.contract = const {'inputs': [], 'outputs': []},
     this.tests = const [],
     this.contractSchema,
-    this.accessGrants = const [],
   });
 
   factory InstructionGraph.empty({
@@ -231,7 +226,6 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
         'contract': contract,
         'tests': tests,
         if (contractSchema != null) 'contractSchema': contractSchema!.toJson(),
-        'accessGrants': accessGrants.map((g) => g.toMap()).toList(),
       };
 
   @override
@@ -258,10 +252,6 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
       contractSchema: m['contractSchema'] != null
           ? ContractSchema.fromJson(m['contractSchema'] as Map<String, dynamic>)
           : null,
-      accessGrants: ((m['accessGrants'] as List?) ?? [])
-          .whereType<Map<String, dynamic>>()
-          .map(AccessGrant.fromMap)
-          .toList(),
     );
   }
 
@@ -271,15 +261,13 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
     Map<String, InstructionEdge>? edges,
     Map<String, dynamic>? contract,
     List<Map<String, dynamic>>? tests,
-    List<AccessGrant>? accessGrants,
   }) =>
       _copy(
           name: name,
           nodes: nodes,
           edges: edges,
           contract: contract,
-          tests: tests,
-          accessGrants: accessGrants);
+          tests: tests);
 
   InstructionGraph _copy({
     String? name,
@@ -288,7 +276,6 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
     Map<String, dynamic>? contract,
     List<Map<String, dynamic>>? tests,
     ContractSchema? contractSchema,
-    List<AccessGrant>? accessGrants,
   }) =>
       InstructionGraph(
         id: id,
@@ -300,7 +287,6 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
         contract: contract ?? this.contract,
         tests: tests ?? this.tests,
         contractSchema: contractSchema ?? this.contractSchema,
-        accessGrants: accessGrants ?? this.accessGrants,
       );
 
   ContractSchema getContractSchema() =>

@@ -18,6 +18,8 @@
 import 'package:aq_schema/data_layer/storable/direct_storable.dart';
 import 'package:aq_schema/data_layer/storable/logged_storable.dart';
 
+export 'storable_rbac.dart';
+
 import '../models/aq_user.dart';
 import '../models/aq_tenant.dart';
 import '../models/aq_profile.dart';

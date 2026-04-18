@@ -19,19 +19,19 @@ enum ValidationFailure {
   wrongType,
 }
 
-final class ValidationResult {
-  const ValidationResult._({
+final class TokenValidationResult {
+  const TokenValidationResult._({
     required this.valid,
     this.claims,
     this.failure,
     this.message,
   });
 
-  factory ValidationResult.ok(AqTokenClaims claims) =>
-      ValidationResult._(valid: true, claims: claims);
+  factory TokenValidationResult.ok(AqTokenClaims claims) =>
+      TokenValidationResult._(valid: true, claims: claims);
 
-  factory ValidationResult.fail(ValidationFailure failure, String message) =>
-      ValidationResult._(valid: false, failure: failure, message: message);
+  factory TokenValidationResult.fail(ValidationFailure failure, String message) =>
+      TokenValidationResult._(valid: false, failure: failure, message: message);
 
   final bool valid;
   final AqTokenClaims? claims;
@@ -54,42 +54,42 @@ final class TokenValidator {
   final TokenCodec codec;
 
   /// Validate access token signature and expiry.
-  ValidationResult validateAccess(String token) =>
+  TokenValidationResult validateAccess(String token) =>
       _validate(token, expectedType: TokenType.access);
 
   /// Validate refresh token signature and expiry.
-  ValidationResult validateRefresh(String token) =>
+  TokenValidationResult validateRefresh(String token) =>
       _validate(token, expectedType: TokenType.refresh);
 
   /// Validate any token type.
-  ValidationResult validate(String token) => _validate(token);
+  TokenValidationResult validate(String token) => _validate(token);
 
-  ValidationResult _validate(String token, {TokenType? expectedType}) {
+  TokenValidationResult _validate(String token, {TokenType? expectedType}) {
     AqTokenClaims claims;
     try {
       claims = codec.decode(token);
     } on TokenSignatureException catch (e) {
-      return ValidationResult.fail(ValidationFailure.invalidSignature, e.message);
+      return TokenValidationResult.fail(ValidationFailure.invalidSignature, e.message);
     } on TokenFormatException catch (e) {
-      return ValidationResult.fail(ValidationFailure.malformed, e.message);
+      return TokenValidationResult.fail(ValidationFailure.malformed, e.message);
     } catch (e) {
-      return ValidationResult.fail(ValidationFailure.malformed, e.toString());
+      return TokenValidationResult.fail(ValidationFailure.malformed, e.toString());
     }
 
     if (claims.isExpired) {
-      return ValidationResult.fail(
+      return TokenValidationResult.fail(
         ValidationFailure.expired,
         'Token expired at ${DateTime.fromMillisecondsSinceEpoch(claims.exp * 1000)}',
       );
     }
 
     if (expectedType != null && claims.type != expectedType) {
-      return ValidationResult.fail(
+      return TokenValidationResult.fail(
         ValidationFailure.wrongType,
         'Expected ${expectedType.value} token, got ${claims.type.value}',
       );
     }
 
-    return ValidationResult.ok(claims);
+    return TokenValidationResult.ok(claims);
   }
 }

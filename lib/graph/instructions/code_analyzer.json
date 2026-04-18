@@ -1,0 +1,89 @@
+{
+  "id": "instruction_code_analyzer",
+  "name": "Code Analyzer",
+  "description": "Сложная инструкция для анализа кода с использованием LLM",
+  "contract": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "source_code": {
+          "type": "string",
+          "description": "Исходный код для анализа"
+        },
+        "analysis_type": {
+          "type": "string",
+          "description": "Тип анализа",
+          "enum": ["security", "performance", "style"],
+          "default": "security"
+        }
+      },
+      "required": ["source_code"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "analysis": {
+          "type": "string",
+          "description": "Результат анализа"
+        },
+        "issues": {
+          "type": "array",
+          "description": "Список найденных проблем"
+        },
+        "score": {
+          "type": "number",
+          "description": "Оценка качества кода (0-100)"
+        }
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "analyze",
+      "type": "systemAction",
+      "payload": {
+        "tool_id": "llm_action",
+        "prompt_blueprint_id": "prompt_code_analysis",
+        "tool_args_variables": {
+          "prompt": "compiled_prompt"
+        },
+        "output_var": "raw_analysis"
+      }
+    },
+    {
+      "id": "parse",
+      "type": "systemAction",
+      "payload": {
+        "tool_id": "parse_json",
+        "tool_args_variables": {
+          "input": "raw_analysis"
+        },
+        "output_var": "parsed"
+      }
+    },
+    {
+      "id": "validate",
+      "type": "validationCheck",
+      "payload": {
+        "check_var": "parsed",
+        "operator": "!=",
+        "target_value": "null"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "sourceId": "analyze",
+      "targetId": "parse"
+    },
+    {
+      "sourceId": "parse",
+      "targetId": "validate"
+    },
+    {
+      "sourceId": "validate",
+      "targetId": "end",
+      "trigger": "true"
+    }
+  ]
+}

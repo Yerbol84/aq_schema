@@ -9,6 +9,11 @@
 
 import 'package:aq_schema/aq_schema.dart';
 import 'security_storables.dart';
+import '../models/aq_role.dart';
+import '../models/aq_policy.dart';
+import '../models/aq_access_log.dart';
+import '../models/aq_audit_trail.dart';
+import 'storable_rbac.dart';
 
 /// Все security домены — единый источник истины.
 /// Сервер и клиент читают этот список.
@@ -86,6 +91,63 @@ class AqSecurityDomains {
         VaultIndex(name: 'idx_sec_apikey_hash', field: 'keyHash', unique: true),
         VaultIndex(name: 'idx_sec_apikey_user', field: 'userId'),
         VaultIndex(name: 'idx_sec_apikey_active', field: 'isActive'),
+      ],
+    ),
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // RBAC Collections
+    // ══════════════════════════════════════════════════════════════════════════
+
+    // ── RBAC Roles (Direct) ──────────────────────────────────────────────────
+    DomainDescriptor.direct(
+      collection: AqRole.kCollection,
+      fromMap: StorableAqRole.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_rbac_roles_name', field: 'name'),
+        VaultIndex(name: 'idx_rbac_roles_tenant', field: 'tenantId'),
+      ],
+    ),
+
+    // ── RBAC User Roles (Direct) ─────────────────────────────────────────────
+    DomainDescriptor.direct(
+      collection: AqUserRole.kCollection,
+      fromMap: StorableAqUserRole.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_rbac_ur_user', field: 'userId'),
+        VaultIndex(name: 'idx_rbac_ur_role', field: 'roleId'),
+        VaultIndex(name: 'idx_rbac_ur_tenant', field: 'tenantId'),
+      ],
+    ),
+
+    // ── RBAC Policies (Direct) ───────────────────────────────────────────────
+    DomainDescriptor.direct(
+      collection: AqPolicy.kCollection,
+      fromMap: StorableAqPolicy.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_rbac_policies_tenant', field: 'tenantId'),
+        VaultIndex(name: 'idx_rbac_policies_active', field: 'isActive'),
+      ],
+    ),
+
+    // ── RBAC Access Logs (Logged) ────────────────────────────────────────────
+    DomainDescriptor.logged(
+      collection: AqAccessLog.kCollection,
+      fromMap: StorableAqAccessLog.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_rbac_logs_user', field: 'userId'),
+        VaultIndex(name: 'idx_rbac_logs_resource', field: 'resource'),
+        VaultIndex(name: 'idx_rbac_logs_timestamp', field: 'timestamp'),
+      ],
+    ),
+
+    // ── RBAC Audit Trail (Logged) ────────────────────────────────────────────
+    DomainDescriptor.logged(
+      collection: AqAuditTrail.kCollection,
+      fromMap: StorableAqAuditTrail.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_rbac_audit_user', field: 'userId'),
+        VaultIndex(name: 'idx_rbac_audit_entity', field: 'entityId'),
+        VaultIndex(name: 'idx_rbac_audit_timestamp', field: 'timestamp'),
       ],
     ),
   ];

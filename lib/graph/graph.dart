@@ -24,5 +24,6 @@ export 'validation/graph_contract_validator.dart';
 export 'transport/messages/run_event.dart';
 export 'transport/messages/run_request.dart';
 export 'transport/messages/run_status.dart';
+export 'transport/messages/run_state.dart';
 export 'transport/messages/user_input_response.dart';
 export 'transport/interfaces/i_engine_transport.dart';

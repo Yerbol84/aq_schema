@@ -1,0 +1,40 @@
+{
+  "id": "instruction_file_read",
+  "name": "File Read",
+  "description": "Базовая инструкция для чтения файла",
+  "contract": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "file_path": {
+          "type": "string",
+          "description": "Путь к файлу для чтения"
+        }
+      },
+      "required": ["file_path"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "description": "Содержимое файла"
+        }
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "node1",
+      "type": "systemAction",
+      "payload": {
+        "tool_id": "fs_read_file",
+        "tool_args_variables": {
+          "file_path": "file_path"
+        },
+        "output_var": "content"
+      }
+    }
+  ],
+  "edges": []
+}

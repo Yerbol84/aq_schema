@@ -33,39 +33,49 @@ final class LogEntry {
     this.rollbackToEntryId,
   });
 
-  Map<String, dynamic> toMap() => {
-        'entryId': entryId,
-        'entityId': entityId,
-        'collectionId': collectionId,
-        'changedBy': changedBy,
-        'changedAt': changedAt.toIso8601String(),
-        'operation': operation.name,
-        'diff': jsonEncode(
-          diff.map((k, v) => MapEntry(k, v.toMap())),
-        ),
-        'snapshot': snapshot != null ? jsonEncode(snapshot) : null,
-        'rollbackToEntryId': rollbackToEntryId,
-      };
+  /// 3-level constants system: Domain → Sphere → Key
+  static final keys = _LogEntryKeys._();
+
+  // ── Serialization ───────────────────────────────────────────────────────────
+
+  Map<String, dynamic> toMap() {
+    final k = LogEntry.keys.jsonKeys;
+    return {
+      k.entryId: entryId,
+      k.entityId: entityId,
+      k.collectionId: collectionId,
+      k.changedBy: changedBy,
+      k.changedAt: changedAt.toIso8601String(),
+      k.operation: operation.name,
+      k.diff: jsonEncode(
+        diff.map((key, value) => MapEntry(key, value.toMap())),
+      ),
+      k.snapshot: snapshot != null ? jsonEncode(snapshot) : null,
+      k.rollbackToEntryId: rollbackToEntryId,
+    };
+  }
 
   factory LogEntry.fromMap(Map<String, dynamic> m) {
+    final k = LogEntry.keys.jsonKeys;
+
     // Decode diff
-    final rawDiff = m['diff'];
+    final rawDiff = m[k.diff];
     final Map<String, FieldDiff> diff;
     if (rawDiff is String && rawDiff.isNotEmpty) {
       final decoded = jsonDecode(rawDiff) as Map<String, dynamic>? ?? {};
       diff = decoded.map(
-        (k, v) => MapEntry(k, FieldDiff.fromMap(v as Map<String, dynamic>)),
+        (key, value) => MapEntry(key, FieldDiff.fromMap(value as Map<String, dynamic>)),
       );
     } else if (rawDiff is Map) {
       diff = (rawDiff as Map<String, dynamic>).map(
-        (k, v) => MapEntry(k, FieldDiff.fromMap(v as Map<String, dynamic>)),
+        (key, value) => MapEntry(key, FieldDiff.fromMap(value as Map<String, dynamic>)),
       );
     } else {
       diff = {};
     }
 
     // Decode snapshot
-    final rawSnap = m['snapshot'];
+    final rawSnap = m[k.snapshot];
     Map<String, dynamic>? snapshot;
     if (rawSnap is String && rawSnap.isNotEmpty) {
       snapshot = jsonDecode(rawSnap) as Map<String, dynamic>?;
@@ -74,19 +84,43 @@ final class LogEntry {
     }
 
     return LogEntry(
-      entryId: m['entryId'] as String,
-      entityId: m['entityId'] as String,
-      collectionId: m['collectionId'] as String? ?? '',
-      changedBy: m['changedBy'] as String? ?? '',
-      changedAt: DateTime.tryParse(m['changedAt'] as String? ?? '') ?? DateTime.now(),
-      operation: LogOperation.fromString(m['operation'] as String? ?? 'updated'),
+      entryId: m[k.entryId] as String,
+      entityId: m[k.entityId] as String,
+      collectionId: m[k.collectionId] as String? ?? '',
+      changedBy: m[k.changedBy] as String? ?? '',
+      changedAt: DateTime.tryParse(m[k.changedAt] as String? ?? '') ?? DateTime.now(),
+      operation: LogOperation.fromString(m[k.operation] as String? ?? 'updated'),
       diff: diff,
       snapshot: snapshot,
-      rollbackToEntryId: m['rollbackToEntryId'] as String?,
+      rollbackToEntryId: m[k.rollbackToEntryId] as String?,
     );
   }
 
   @override
   String toString() =>
       'LogEntry($entryId op:${operation.name} by:$changedBy at:${changedAt.toIso8601String()})';
+}
+
+// ── Level 2: Spheres ──────────────────────────────────────────────────────────
+
+class _LogEntryKeys {
+  _LogEntryKeys._();
+
+  final jsonKeys = _LogEntryJsonKeys._();
+}
+
+// ── Level 3: JSON Keys ────────────────────────────────────────────────────────
+
+class _LogEntryJsonKeys {
+  _LogEntryJsonKeys._();
+
+  final String entryId = 'entryId';
+  final String entityId = 'entityId';
+  final String collectionId = 'collectionId';
+  final String changedBy = 'changedBy';
+  final String changedAt = 'changedAt';
+  final String operation = 'operation';
+  final String diff = 'diff';
+  final String snapshot = 'snapshot';
+  final String rollbackToEntryId = 'rollbackToEntryId';
 }

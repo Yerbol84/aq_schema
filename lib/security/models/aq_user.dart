@@ -18,18 +18,26 @@ enum UserType {
 }
 
 /// Which identity provider authenticated this user.
-enum AuthProvider {
+///
+/// **НАЗНАЧЕНИЕ:** Тип провайдера идентификации для пользователей приложения.
+/// Используется в AqUser для отслеживания через какой сервис пользователь вошёл.
+///
+/// **ОТЛИЧИЕ ОТ auth/AuthProvider:**
+/// - security/IdentityProvider — enum провайдеров (google, github, email)
+/// - auth/AuthProvider — interface для MCP аутентификации
+enum IdentityProvider {
   google('google'),
+  github('github'),
   emailPassword('email_password'),
   apiKey('api_key'),
   mock('mock');
 
-  const AuthProvider(this.value);
+  const IdentityProvider(this.value);
   final String value;
 
-  static AuthProvider fromString(String s) =>
-      AuthProvider.values.firstWhere((e) => e.value == s,
-          orElse: () => AuthProvider.mock);
+  static IdentityProvider fromString(String s) =>
+      IdentityProvider.values.firstWhere((e) => e.value == s,
+          orElse: () => IdentityProvider.mock);
 }
 
 /// A platform user.
@@ -59,7 +67,7 @@ final class AqUser {
   /// The tenant this user belongs to.
   final String tenantId;
 
-  final AuthProvider authProvider;
+  final IdentityProvider authProvider;
 
   /// User ID in the external provider (Google `sub`, etc.).
   final String? providerUserId;
@@ -77,7 +85,7 @@ final class AqUser {
         photoUrl: json['photoUrl'] as String?,
         userType: UserType.fromString(json['userType'] as String? ?? 'end_user'),
         tenantId: json['tenantId'] as String,
-        authProvider: AuthProvider.fromString(
+        authProvider: IdentityProvider.fromString(
             json['authProvider'] as String? ?? 'mock'),
         providerUserId: json['providerUserId'] as String?,
         isActive: json['isActive'] as bool? ?? true,

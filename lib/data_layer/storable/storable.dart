@@ -39,4 +39,48 @@ abstract interface class Storable {
   /// };
   /// ```
   Map<String, dynamic> get jsonSchema;
+
+  /// 3-level constants system: Domain → Sphere → Key
+  static final keys = _StorableKeys._();
+}
+
+// ── Level 2: Spheres ──────────────────────────────────────────────────────────
+
+class _StorableKeys {
+  _StorableKeys._();
+
+  final dbKeys = _StorableDbKeys._();
+  final jsonKeys = _StorableJsonKeys._();
+  final transportKeys = _StorableTransportKeys._();
+}
+
+// ── Level 3: DB Keys ──────────────────────────────────────────────────────────
+
+class _StorableDbKeys {
+  _StorableDbKeys._();
+
+  final String id = 'id';
+  final String tenantId = 'tenant_id';
+  final String data = 'data';
+  final String createdAt = 'created_at';
+  final String updatedAt = 'updated_at';
+}
+
+// ── Level 3: JSON Keys ────────────────────────────────────────────────────────
+
+class _StorableJsonKeys {
+  _StorableJsonKeys._();
+
+  final String id = 'id';
+  final String tenantId = 'tenantId';
+}
+
+// ── Level 3: Transport Keys ───────────────────────────────────────────────────
+
+class _StorableTransportKeys {
+  _StorableTransportKeys._();
+
+  final String collection = 'collection';
+  final String operation = 'operation';
+  final String tenantId = 'tenantId';
 }

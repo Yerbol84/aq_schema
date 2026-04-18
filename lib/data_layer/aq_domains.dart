@@ -101,5 +101,29 @@ class AqDomains {
         VaultIndex(name: 'idx_pg_name', field: 'name'),
       ],
     ),
+
+    // ── Graph Run States ──────────────────────────────────────────────────────
+    DomainDescriptor.direct(
+      collection: 'graph_run_states',
+      fromMap: GraphRunState.fromJson,
+      indexes: [
+        VaultIndex(name: 'idx_run_blueprint', field: 'blueprintId'),
+        VaultIndex(name: 'idx_run_project', field: 'projectId'),
+        VaultIndex(name: 'idx_run_status', field: 'status'),
+        VaultIndex(name: 'idx_run_started', field: 'startedAt'),
+      ],
+    ),
+
+    // ── Workflow Runs (LoggedStorable - audit trail) ──────────────────────────
+    DomainDescriptor.logged(
+      collection: 'workflow_runs',
+      fromMap: WorkflowRun.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_wfrun_project', field: 'projectId'),
+        VaultIndex(name: 'idx_wfrun_blueprint', field: 'blueprintId'),
+        VaultIndex(name: 'idx_wfrun_status', field: 'status'),
+        VaultIndex(name: 'idx_wfrun_created', field: 'createdAt'),
+      ],
+    ),
   ];
 }

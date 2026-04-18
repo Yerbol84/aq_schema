@@ -2,6 +2,7 @@ import 'aq_user.dart';
 import 'aq_session.dart';
 import 'aq_tenant.dart';
 import 'aq_token_claims.dart';
+import 'credentials.dart';
 
 // pkgs/aq_schema/lib/security/models/aq_api_key.dart
 //
@@ -20,7 +21,9 @@ final class AqApiKey {
     required this.isActive,
     required this.createdAt,
     this.lastUsedAt,
+    this.lastRotatedAt,
     this.expiresAt,
+    this.updatedAt,
   });
 
   final String id;
@@ -39,8 +42,10 @@ final class AqApiKey {
   final List<String> permissions;
   final bool isActive;
   final int? lastUsedAt;
+  final int? lastRotatedAt;
   final int? expiresAt;
   final int createdAt;
+  final int? updatedAt;
 
   bool get isExpired {
     if (expiresAt == null) return false;
@@ -58,8 +63,10 @@ final class AqApiKey {
             (json['permissions'] as List<dynamic>?)?.cast<String>() ?? [],
         isActive: json['isActive'] as bool? ?? true,
         lastUsedAt: json['lastUsedAt'] as int?,
+        lastRotatedAt: json['lastRotatedAt'] as int?,
         expiresAt: json['expiresAt'] as int?,
         createdAt: json['createdAt'] as int,
+        updatedAt: json['updatedAt'] as int?,
       );
 
   Map<String, dynamic> toJson() {
@@ -75,74 +82,63 @@ final class AqApiKey {
       'createdAt': createdAt,
     };
     if (lastUsedAt != null) m['lastUsedAt'] = lastUsedAt;
+    if (lastRotatedAt != null) m['lastRotatedAt'] = lastRotatedAt;
     if (expiresAt != null) m['expiresAt'] = expiresAt;
+    if (updatedAt != null) m['updatedAt'] = updatedAt;
     return m;
   }
+
+  AqApiKey copyWith({
+    String? name,
+    List<String>? permissions,
+    bool? isActive,
+    int? lastUsedAt,
+    int? lastRotatedAt,
+    int? expiresAt,
+    int? updatedAt,
+  }) =>
+      AqApiKey(
+        id: id,
+        userId: userId,
+        tenantId: tenantId,
+        name: name ?? this.name,
+        keyPrefix: keyPrefix,
+        keyHash: keyHash,
+        permissions: permissions ?? this.permissions,
+        isActive: isActive ?? this.isActive,
+        lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+        lastRotatedAt: lastRotatedAt ?? this.lastRotatedAt,
+        expiresAt: expiresAt ?? this.expiresAt,
+        createdAt: createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Auth request / response DTOs
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Incoming auth request. Discriminated by [provider].
+/// Incoming auth request with credentials.
 final class AuthRequest {
-  const AuthRequest({
-    required this.provider,
-    this.googleCode,
-    this.googleRedirectUri,
-    this.email,
-    this.password,
-    this.apiKey,
-  });
+  const AuthRequest({required this.credentials});
 
-  final AuthProvider provider;
-
-  // Google OAuth2 code exchange
-  final String? googleCode;
-  final String? googleRedirectUri;
-
-  // Email/password (future)
-  final String? email;
-  final String? password;
-
-  // API key (service accounts)
-  final String? apiKey;
-
-  factory AuthRequest.google({
-    required String code,
-    required String redirectUri,
-  }) =>
-      AuthRequest(
-        provider: AuthProvider.google,
-        googleCode: code,
-        googleRedirectUri: redirectUri,
-      );
-
-  factory AuthRequest.apiKey(String key) =>
-      AuthRequest(provider: AuthProvider.apiKey, apiKey: key);
+  final Credentials credentials;
 
   factory AuthRequest.fromJson(Map<String, dynamic> json) => AuthRequest(
-        provider: AuthProvider.fromString(json['provider'] as String),
-        googleCode: json['googleCode'] as String?,
-        googleRedirectUri: json['googleRedirectUri'] as String?,
-        email: json['email'] as String?,
-        password: json['password'] as String?,
-        apiKey: json['apiKey'] as String?,
+        credentials: Credentials.fromJson(
+          json['credentials'] as Map<String, dynamic>,
+        ),
       );
 
-  Map<String, dynamic> toJson() {
-    final m = <String, dynamic>{'provider': provider.value};
-    if (googleCode != null) m['googleCode'] = googleCode;
-    if (googleRedirectUri != null) m['googleRedirectUri'] = googleRedirectUri;
-    if (email != null) m['email'] = email;
-    if (apiKey != null) m['apiKey'] = apiKey;
-    return m;
-  }
+  Map<String, dynamic> toJson() => {
+        'credentials': credentials.toJson(),
+      };
 }
 
-/// Successful auth response.
-final class AuthResponse {
-  const AuthResponse({
+/// Successful auth response (для API транспорта).
+/// Используется в HTTP API между сервисами.
+final class ApiAuthResponse {
+  const ApiAuthResponse({
     required this.user,
     required this.tenant,
     required this.tokens,
@@ -154,7 +150,7 @@ final class AuthResponse {
   final TokenPair tokens;
   final AqSession session;
 
-  factory AuthResponse.fromJson(Map<String, dynamic> json) => AuthResponse(
+  factory ApiAuthResponse.fromJson(Map<String, dynamic> json) => ApiAuthResponse(
         user: AqUser.fromJson(json['user'] as Map<String, dynamic>),
         tenant: AqTenant.fromJson(json['tenant'] as Map<String, dynamic>),
         tokens: TokenPair.fromJson(json['tokens'] as Map<String, dynamic>),

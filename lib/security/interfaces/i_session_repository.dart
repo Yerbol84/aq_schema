@@ -21,9 +21,11 @@ abstract interface class IApiKeyRepository {
   Future<AqApiKey?> findByHash(String keyHash);
   Future<AqApiKey?> findById(String id);
   Future<AqApiKey> create(AqApiKey apiKey);
+  Future<AqApiKey> update(AqApiKey apiKey);
   Future<void> revoke(String id);
   Future<void> updateLastUsed(String id, int timestamp);
   Future<List<AqApiKey>> listByUser(String userId);
+  Future<List<AqApiKey>> listAll();
 }
 
 abstract interface class ITenantRepository {

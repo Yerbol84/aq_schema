@@ -111,7 +111,6 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
       'name': {'type': 'string'},
       'nodes': {'type': 'array', 'items': {'type': 'object'}},
       'edges': {'type': 'array', 'items': {'type': 'object'}},
-      'accessGrants': {'type': 'array', 'items': {'type': 'object'}},
     },
     'required': ['id', 'tenantId', 'ownerId', 'name'],
   };
@@ -124,9 +123,6 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
 
   @override
   final String ownerId; // projectId
-
-  @override
-  final List<AccessGrant> accessGrants;
 
   final String name;
 
@@ -152,7 +148,6 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
     required this.name,
     super.nodes = const {},
     super.edges = const {},
-    this.accessGrants = const [],
   });
 
   factory PromptGraph.empty({
@@ -199,7 +194,6 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
         'name': name,
         'nodes': nodes.values.map((n) => n.toJson()).toList(),
         'edges': edges.values.map((e) => e.toJson()).toList(),
-        'accessGrants': accessGrants.map((g) => g.toMap()).toList(),
       };
 
   @override
@@ -220,10 +214,6 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
       name: m['name'] as String? ?? '',
       nodes: {for (var n in nList) n.id: n},
       edges: {for (var e in eList) e.id: e},
-      accessGrants: ((m['accessGrants'] as List?) ?? [])
-          .whereType<Map<String, dynamic>>()
-          .map(AccessGrant.fromMap)
-          .toList(),
     );
   }
 
@@ -231,15 +221,13 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
     String? name,
     Map<String, PromptNode>? nodes,
     Map<String, PromptEdge>? edges,
-    List<AccessGrant>? accessGrants,
   }) =>
-      _copy(name: name, nodes: nodes, edges: edges, accessGrants: accessGrants);
+      _copy(name: name, nodes: nodes, edges: edges);
 
   PromptGraph _copy({
     String? name,
     Map<String, PromptNode>? nodes,
     Map<String, PromptEdge>? edges,
-    List<AccessGrant>? accessGrants,
   }) =>
       PromptGraph(
         id: id,
@@ -248,6 +236,5 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
         name: name ?? this.name,
         nodes: nodes ?? this.nodes,
         edges: edges ?? this.edges,
-        accessGrants: accessGrants ?? this.accessGrants,
       );
 }

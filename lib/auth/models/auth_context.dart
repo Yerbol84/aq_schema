@@ -1,15 +1,35 @@
-/// Auth domain models and abstract interfaces.
+/// Auth domain models and abstract interfaces for MCP protocol.
 ///
-/// v1 uses MockAuthProvider (always success).
-/// v2 will plug in JwtAuthProvider / OAuth2AuthProvider without
-/// changing any other packages in the ecosystem.
+/// **НАЗНАЧЕНИЕ:** Аутентификация на уровне MCP протокола (worker ↔ adapter).
+/// Эти типы используются для валидации токенов в MCP запросах, НЕ для управления
+/// пользователями приложения (для этого используйте security/).
+///
+/// **АРХИТЕКТУРА:**
+/// - MCP клиент отправляет токен в `params._aq_auth` → AuthTokenPayload
+/// - AuthProvider валидирует токен → AuthResult
+/// - При успехе создаётся AuthContext (без сырого токена)
+/// - AuthContext передаётся в Redis очередь вместе с job
+/// - Worker получает AuthContext и выполняет задачу
+///
+/// **ВЕРСИИ:**
+/// - v1: MockAuthProvider — всегда успех, для разработки
+/// - v2: JwtAuthProvider, OAuth2AuthProvider — реальная валидация
+///
+/// **ОТЛИЧИЕ ОТ security/:**
+/// - auth/ — инфраструктурный слой (MCP протокол, worker↔adapter)
+/// - security/ — прикладной слой (пользователи, роли, сессии, RBAC)
 library;
 
 // ══════════════════════════════════════════════════════════
 //  Enums
 // ══════════════════════════════════════════════════════════
 
-/// Authorization mechanism type.
+/// Тип механизма авторизации для MCP протокола.
+///
+/// **ИСПОЛЬЗОВАНИЕ В MCP:**
+/// - Определяет какой AuthProvider использовать для валидации
+/// - Передаётся в AuthTokenPayload от MCP клиента
+/// - Влияет на формат токена и логику валидации
 enum AuthType {
   bearer('bearer'),
   apikey('apikey'),
@@ -31,7 +51,12 @@ enum AuthType {
       };
 }
 
-/// Reason why auth validation failed.
+/// Причина отказа в аутентификации MCP запроса.
+///
+/// **ИСПОЛЬЗОВАНИЕ В MCP:**
+/// - Возвращается в AuthResult.failureReason при неудачной валидации
+/// - Помогает MCP клиенту понять почему запрос отклонён
+/// - Логируется для мониторинга безопасности
 enum AuthFailureReason {
   tokenMissing('token_missing'),
   tokenExpired('token_expired'),
@@ -48,11 +73,39 @@ enum AuthFailureReason {
 }
 
 // ══════════════════════════════════════════════════════════
-//  AuthTokenPayload — raw incoming token from MCP client
+//  AuthTokenPayload — сырой входящий токен от MCP клиента
 // ══════════════════════════════════════════════════════════
 
-/// Raw token payload passed in `params._aq_auth` by MCP client.
-/// This is the input — not yet validated.
+/// Сырой токен из MCP запроса (ещё не валидирован).
+///
+/// **РОЛЬ В MCP ПРОТОКОЛЕ:**
+/// - MCP клиент отправляет токен в `params._aq_auth`
+/// - Adapter извлекает AuthTokenPayload из запроса
+/// - Передаёт в AuthProvider.validate() для проверки
+/// - НЕ сохраняется в Redis — только валидированный AuthContext
+///
+/// **ФОРМАТ:**
+/// ```json
+/// {
+///   "type": "bearer",
+///   "token": "eyJhbGc..."
+/// }
+/// ```
+/// или для OAuth2:
+/// ```json
+/// {
+///   "type": "oauth2",
+///   "oauth2": {
+///     "access_token": "...",
+///     "token_type": "Bearer",
+///     "expires_in": 3600
+///   }
+/// }
+/// ```
+///
+/// **БЕЗОПАСНОСТЬ:**
+/// - Содержит сырой токен — не логировать полностью
+/// - Не передавать в worker — только AuthContext
 final class AuthTokenPayload {
   const AuthTokenPayload({
     required this.type,
@@ -83,7 +136,12 @@ final class AuthTokenPayload {
   static const empty = AuthTokenPayload(type: AuthType.none);
 }
 
-/// OAuth2 token data inside [AuthTokenPayload].
+/// OAuth2 токен внутри [AuthTokenPayload].
+///
+/// **РОЛЬ В MCP:**
+/// - Используется когда MCP клиент аутентифицируется через OAuth2
+/// - Содержит access_token и метаданные OAuth2 провайдера
+/// - OAuth2AuthProvider извлекает и валидирует эти данные
 final class OAuth2TokenPayload {
   const OAuth2TokenPayload({
     required this.accessToken,
@@ -121,11 +179,31 @@ final class OAuth2TokenPayload {
 }
 
 // ══════════════════════════════════════════════════════════
-//  AuthContext — internal validated state
+//  AuthContext — внутреннее валидированное состояние
 // ══════════════════════════════════════════════════════════
 
-/// Validated auth state. Created by [AuthProvider] after successful validation.
-/// Passed into the Redis queue alongside the job — never contains raw tokens.
+/// Валидированное состояние аутентификации для MCP протокола.
+///
+/// **РОЛЬ В MCP АРХИТЕКТУРЕ:**
+/// 1. AuthProvider.validate() создаёт AuthContext после успешной проверки токена
+/// 2. Adapter сохраняет AuthContext в Redis вместе с job
+/// 3. Worker получает AuthContext из Redis и выполняет задачу
+/// 4. AuthContext НЕ содержит сырой токен — только валидированные claims
+///
+/// **ЖИЗНЕННЫЙ ЦИКЛ:**
+/// ```
+/// MCP Request → AuthTokenPayload → AuthProvider.validate()
+///   → AuthContext → Redis Queue → Worker
+/// ```
+///
+/// **ОТЛИЧИЕ ОТ AuthTokenPayload:**
+/// - AuthTokenPayload — сырой вход (может быть невалидным)
+/// - AuthContext — валидированный результат (всегда безопасен)
+///
+/// **БЕЗОПАСНОСТЬ:**
+/// - Не содержит сырой токен (только subject, scopes, claims)
+/// - Можно безопасно логировать и передавать между сервисами
+/// - Проверяйте isExpired перед использованием
 final class AuthContext {
   const AuthContext({
     required this.type,
@@ -206,10 +284,24 @@ final class AuthContext {
 }
 
 // ══════════════════════════════════════════════════════════
-//  AuthResult — validation output
+//  AuthResult — результат валидации
 // ══════════════════════════════════════════════════════════
 
-/// Result returned by [AuthProvider.validate].
+/// Результат валидации токена в MCP протоколе.
+///
+/// **РОЛЬ В MCP:**
+/// - Возвращается из AuthProvider.validate()
+/// - Adapter проверяет success перед постановкой job в очередь
+/// - При success=false MCP запрос отклоняется с ошибкой
+///
+/// **ИСПОЛЬЗОВАНИЕ:**
+/// ```dart
+/// final result = await authProvider.validate(tokenPayload);
+/// if (!result.success) {
+///   return McpError.unauthorized(result.failureReason?.value);
+/// }
+/// // Использовать result.context для job
+/// ```
 final class AuthResult {
   const AuthResult({
     required this.success,
@@ -272,44 +364,170 @@ final class AuthResult {
 }
 
 // ══════════════════════════════════════════════════════════
-//  AuthProvider — abstract interface
+//  AuthProvider — абстрактный интерфейс
 // ══════════════════════════════════════════════════════════
 
-/// Abstract interface for authentication providers.
+/// Абстрактный интерфейс провайдера аутентификации для MCP.
 ///
-/// v1: [MockAuthProvider] — always returns success, logs calls.
-/// v2: JwtAuthProvider, OAuth2AuthProvider — real validation.
+/// **РОЛЬ В АРХИТЕКТУРЕ:**
+/// - Единая точка валидации токенов в MCP протоколе
+/// - Реализации: MockAuthProvider (v1), JwtAuthProvider (v2), OAuth2AuthProvider (v2)
+/// - Adapter зависит только от интерфейса — реализацию можно менять без изменения кода
 ///
-/// Upper packages (aq_auth, aq_mcp_adapter) depend only on this interface.
-/// Swap implementation without changing any other packages.
+/// **ВЕРСИИ:**
+/// - **v1 (MockAuthProvider):** Всегда возвращает success, логирует вызовы, для разработки
+/// - **v2 (JwtAuthProvider):** Валидирует JWT токены, проверяет подпись и срок
+/// - **v2 (OAuth2AuthProvider):** Валидирует OAuth2 токены через внешний провайдер
+///
+/// **ИСПОЛЬЗОВАНИЕ В ADAPTER:**
+/// ```dart
+/// final authProvider = JwtAuthProvider(secretKey: '...');
+/// final result = await authProvider.validate(tokenPayload);
+/// if (!result.success) {
+///   return McpError.unauthorized();
+/// }
+/// // Передать result.context в Redis
+/// ```
+///
+/// **РАСШИРЕНИЕ:**
+/// Для добавления нового типа аутентификации:
+/// 1. Добавить значение в AuthType enum
+/// 2. Создать класс реализующий AuthProvider
+/// 3. Зарегистрировать в adapter
 abstract interface class AuthProvider {
-  /// Whether this provider is the mock stub (v1).
+  /// Является ли этот провайдер mock-заглушкой (v1).
+  ///
+  /// **ИСПОЛЬЗОВАНИЕ:**
+  /// - true для MockAuthProvider (разработка/тесты)
+  /// - false для реальных провайдеров (продакшн)
+  /// - Adapter может логировать предупреждение если isMock=true в продакшне
   bool get isMock;
 
-  /// Validates a raw token payload from the MCP client.
+  /// Валидирует сырой токен от MCP клиента.
+  ///
+  /// **ПРОЦЕСС:**
+  /// 1. Извлекает токен из tokenPayload
+  /// 2. Проверяет подпись (для JWT) или обращается к OAuth2 провайдеру
+  /// 3. Проверяет срок действия
+  /// 4. Извлекает claims (subject, scopes)
+  /// 5. Возвращает AuthResult с AuthContext или failureReason
+  ///
+  /// **ВАЖНО:**
+  /// - Метод должен быть быстрым (< 100ms)
+  /// - Не должен бросать исключения — возвращать AuthResult.failure()
+  /// - Кэшировать результаты если возможно
   Future<AuthResult> validate(AuthTokenPayload tokenPayload);
 
-  /// Refreshes an expired [AuthContext] (OAuth2 only).
-  /// Default impl returns the same context unchanged.
+  /// Обновляет истёкший AuthContext (только для OAuth2).
+  ///
+  /// **ИСПОЛЬЗОВАНИЕ:**
+  /// - Worker вызывает если обнаружил что AuthContext.isExpired = true
+  /// - OAuth2AuthProvider использует refresh_token для получения нового access_token
+  /// - Другие провайдеры возвращают тот же context без изменений
+  ///
+  /// **РЕАЛИЗАЦИЯ ПО УМОЛЧАНИЮ:**
+  /// ```dart
+  /// Future<AuthContext> refresh(AuthContext expiredContext) async {
+  ///   return expiredContext; // Не поддерживается
+  /// }
+  /// ```
   Future<AuthContext> refresh(AuthContext expiredContext);
 
-  /// Checks whether the given context has all [requiredScopes].
+  /// Проверяет наличие всех требуемых scopes в контексте.
+  ///
+  /// **ИСПОЛЬЗОВАНИЕ В MCP:**
+  /// - AuthMiddleware.authorize() вызывает для проверки прав на tool
+  /// - Если tool требует scopes=['llm', 'fs:read'], проверяет что все есть в ctx.scopes
+  /// - Wildcard '*' в ctx.scopes разрешает всё
+  ///
+  /// **ПРИМЕР:**
+  /// ```dart
+  /// final hasAccess = authProvider.hasScope(ctx, ['llm', 'fs:read']);
+  /// if (!hasAccess) {
+  ///   return McpError.forbidden('Insufficient scopes');
+  /// }
+  /// ```
   bool hasScope(AuthContext ctx, List<String> requiredScopes);
 }
 
 // ══════════════════════════════════════════════════════════
-//  AuthMiddleware — abstract interface
+//  AuthMiddleware — абстрактный интерфейс
 // ══════════════════════════════════════════════════════════
 
-/// Middleware interface used by the adapter to gate requests.
+/// Middleware интерфейс для контроля доступа к MCP запросам.
 ///
-/// Separates "can this request proceed?" (authenticate)
-/// from "can this principal use this tool?" (authorize).
+/// **РОЛЬ В MCP ADAPTER:**
+/// - Adapter вызывает middleware перед обработкой каждого MCP запроса
+/// - Разделяет аутентификацию (authenticate) и авторизацию (authorize)
+/// - Позволяет централизованно управлять доступом к tools
+///
+/// **ПРОЦЕСС ОБРАБОТКИ MCP ЗАПРОСА:**
+/// ```
+/// 1. MCP Request → Adapter
+/// 2. Adapter извлекает params._aq_auth → AuthTokenPayload
+/// 3. middleware.authenticate(payload) → AuthResult
+/// 4. Если !success → return McpError.unauthorized()
+/// 5. middleware.authorize(context, toolName) → bool
+/// 6. Если !authorized → return McpError.forbidden()
+/// 7. Выполнить tool и вернуть результат
+/// ```
+///
+/// **РЕАЛИЗАЦИЯ:**
+/// ```dart
+/// class DefaultAuthMiddleware implements AuthMiddleware {
+///   final AuthProvider provider;
+///   final Map<String, List<String>> toolScopes;
+///
+///   Future<AuthResult> authenticate(AuthTokenPayload? payload) async {
+///     if (payload == null) return AuthResult.failure(AuthFailureReason.tokenMissing);
+///     return await provider.validate(payload);
+///   }
+///
+///   Future<bool> authorize(AuthContext ctx, String toolName) async {
+///     final requiredScopes = toolScopes[toolName] ?? [];
+///     return provider.hasScope(ctx, requiredScopes);
+///   }
+/// }
+/// ```
 abstract interface class AuthMiddleware {
-  /// Authenticates the raw token payload.
-  /// Returns a validated [AuthResult].
+  /// Аутентифицирует сырой токен из MCP запроса.
+  ///
+  /// **ВЫЗЫВАЕТСЯ:** Adapter перед обработкой каждого MCP запроса
+  ///
+  /// **ПАРАМЕТРЫ:**
+  /// - payload: Токен из params._aq_auth (может быть null для публичных tools)
+  ///
+  /// **ВОЗВРАЩАЕТ:**
+  /// - AuthResult.success с AuthContext если токен валиден
+  /// - AuthResult.failure с причиной если токен невалиден или отсутствует
+  ///
+  /// **ПРИМЕР:**
+  /// ```dart
+  /// final result = await middleware.authenticate(tokenPayload);
+  /// if (!result.success) {
+  ///   return McpError.unauthorized(result.failureReason?.value);
+  /// }
+  /// ```
   Future<AuthResult> authenticate(AuthTokenPayload? payload);
 
-  /// Checks if the authenticated [AuthContext] is allowed to use [toolName].
+  /// Проверяет право использовать конкретный tool.
+  ///
+  /// **ВЫЗЫВАЕТСЯ:** Adapter после успешной аутентификации
+  ///
+  /// **ПАРАМЕТРЫ:**
+  /// - ctx: Валидированный AuthContext из authenticate()
+  /// - toolName: Имя tool из MCP запроса (например, "llm_complete")
+  ///
+  /// **ВОЗВРАЩАЕТ:**
+  /// - true если ctx.scopes содержит все требуемые scopes для tool
+  /// - false если прав недостаточно
+  ///
+  /// **ПРИМЕР:**
+  /// ```dart
+  /// final allowed = await middleware.authorize(context, 'llm_complete');
+  /// if (!allowed) {
+  ///   return McpError.forbidden('Tool requires llm scope');
+  /// }
+  /// ```
   Future<bool> authorize(AuthContext ctx, String toolName);
 }

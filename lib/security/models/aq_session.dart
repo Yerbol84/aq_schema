@@ -40,7 +40,7 @@ final class AqSession {
   final String userId;
   final String tenantId;
   final SessionStatus status;
-  final AuthProvider authProvider;
+  final IdentityProvider authProvider;
   final String? ipAddress;
   final String? userAgent;
 
@@ -86,7 +86,7 @@ final class AqSession {
         userId: json['userId'] as String,
         tenantId: json['tenantId'] as String,
         status: SessionStatus.fromString(json['status'] as String? ?? 'active'),
-        authProvider: AuthProvider.fromString(
+        authProvider: IdentityProvider.fromString(
             json['authProvider'] as String? ?? 'mock'),
         ipAddress: json['ipAddress'] as String?,
         userAgent: json['userAgent'] as String?,

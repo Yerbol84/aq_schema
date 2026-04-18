@@ -7,13 +7,14 @@ library;
 import 'package:aq_schema/mcp/validators/mcp_validator.dart';
 
 import '../models/worker_models.dart';
+import '../models/worker_validation_result.dart';
 
 /// Validates worker protocol JSON objects.
 abstract final class WorkerValidator {
   // ── WorkerRegistration ────────────────────────────────
 
   /// Validates a raw worker registration map.
-  static ValidationResult validateRegistration(Map<String, dynamic> json) {
+  static WorkerValidationResult validateRegistration(Map<String, dynamic> json) {
     final errors = <String>[];
 
     final workerId = json['worker_id'];
@@ -28,7 +29,7 @@ abstract final class WorkerValidator {
     }
 
     final tools = json['tools'];
-    if (tools == null || tools is! List || (tools as List).isEmpty) {
+    if (tools == null || tools is! List || tools.isEmpty) {
       errors.add('tools is required and must be a non-empty array');
     } else {
       for (var i = 0; i < tools.length; i++) {
@@ -60,18 +61,18 @@ abstract final class WorkerValidator {
     }
 
     return errors.isEmpty
-        ? const ValidationResult.ok()
-        : ValidationResult.fail(errors);
+        ? WorkerValidationResult.ok()
+        : WorkerValidationResult.fail(errors);
   }
 
   /// Validates a [WorkerRegistration] instance.
-  static ValidationResult validateWorkerRegistration(WorkerRegistration reg) =>
+  static WorkerValidationResult validateWorkerRegistration(WorkerRegistration reg) =>
       validateRegistration(reg.toJson());
 
   // ── WorkerJob ─────────────────────────────────────────
 
   /// Validates a raw job map.
-  static ValidationResult validateJob(Map<String, dynamic> json) {
+  static WorkerValidationResult validateJob(Map<String, dynamic> json) {
     final errors = <String>[];
 
     final jobId = json['job_id'];
@@ -109,18 +110,18 @@ abstract final class WorkerValidator {
     }
 
     return errors.isEmpty
-        ? const ValidationResult.ok()
-        : ValidationResult.fail(errors);
+        ? WorkerValidationResult.ok()
+        : WorkerValidationResult.fail(errors);
   }
 
   /// Validates a [WorkerJobImpl] instance.
-  static ValidationResult validateWorkerJob(WorkerJobImpl job) =>
+  static WorkerValidationResult validateWorkerJob(WorkerJobImpl job) =>
       validateJob(job.toJson());
 
   // ── WorkerResult ──────────────────────────────────────
 
   /// Validates a raw result map.
-  static ValidationResult validateResult(Map<String, dynamic> json) {
+  static WorkerValidationResult validateResult(Map<String, dynamic> json) {
     final errors = <String>[];
 
     final jobId = json['job_id'];
@@ -169,18 +170,18 @@ abstract final class WorkerValidator {
     }
 
     return errors.isEmpty
-        ? const ValidationResult.ok()
-        : ValidationResult.fail(errors);
+        ? WorkerValidationResult.ok()
+        : WorkerValidationResult.fail(errors);
   }
 
   /// Validates a [WorkerResultImpl] instance.
-  static ValidationResult validateWorkerResult(WorkerResultImpl result) =>
+  static WorkerValidationResult validateWorkerResult(WorkerResultImpl result) =>
       validateResult(result.toJson());
 
   // ── WorkerHealth ──────────────────────────────────────
 
   /// Validates a raw health check map.
-  static ValidationResult validateHealth(Map<String, dynamic> json) {
+  static WorkerValidationResult validateHealth(Map<String, dynamic> json) {
     final errors = <String>[];
 
     final workerId = json['worker_id'];
@@ -199,11 +200,11 @@ abstract final class WorkerValidator {
     }
 
     return errors.isEmpty
-        ? const ValidationResult.ok()
-        : ValidationResult.fail(errors);
+        ? WorkerValidationResult.ok()
+        : WorkerValidationResult.fail(errors);
   }
 
   /// Validates a [WorkerHealth] instance.
-  static ValidationResult validateWorkerHealth(WorkerHealth health) =>
+  static WorkerValidationResult validateWorkerHealth(WorkerHealth health) =>
       validateHealth(health.toJson());
 }

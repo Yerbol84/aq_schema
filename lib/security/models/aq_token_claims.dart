@@ -7,6 +7,7 @@
 // Refresh token: type='refresh', exp=now+2592000
 
 import 'aq_user.dart';
+import 'aq_scope.dart';
 
 enum TokenType {
   access('access'),
@@ -35,6 +36,7 @@ final class AqTokenClaims {
     this.name,
     this.roles = const [],
     this.perms = const [],
+    this.scopes = const [],
     this.utype = UserType.endUser,
   });
 
@@ -51,8 +53,11 @@ final class AqTokenClaims {
   /// Active role names
   final List<String> roles;
 
-  /// Flattened permission keys from all roles
+  /// Flattened permission keys from all roles (legacy)
   final List<String> perms;
+
+  /// Scopes для fine-grained access control (новая система)
+  final List<String> scopes;
 
   /// UserType shortcut — avoids role lookup on every request
   final UserType utype;
@@ -74,6 +79,7 @@ final class AqTokenClaims {
     return now >= exp;
   }
 
+  /// Legacy permission check (deprecated, use hasScope instead)
   bool hasPermission(String perm) {
     if (perms.contains('*')) return true;
     if (perms.contains(perm)) return true;
@@ -82,8 +88,27 @@ final class AqTokenClaims {
     return false;
   }
 
+  /// Legacy permission check (deprecated, use hasAllScopes instead)
   bool hasAllPermissions(List<String> required) =>
       required.every(hasPermission);
+
+  /// Проверяет наличие конкретного scope
+  bool hasScope(String scope) {
+    final checker = ScopeChecker(scopes);
+    return checker.has(scope);
+  }
+
+  /// Проверяет наличие хотя бы одного из требуемых scopes
+  bool hasAnyScope(List<String> requiredScopes) {
+    final checker = ScopeChecker(scopes);
+    return checker.hasAny(requiredScopes);
+  }
+
+  /// Проверяет наличие всех требуемых scopes
+  bool hasAllScopes(List<String> requiredScopes) {
+    final checker = ScopeChecker(scopes);
+    return checker.hasAll(requiredScopes);
+  }
 
   factory AqTokenClaims.fromJson(Map<String, dynamic> json) => AqTokenClaims(
         sub: json['sub'] as String,
@@ -93,6 +118,7 @@ final class AqTokenClaims {
         type: TokenType.fromString(json['type'] as String? ?? 'access'),
         roles: (json['roles'] as List<dynamic>?)?.cast<String>() ?? [],
         perms: (json['perms'] as List<dynamic>?)?.cast<String>() ?? [],
+        scopes: (json['scopes'] as List<dynamic>?)?.cast<String>() ?? [],
         utype: UserType.fromString(json['utype'] as String? ?? 'end_user'),
         iat: json['iat'] as int,
         exp: json['exp'] as int,
@@ -115,6 +141,7 @@ final class AqTokenClaims {
     if (name != null) m['name'] = name;
     if (roles.isNotEmpty) m['roles'] = roles;
     if (perms.isNotEmpty) m['perms'] = perms;
+    if (scopes.isNotEmpty) m['scopes'] = scopes;
     return m;
   }
 
