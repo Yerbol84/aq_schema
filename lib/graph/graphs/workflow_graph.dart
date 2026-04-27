@@ -175,6 +175,9 @@ class WorkflowGraph extends $Graph<WorkflowNode, WorkflowEdge>
   /// Storage collection name — shared between client and server.
   static const kCollection = 'workflow_graphs';
 
+  @override
+  bool get softDelete => true;
+
   /// Current schema version.
   static const kSchemaVersion = '1.0.0';
 

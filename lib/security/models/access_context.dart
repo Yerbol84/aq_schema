@@ -22,6 +22,8 @@ final class AccessContext {
     this.resourceAttributes = const {},
     this.sessionId,
     this.requestId,
+    this.mfaVerified = false,
+    this.userAgent,
   });
 
   /// ID пользователя, для которого проверяется доступ
@@ -79,6 +81,14 @@ final class AccessContext {
   /// ID запроса (для трейсинга)
   final String? requestId;
 
+  /// MFA verification status
+  /// true if the user has completed multi-factor authentication
+  final bool mfaVerified;
+
+  /// User-Agent header from the request
+  /// Used for logging and security analysis
+  final String? userAgent;
+
   /// Получить тип ресурса из resource string
   ///
   /// Примеры:
@@ -125,6 +135,8 @@ final class AccessContext {
         resourceAttributes: json['resourceAttributes'] as Map<String, dynamic>? ?? {},
         sessionId: json['sessionId'] as String?,
         requestId: json['requestId'] as String?,
+        mfaVerified: json['mfaVerified'] as bool? ?? false,
+        userAgent: json['userAgent'] as String?,
       );
 
   Map<String, dynamic> toJson() {
@@ -133,6 +145,7 @@ final class AccessContext {
       'tenantId': tenantId,
       'resource': resource,
       'action': action,
+      'mfaVerified': mfaVerified,
     };
     if (userRoles.isNotEmpty) m['userRoles'] = userRoles;
     if (userPermissions.isNotEmpty) m['userPermissions'] = userPermissions;
@@ -143,6 +156,7 @@ final class AccessContext {
     if (resourceAttributes.isNotEmpty) m['resourceAttributes'] = resourceAttributes;
     if (sessionId != null) m['sessionId'] = sessionId;
     if (requestId != null) m['requestId'] = requestId;
+    if (userAgent != null) m['userAgent'] = userAgent;
     return m;
   }
 

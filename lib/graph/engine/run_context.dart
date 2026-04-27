@@ -204,6 +204,25 @@ class RunContext {
         type: 'system', depth: 0, branch: currentBranch);
   }
 
+  // ── Ветвление ────────────────────────────────────────────────────────
+  /// Создать дочерний контекст для новой ветки выполнения.
+  ///
+  /// Копирует текущее состояние — изменения в дочернем контексте
+  /// не влияют на родительский.
+  RunContext cloneForBranch(String branchName) {
+    final child = RunContext(
+      runId: runId,
+      projectId: projectId,
+      projectPath: projectPath,
+      log: _log,
+      currentBranch: branchName,
+      apiKeyClaims: apiKeyClaims,
+    );
+    // Копируем состояние
+    child.state.addAll(_deepCopy(state) as Map<String, dynamic>);
+    return child;
+  }
+
   // ── Сериализация (без изменений) ─────────────────────────────────────
   Map<String, dynamic> toJson() => {
         'runId': runId,

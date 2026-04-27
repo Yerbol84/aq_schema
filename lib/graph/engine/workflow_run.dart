@@ -69,6 +69,9 @@ final class WorkflowRun implements LoggedStorable {
   /// Время создания
   final DateTime createdAt;
 
+  /// Время удаления (для soft delete)
+  final DateTime? deletedAt;
+
   const WorkflowRun({
     required this.id,
     required this.projectId,
@@ -79,12 +82,16 @@ final class WorkflowRun implements LoggedStorable {
     this.contextJson,
     this.suspendedNodeId,
     required this.createdAt,
+    this.deletedAt,
   });
 
   // ── Storable interface ──────────────────────────────────────────────────────
 
   @override
   String get collectionName => 'workflow_runs';
+
+  @override
+  bool get softDelete => true;
 
   @override
   Map<String, dynamic> toMap() => {
@@ -97,6 +104,7 @@ final class WorkflowRun implements LoggedStorable {
         'contextJson': contextJson,
         'suspendedNodeId': suspendedNodeId,
         'createdAt': createdAt.toIso8601String(),
+        'deletedAt': deletedAt?.toIso8601String(),
       };
 
   @override
@@ -134,6 +142,9 @@ final class WorkflowRun implements LoggedStorable {
       contextJson: m['contextJson'] as String?,
       suspendedNodeId: m['suspendedNodeId'] as String?,
       createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ?? DateTime.now(),
+      deletedAt: m['deletedAt'] != null
+          ? DateTime.tryParse(m['deletedAt'] as String)
+          : null,
     );
   }
 
@@ -149,6 +160,7 @@ final class WorkflowRun implements LoggedStorable {
     String? contextJson,
     String? suspendedNodeId,
     DateTime? createdAt,
+    DateTime? deletedAt,
   }) {
     return WorkflowRun(
       id: id ?? this.id,
@@ -160,6 +172,7 @@ final class WorkflowRun implements LoggedStorable {
       contextJson: contextJson ?? this.contextJson,
       suspendedNodeId: suspendedNodeId ?? this.suspendedNodeId,
       createdAt: createdAt ?? this.createdAt,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 }

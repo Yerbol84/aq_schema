@@ -14,12 +14,14 @@ class TestDocumentV1 implements DirectStorable {
   final String tenantId;
   final String title;
   final String content;
+  final DateTime? deletedAt;
 
   TestDocumentV1({
     required this.id,
     required this.tenantId,
     required this.title,
     required this.content,
+    this.deletedAt,
   });
 
   factory TestDocumentV1.fromMap(Map<String, dynamic> map) {
@@ -28,6 +30,9 @@ class TestDocumentV1 implements DirectStorable {
       tenantId: map['tenantId'] as String,
       title: map['title'] as String,
       content: map['content'] as String,
+      deletedAt: map['deletedAt'] != null
+          ? DateTime.tryParse(map['deletedAt'] as String)
+          : null,
     );
   }
 
@@ -38,6 +43,7 @@ class TestDocumentV1 implements DirectStorable {
       'tenantId': tenantId,
       'title': title,
       'content': content,
+      'deletedAt': deletedAt?.toIso8601String(),
     };
   }
 
@@ -57,6 +63,9 @@ class TestDocumentV1 implements DirectStorable {
   String get collectionName => kCollection;
 
   @override
+  bool get softDelete => true;
+
+  @override
   Map<String, dynamic> get indexFields => {};
 
   static const String kCollection = 'test_documents';
@@ -71,6 +80,7 @@ class TestDocumentV2 implements DirectStorable {
   final String title;
   final String author;
   final String summary;
+  final DateTime? deletedAt;
 
   TestDocumentV2({
     required this.id,
@@ -78,6 +88,7 @@ class TestDocumentV2 implements DirectStorable {
     required this.title,
     required this.author,
     required this.summary,
+    this.deletedAt,
   });
 
   factory TestDocumentV2.fromMap(Map<String, dynamic> map) {
@@ -87,6 +98,9 @@ class TestDocumentV2 implements DirectStorable {
       title: map['title'] as String,
       author: map['author'] as String,
       summary: map['summary'] as String,
+      deletedAt: map['deletedAt'] != null
+          ? DateTime.tryParse(map['deletedAt'] as String)
+          : null,
     );
   }
 
@@ -98,6 +112,7 @@ class TestDocumentV2 implements DirectStorable {
       'title': title,
       'author': author,
       'summary': summary,
+      'deletedAt': deletedAt?.toIso8601String(),
     };
   }
 
@@ -116,6 +131,9 @@ class TestDocumentV2 implements DirectStorable {
 
   @override
   String get collectionName => kCollection;
+
+  @override
+  bool get softDelete => true;
 
   @override
   Map<String, dynamic> get indexFields => {};

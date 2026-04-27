@@ -37,6 +37,9 @@ class GraphRunState implements DirectStorable {
   String get collectionName => 'graph_run_states';
 
   @override
+  bool get softDelete => true;
+
+  @override
   Map<String, dynamic> toMap() => toJson();
 
   @override

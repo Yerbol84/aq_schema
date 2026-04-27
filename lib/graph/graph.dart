@@ -6,6 +6,7 @@ export 'core/graph_def.dart';
 
 // Graph models
 export 'graphs/workflow_graph.dart';
+export 'graphs/typed_workflow_graph.dart';
 export 'graphs/instruction_graph.dart';
 export 'graphs/prompt_graph.dart';
 export 'graphs/contract_schema.dart';
@@ -14,6 +15,7 @@ export 'graphs/contract_schema.dart';
 export 'engine/run_context.dart';
 export 'engine/i_hand.dart';
 export 'engine/tool_registry.dart';
+export 'engine/i_graph_engine_client.dart';
 
 // Logging
 export 'logging/workflow_event_logger.dart';

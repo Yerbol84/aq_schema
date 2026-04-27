@@ -109,8 +109,14 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
       'tenantId': {'type': 'string'},
       'ownerId': {'type': 'string'},
       'name': {'type': 'string'},
-      'nodes': {'type': 'array', 'items': {'type': 'object'}},
-      'edges': {'type': 'array', 'items': {'type': 'object'}},
+      'nodes': {
+        'type': 'array',
+        'items': {'type': 'object'}
+      },
+      'edges': {
+        'type': 'array',
+        'items': {'type': 'object'}
+      },
     },
     'required': ['id', 'tenantId', 'ownerId', 'name'],
   };
@@ -237,4 +243,8 @@ class PromptGraph extends $Graph<PromptNode, PromptEdge>
         nodes: nodes ?? this.nodes,
         edges: edges ?? this.edges,
       );
+
+  @override
+  // TODO: implement softDelete
+  bool get softDelete => true;
 }

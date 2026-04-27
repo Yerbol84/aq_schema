@@ -40,6 +40,29 @@ abstract interface class Storable {
   /// ```
   Map<String, dynamic> get jsonSchema;
 
+  /// Controls delete behavior for the ENTIRE ENTITY:
+  /// - `true` (default): Soft delete - mark as deleted, keep in DB
+  /// - `false`: Hard delete - physically remove from DB
+  ///
+  /// Both modes log the delete operation to `{collection}_deleted` table.
+  ///
+  /// ## DirectStorage
+  /// - Soft: Mark `deletedAt`, record stays in table
+  /// - Hard: Remove from table
+  ///
+  /// ## VersionedStorage
+  /// - Applies to `deleteEntity()` only (deletes ALL versions)
+  /// - `deleteVersion()` is ALWAYS soft (state flag), regardless of this setting
+  /// - Soft: Mark ALL versions with `deletedAt`
+  /// - Hard: Remove ALL versions from table
+  ///
+  /// ## LoggedStorage
+  /// - Applies to main entity record only
+  /// - Audit log (`{collection}_log`) is ALWAYS preserved
+  /// - Soft: Mark main record `deletedAt`, keep in table
+  /// - Hard: Remove main record, log entries stay
+  bool get softDelete => true;
+
   /// 3-level constants system: Domain → Sphere → Key
   static final keys = _StorableKeys._();
 }
@@ -64,6 +87,7 @@ class _StorableDbKeys {
   final String data = 'data';
   final String createdAt = 'created_at';
   final String updatedAt = 'updated_at';
+  final String deletedAt = 'deleted_at';
 }
 
 // ── Level 3: JSON Keys ────────────────────────────────────────────────────────
@@ -73,6 +97,7 @@ class _StorableJsonKeys {
 
   final String id = 'id';
   final String tenantId = 'tenantId';
+  final String deletedAt = 'deletedAt';
 }
 
 // ── Level 3: Transport Keys ───────────────────────────────────────────────────

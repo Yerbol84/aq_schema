@@ -89,6 +89,9 @@ final class StorableUser implements DirectStorable {
 
   @override
   String get collectionName => SecurityCollections.users;
+
+  @override
+  bool get softDelete => true;
 }
 
 final class StorableTenant implements DirectStorable {
@@ -124,6 +127,9 @@ final class StorableTenant implements DirectStorable {
 
   @override
   String get collectionName => SecurityCollections.tenants;
+
+  @override
+  bool get softDelete => true;
 }
 
 final class StorableProfile implements DirectStorable {
@@ -154,8 +160,19 @@ final class StorableProfile implements DirectStorable {
 
   @override
   String get collectionName => SecurityCollections.profiles;
+
+  @override
+  bool get softDelete => true;
 }
 
+/// TODO: Миграция на VersionedStorable
+/// См. pkgs/dart_vault_package/other_layer_tasks/secure_layer/REQUIREMENTS_FOR_DATA_LAYER.md
+///
+/// Когда дата-слой подтвердит поддержку VersionedRepository:
+/// - Изменить implements DirectStorable → implements VersionedStorable
+/// - Добавить entityId, ownerId, sharedWith
+/// - Обновить VaultRoleRepository для работы с версиями
+/// - Создать миграционный скрипт для существующих данных
 final class StorableRole implements DirectStorable {
   StorableRole(this._r);
   final AqRole _r;
@@ -187,6 +204,9 @@ final class StorableRole implements DirectStorable {
 
   @override
   String get collectionName => SecurityCollections.roles;
+
+  @override
+  bool get softDelete => true;
 }
 
 final class StorableUserRole implements DirectStorable {
@@ -220,6 +240,22 @@ final class StorableUserRole implements DirectStorable {
 
   @override
   String get collectionName => SecurityCollections.userRoles;
+
+  @override
+  bool get softDelete => true;
+
+  // ── TTL Support (заглушка, ожидает реализацию от дата-слоя) ──────────────────
+
+  /// TODO: Ожидает реализацию TTL Support в dart_vault
+  /// См. pkgs/dart_vault_package/other_layer_tasks/secure_layer/REQUIREMENTS_FOR_DATA_LAYER.md
+  ///
+  /// Когда дата-слой реализует TTL:
+  /// - Раскомментировать этот метод
+  /// - Временные назначения ролей будут автоматически удаляться при expiration
+  /// - Клиент больше не будет видеть expired назначения
+
+  // @override
+  // int? get expiresAt => _ur.expiresAt;
 }
 
 // ═══════════════════════════════════════════
@@ -270,6 +306,28 @@ final class StorableSession implements LoggedStorable {
 
   @override
   String get collectionName => SecurityCollections.sessions;
+
+  @override
+  bool get softDelete => true;
+
+  // ── TTL Support (заглушка, ожидает реализацию от дата-слоя) ──────────────────
+
+  /// TODO: Ожидает реализацию TTL Support в dart_vault
+  /// См. pkgs/dart_vault_package/other_layer_tasks/secure_layer/REQUIREMENTS_FOR_DATA_LAYER.md
+  ///
+  /// Когда дата-слой реализует TTL:
+  /// - Раскомментировать эти методы
+  /// - Удалить ручную expiration логику из VaultSessionRepository.purgeExpired()
+
+  // @override
+  // int? get expiresAt => _s.expiresAt;
+
+  // @override
+  // StorableSession? onExpire() {
+  //   return StorableSession(_s.copyWith(
+  //     status: SessionStatus.expired,
+  //   ));
+  // }
 }
 
 /// ApiKey is LoggedStorable — track creation, revocation, last-used.
@@ -309,4 +367,26 @@ final class StorableApiKey implements LoggedStorable {
 
   @override
   String get collectionName => SecurityCollections.apiKeys;
+
+  @override
+  bool get softDelete => true;
+
+  // ── TTL Support (заглушка, ожидает реализацию от дата-слоя) ──────────────────
+
+  /// TODO: Ожидает реализацию TTL Support в dart_vault
+  /// См. pkgs/dart_vault_package/other_layer_tasks/secure_layer/REQUIREMENTS_FOR_DATA_LAYER.md
+  ///
+  /// Когда дата-слой реализует TTL:
+  /// - Раскомментировать эти методы
+  /// - API ключи будут автоматически деактивироваться при expiration
+
+  // @override
+  // int? get expiresAt => _k.expiresAt;
+
+  // @override
+  // StorableApiKey? onExpire() {
+  //   return StorableApiKey(_k.copyWith(
+  //     isActive: false,
+  //   ));
+  // }
 }

@@ -135,6 +135,46 @@ final class AccessAlert {
       ? DateTime.fromMillisecondsSinceEpoch(resolvedAt! * 1000)
       : null;
 
+  AccessAlert copyWith({
+    String? id,
+    AlertType? type,
+    AlertSeverity? severity,
+    String? title,
+    String? description,
+    String? userId,
+    String? userEmail,
+    String? tenantId,
+    int? timestamp,
+    String? resource,
+    String? action,
+    String? ipAddress,
+    Map<String, dynamic>? metadata,
+    bool? resolved,
+    int? resolvedAt,
+    String? resolvedBy,
+    String? resolution,
+  }) {
+    return AccessAlert(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      severity: severity ?? this.severity,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      userId: userId ?? this.userId,
+      userEmail: userEmail ?? this.userEmail,
+      tenantId: tenantId ?? this.tenantId,
+      timestamp: timestamp ?? this.timestamp,
+      resource: resource ?? this.resource,
+      action: action ?? this.action,
+      ipAddress: ipAddress ?? this.ipAddress,
+      metadata: metadata ?? this.metadata,
+      resolved: resolved ?? this.resolved,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      resolvedBy: resolvedBy ?? this.resolvedBy,
+      resolution: resolution ?? this.resolution,
+    );
+  }
+
   factory AccessAlert.fromJson(Map<String, dynamic> json) => AccessAlert(
         id: json['id'] as String,
         type: AlertType.fromString(json['type'] as String),

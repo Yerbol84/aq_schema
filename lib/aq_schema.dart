@@ -71,9 +71,24 @@ export 'data_layer/storable/versioned_storable.dart';
 export 'data_layer/aq_domains.dart';
 export 'data_layer/storage/buffered_storage.dart';
 
+// Data Layer Client Protocol
+export 'data_layer/i_data_layer.dart';
+
+// Repository Interfaces
+export 'data_layer/repositories/direct_repository.dart';
+export 'data_layer/repositories/versioned_repository.dart';
+export 'data_layer/repositories/logged_repository.dart';
+
+// API Contracts (Single Source of Truth for HTTP routes)
+export 'core/interfaces/i_aq_api_contract.dart';
+export 'core/models/route_spec.dart';
+export 'data_layer/api_contract/vault_api_contract.dart';
+export 'data_layer/api_contract/vault_api_route_builder.dart';
+
 // Security & RBAC
 export 'security/security.dart';
 export 'security/models/api_key_claims.dart';
+export 'security/interfaces/clients_protocols/i_auth_context.dart';
 
 // Test domains (for migration testing)
 export 'test/test_document.dart';

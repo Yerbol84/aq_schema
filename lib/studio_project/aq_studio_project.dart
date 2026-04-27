@@ -32,6 +32,7 @@ class AqStudioProject implements DirectStorable, Sharable, Versionable {
   String get collectionName => kCollection;
 
   @override
+  bool get softDelete => true;
   String get schemaVersion => kSchemaVersion;
 
   @override
@@ -47,6 +48,7 @@ class AqStudioProject implements DirectStorable, Sharable, Versionable {
   final String path;
   final String projectType;
   final DateTime lastOpened;
+  final DateTime? deletedAt;
 
   const AqStudioProject({
     required this.id,
@@ -56,6 +58,7 @@ class AqStudioProject implements DirectStorable, Sharable, Versionable {
     required this.path,
     required this.projectType,
     required this.lastOpened,
+    this.deletedAt,
   });
 
   factory AqStudioProject.create({
@@ -73,6 +76,7 @@ class AqStudioProject implements DirectStorable, Sharable, Versionable {
         path: '',
         projectType: projectType,
         lastOpened: DateTime.now(),
+        deletedAt: null,
       );
 
   @override
@@ -84,6 +88,7 @@ class AqStudioProject implements DirectStorable, Sharable, Versionable {
         'path': path,
         'projectType': projectType,
         'lastOpened': lastOpened.toIso8601String(),
+        'deletedAt': deletedAt?.toIso8601String(),
       };
 
   @override
@@ -101,6 +106,9 @@ class AqStudioProject implements DirectStorable, Sharable, Versionable {
         projectType: m['projectType'] as String? ?? 'coder',
         lastOpened:
             DateTime.tryParse(m['lastOpened'] as String? ?? '') ?? DateTime.now(),
+        deletedAt: m['deletedAt'] != null
+            ? DateTime.tryParse(m['deletedAt'] as String)
+            : null,
       );
 
   AqStudioProject copyWith({
@@ -108,6 +116,7 @@ class AqStudioProject implements DirectStorable, Sharable, Versionable {
     String? path,
     String? projectType,
     DateTime? lastOpened,
+    DateTime? deletedAt,
   }) =>
       AqStudioProject(
         id: id,
@@ -117,5 +126,6 @@ class AqStudioProject implements DirectStorable, Sharable, Versionable {
         path: path ?? this.path,
         projectType: projectType ?? this.projectType,
         lastOpened: lastOpened ?? this.lastOpened,
+        deletedAt: deletedAt ?? this.deletedAt,
       );
 }

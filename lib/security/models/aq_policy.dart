@@ -151,6 +151,30 @@ final class AqPolicy {
   final int createdAt;
   final String createdBy;
 
+  AqPolicy copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? tenantId,
+    List<PolicyStatement>? statements,
+    bool? isActive,
+    int? priority,
+    int? createdAt,
+    String? createdBy,
+  }) {
+    return AqPolicy(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      tenantId: tenantId ?? this.tenantId,
+      statements: statements ?? this.statements,
+      isActive: isActive ?? this.isActive,
+      priority: priority ?? this.priority,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+    );
+  }
+
   factory AqPolicy.fromJson(Map<String, dynamic> json) => AqPolicy(
         id: json['id'] as String,
         name: json['name'] as String,

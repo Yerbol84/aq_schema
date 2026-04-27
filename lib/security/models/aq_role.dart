@@ -13,9 +13,12 @@ final class AqRole {
     this.tenantId,
     this.isSystem = false,
     this.createdAt,
+    this.inheritsFrom = const [],
+    this.metadata = const {},
+    this.updatedAt,
   });
 
-  static const String kCollection = 'rbac_roles';
+  static const String kCollection = 'security_roles';
 
   final String id;
   final String name;
@@ -30,6 +33,18 @@ final class AqRole {
   /// System roles cannot be deleted.
   final bool isSystem;
   final int? createdAt;
+
+  /// Parent role IDs for role inheritance
+  /// Roles inherit all permissions from their parent roles
+  final List<String> inheritsFrom;
+
+  /// Additional metadata for extensibility
+  /// Examples: {"color": "#FF5733", "icon": "admin_shield", "category": "system"}
+  final Map<String, dynamic> metadata;
+
+  /// Timestamp of last update (milliseconds since epoch)
+  /// Used for audit, sync, and UI display
+  final int? updatedAt;
 
   bool hasPermission(String perm) {
     if (permissions.contains('*')) return true;
@@ -50,6 +65,9 @@ final class AqRole {
     List<String>? permissions,
     bool? isSystem,
     int? createdAt,
+    List<String>? inheritsFrom,
+    Map<String, dynamic>? metadata,
+    int? updatedAt,
   }) {
     return AqRole(
       id: id ?? this.id,
@@ -59,6 +77,9 @@ final class AqRole {
       permissions: permissions ?? this.permissions,
       isSystem: isSystem ?? this.isSystem,
       createdAt: createdAt ?? this.createdAt,
+      inheritsFrom: inheritsFrom ?? this.inheritsFrom,
+      metadata: metadata ?? this.metadata,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
@@ -73,6 +94,12 @@ final class AqRole {
             [],
         isSystem: json['isSystem'] as bool? ?? false,
         createdAt: json['createdAt'] as int?,
+        inheritsFrom: (json['inheritsFrom'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            [],
+        metadata: json['metadata'] as Map<String, dynamic>? ?? {},
+        updatedAt: json['updatedAt'] as int?,
       );
 
   Map<String, dynamic> toJson() {
@@ -85,6 +112,9 @@ final class AqRole {
     if (description != null) m['description'] = description;
     if (tenantId != null) m['tenantId'] = tenantId;
     if (createdAt != null) m['createdAt'] = createdAt;
+    if (inheritsFrom.isNotEmpty) m['inheritsFrom'] = inheritsFrom;
+    if (metadata.isNotEmpty) m['metadata'] = metadata;
+    if (updatedAt != null) m['updatedAt'] = updatedAt;
     return m;
   }
 
@@ -101,9 +131,10 @@ final class AqUserRole {
     required this.grantedAt,
     this.grantedBy,
     this.expiresAt,
+    this.reason,
   });
 
-  static const String kCollection = 'rbac_user_roles';
+  static const String kCollection = 'security_user_roles';
 
   final String userId;
   final String roleId;
@@ -111,6 +142,10 @@ final class AqUserRole {
   final String? grantedBy;
   final int grantedAt;
   final int? expiresAt;
+
+  /// Reason for granting this role
+  /// Examples: "Project team member", "Emergency access for incident #1234", "Trial period"
+  final String? reason;
 
   bool get isExpired {
     if (expiresAt == null) return false;
@@ -124,6 +159,7 @@ final class AqUserRole {
     String? grantedBy,
     int? grantedAt,
     int? expiresAt,
+    String? reason,
   }) {
     return AqUserRole(
       userId: userId ?? this.userId,
@@ -132,6 +168,7 @@ final class AqUserRole {
       grantedBy: grantedBy ?? this.grantedBy,
       grantedAt: grantedAt ?? this.grantedAt,
       expiresAt: expiresAt ?? this.expiresAt,
+      reason: reason ?? this.reason,
     );
   }
 
@@ -142,6 +179,7 @@ final class AqUserRole {
         grantedBy: json['grantedBy'] as String?,
         grantedAt: json['grantedAt'] as int,
         expiresAt: json['expiresAt'] as int?,
+        reason: json['reason'] as String?,
       );
 
   Map<String, dynamic> toJson() {
@@ -153,6 +191,7 @@ final class AqUserRole {
     };
     if (grantedBy != null) m['grantedBy'] = grantedBy;
     if (expiresAt != null) m['expiresAt'] = expiresAt;
+    if (reason != null) m['reason'] = reason;
     return m;
   }
 }

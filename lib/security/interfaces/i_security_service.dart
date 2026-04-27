@@ -226,7 +226,8 @@ abstract interface class ISecurityService {
   Future<bool> hasRole(String role);
 
   /// Проверка нескольких прав (requireAll: true = все, false = хотя бы одно)
-  Future<bool> hasPermissions(List<String> permissions, {bool requireAll = true});
+  Future<bool> hasPermissions(List<String> permissions,
+      {bool requireAll = true});
 
   /// Проверка нескольких ролей
   Future<bool> hasRoles(List<String> roles, {bool requireAll = true});

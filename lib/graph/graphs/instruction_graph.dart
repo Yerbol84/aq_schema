@@ -119,10 +119,19 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
       'tenantId': {'type': 'string'},
       'ownerId': {'type': 'string'},
       'name': {'type': 'string'},
-      'nodes': {'type': 'array', 'items': {'type': 'object'}},
-      'edges': {'type': 'array', 'items': {'type': 'object'}},
+      'nodes': {
+        'type': 'array',
+        'items': {'type': 'object'}
+      },
+      'edges': {
+        'type': 'array',
+        'items': {'type': 'object'}
+      },
       'contract': {'type': 'object'},
-      'tests': {'type': 'array', 'items': {'type': 'object'}},
+      'tests': {
+        'type': 'array',
+        'items': {'type': 'object'}
+      },
     },
     'required': ['id', 'tenantId', 'ownerId', 'name'],
   };
@@ -291,4 +300,7 @@ class InstructionGraph extends $Graph<InstructionNode, InstructionEdge>
 
   ContractSchema getContractSchema() =>
       contractSchema ?? ContractSchema.defaultInstructionContract();
+
+  @override
+  bool get softDelete => false;
 }

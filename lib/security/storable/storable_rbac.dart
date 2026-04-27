@@ -3,7 +3,7 @@
 // Storable wrappers для RBAC моделей.
 //
 // Mapping:
-//   AqRole        → DirectStorable   (роли)
+//   AqRole        → DirectStorable   (используется StorableRole из security_storables.dart)
 //   AqUserRole    → DirectStorable   (назначения ролей)
 //   AqPolicy      → DirectStorable   (политики доступа)
 //   AqAccessLog   → LoggedStorable   (логи доступа с аудитом)
@@ -21,44 +21,8 @@ import '../models/aq_audit_trail.dart';
 //  DirectStorable — RBAC entities
 // ═══════════════════════════════════════════
 
-/// Storable обёртка для AqRole
-final class StorableAqRole implements DirectStorable {
-  StorableAqRole(this._role);
-  final AqRole _role;
-  AqRole get domain => _role;
-
-  @override
-  String get id => _role.id;
-
-  @override
-  Map<String, dynamic> toMap() => _role.toJson();
-
-  @override
-  Map<String, dynamic> get indexFields => {
-        'name': _role.name,
-        'tenantId': _role.tenantId ?? '',
-        'isSystem': _role.isSystem,
-      };
-
-  @override
-  Map<String, dynamic> get jsonSchema => {
-        'type': 'object',
-        'properties': {
-          'id': {'type': 'string'},
-          'name': {'type': 'string'},
-          'tenantId': {'type': 'string'},
-          'isSystem': {'type': 'boolean'},
-          'permissions': {'type': 'array', 'items': {'type': 'string'}},
-        },
-        'required': ['id', 'name', 'permissions'],
-      };
-
-  static StorableAqRole fromMap(Map<String, dynamic> m) =>
-      StorableAqRole(AqRole.fromJson(m));
-
-  @override
-  String get collectionName => AqRole.kCollection;
-}
+// NOTE: StorableAqRole удалён — используется StorableRole из security_storables.dart
+// Это устраняет дублирование и обеспечивает единую коллекцию 'security_roles'
 
 /// Storable обёртка для AqUserRole
 final class StorableAqUserRole implements DirectStorable {
@@ -67,7 +31,8 @@ final class StorableAqUserRole implements DirectStorable {
   AqUserRole get domain => _userRole;
 
   @override
-  String get id => '${_userRole.userId}_${_userRole.roleId}_${_userRole.tenantId}';
+  String get id =>
+      '${_userRole.userId}_${_userRole.roleId}_${_userRole.tenantId}';
 
   @override
   Map<String, dynamic> toMap() => _userRole.toJson();
@@ -96,8 +61,21 @@ final class StorableAqUserRole implements DirectStorable {
 
   @override
   String get collectionName => AqUserRole.kCollection;
+
+  @override
+  // TODO: implement softDelete
+  bool get softDelete => true;
 }
 
+/// TODO: Миграция на VersionedStorable
+/// См. pkgs/dart_vault_package/other_layer_tasks/secure_layer/REQUIREMENTS_FOR_DATA_LAYER.md
+///
+/// Когда дата-слой подтвердит поддержку VersionedRepository:
+/// - Изменить implements DirectStorable → implements VersionedStorable
+/// - Добавить entityId, ownerId, sharedWith
+/// - Обновить VaultPolicyRepository для работы с версиями
+/// - Создать миграционный скрипт для существующих данных
+///
 /// Storable обёртка для AqPolicy
 final class StorableAqPolicy implements DirectStorable {
   StorableAqPolicy(this._policy);
@@ -129,7 +107,14 @@ final class StorableAqPolicy implements DirectStorable {
           'priority': {'type': 'integer'},
           'statements': {'type': 'array'},
         },
-        'required': ['id', 'name', 'tenantId', 'statements', 'createdAt', 'createdBy'],
+        'required': [
+          'id',
+          'name',
+          'tenantId',
+          'statements',
+          'createdAt',
+          'createdBy'
+        ],
       };
 
   static StorableAqPolicy fromMap(Map<String, dynamic> m) =>
@@ -137,6 +122,9 @@ final class StorableAqPolicy implements DirectStorable {
 
   @override
   String get collectionName => AqPolicy.kCollection;
+
+  @override
+  bool get softDelete => true;
 }
 
 // ═══════════════════════════════════════════
@@ -185,7 +173,16 @@ final class StorableAqAccessLog implements LoggedStorable {
           'allowed': {'type': 'boolean'},
           'timestamp': {'type': 'integer'},
         },
-        'required': ['id', 'userId', 'userEmail', 'tenantId', 'resource', 'action', 'allowed', 'timestamp'],
+        'required': [
+          'id',
+          'userId',
+          'userEmail',
+          'tenantId',
+          'resource',
+          'action',
+          'allowed',
+          'timestamp'
+        ],
       };
 
   static StorableAqAccessLog fromMap(Map<String, dynamic> m) =>
@@ -193,6 +190,9 @@ final class StorableAqAccessLog implements LoggedStorable {
 
   @override
   String get collectionName => AqAccessLog.kCollection;
+
+  @override
+  bool get softDelete => true;
 }
 
 /// Storable обёртка для AqAuditTrail
@@ -238,7 +238,17 @@ final class StorableAqAuditTrail implements LoggedStorable {
           'action': {'type': 'string'},
           'timestamp': {'type': 'integer'},
         },
-        'required': ['id', 'userId', 'userEmail', 'tenantId', 'entityType', 'entityId', 'entityName', 'action', 'timestamp'],
+        'required': [
+          'id',
+          'userId',
+          'userEmail',
+          'tenantId',
+          'entityType',
+          'entityId',
+          'entityName',
+          'action',
+          'timestamp'
+        ],
       };
 
   static StorableAqAuditTrail fromMap(Map<String, dynamic> m) =>
@@ -246,4 +256,7 @@ final class StorableAqAuditTrail implements LoggedStorable {
 
   @override
   String get collectionName => AqAuditTrail.kCollection;
+
+  @override
+  bool get softDelete => true;
 }
