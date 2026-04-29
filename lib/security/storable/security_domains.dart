@@ -8,12 +8,6 @@
 // Паттерн идентичен AqDomains в aq_schema/lib/adapter/adapter_models.dart.
 
 import 'package:aq_schema/aq_schema.dart';
-import 'security_storables.dart';
-import '../models/aq_role.dart';
-import '../models/aq_policy.dart';
-import '../models/aq_access_log.dart';
-import '../models/aq_audit_trail.dart';
-import 'storable_rbac.dart';
 
 /// Все security домены — единый источник истины.
 /// Сервер и клиент читают этот список.

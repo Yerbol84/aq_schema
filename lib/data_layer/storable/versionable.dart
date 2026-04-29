@@ -64,6 +64,7 @@ import 'storable.dart';
 ///   'required': ['id', 'name'],
 /// };
 /// ```
+
 abstract interface class Versionable implements Storable {
   /// Current schema version (semver: "1.2.0").
   /// Increment when changing the domain model structure.

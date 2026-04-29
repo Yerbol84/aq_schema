@@ -1,3 +1,6 @@
+import '../storable/versionable.dart';
+import 'increment_type.dart';
+
 /// Semantic version (major.minor.patch).
 final class Semver implements Comparable<Semver> {
   final int major;
@@ -23,6 +26,12 @@ final class Semver implements Comparable<Semver> {
   Semver incrementMinor() => Semver(major, minor + 1, 0);
   Semver incrementPatch() => Semver(major, minor, patch + 1);
 
+  Semver increment(IncrementType type) => switch (type) {
+        IncrementType.major => incrementMajor(),
+        IncrementType.minor => incrementMinor(),
+        IncrementType.patch => incrementPatch(),
+      };
+
   @override
   int compareTo(Semver other) {
     if (major != other.major) return major.compareTo(other.major);
@@ -33,6 +42,7 @@ final class Semver implements Comparable<Semver> {
   bool operator >(Semver other) => compareTo(other) > 0;
   bool operator >=(Semver other) => compareTo(other) >= 0;
   bool operator <(Semver other) => compareTo(other) < 0;
+  bool operator <=(Semver other) => compareTo(other) <= 0;
 
   @override
   bool operator ==(Object other) =>

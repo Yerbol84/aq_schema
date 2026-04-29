@@ -1,3 +1,4 @@
+import '../../server/routing/aq_handler.dart';
 // pkgs/aq_schema/lib/app/stubs/noop_auth_middleware.dart
 //
 // Заглушка auth middleware — логирует что защита не активна.
@@ -13,8 +14,6 @@
 //   IResourceAuthClient.init(JwtResourceClient(secret: jwtSecret));
 //   // ↑ автоматически зарегистрирует реальный authMiddleware
 //   // ↑ эта заглушка больше не нужна
-
-import '../../../server/routing/aq_handler.dart';
 
 /// Заглушка auth middleware.
 ///

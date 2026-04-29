@@ -92,3 +92,4 @@ export 'security/interfaces/clients_protocols/i_auth_context.dart';
 
 // Test domains (for migration testing)
 export 'test/test_document.dart';
+export 'sandbox/interfaces/i_fs_context.dart';

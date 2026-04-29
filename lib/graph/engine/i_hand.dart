@@ -1,7 +1,5 @@
 import 'package:aq_schema/aq_schema.dart';
 
-import 'run_context.dart';
-
 abstract class IHand {
   /// Уникальный технический ID (например: 'fs_write_file')
   String get id;
