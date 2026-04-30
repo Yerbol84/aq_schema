@@ -136,7 +136,7 @@ final class WorkflowRun implements LoggedStorable {
       id: m['id'] as String,
       projectId: m['projectId'] as String,
       blueprintId: m['blueprintId'] as String,
-      graphSnapshot: m['graphSnapshot'] as Map<String, dynamic>,
+      graphSnapshot: (m['graphSnapshot'] as Map<String, dynamic>?) ?? const {},
       status: WorkflowRunStatus.fromString(m['status'] as String? ?? 'running'),
       logsJson: m['logsJson'] as String? ?? '[]',
       contextJson: m['contextJson'] as String?,

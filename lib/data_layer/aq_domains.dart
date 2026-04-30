@@ -1,4 +1,5 @@
 import 'package:aq_schema/aq_schema.dart';
+import '../test/test_document.dart';
 
 /// Describes how a single domain should be stored.
 enum StorageKind { direct, versioned, logged }
@@ -123,6 +124,15 @@ class AqDomains {
         VaultIndex(name: 'idx_wfrun_blueprint', field: 'blueprintId'),
         VaultIndex(name: 'idx_wfrun_status', field: 'status'),
         VaultIndex(name: 'idx_wfrun_created', field: 'createdAt'),
+      ],
+    ),
+
+    // ── Test Documents (DirectStorable - migration demo) ──────────────────────
+    DomainDescriptor.direct(
+      collection: TestDocumentV1.kCollection,
+      fromMap: TestDocumentV1.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_doc_title', field: 'title'),
       ],
     ),
   ];

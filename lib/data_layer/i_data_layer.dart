@@ -184,6 +184,47 @@ abstract interface class IDataLayer {
     _instance = implementation;
   }
 
+  /// Initializer function — registered by dart_vault package at startup.
+  static Future<void> Function({
+    required String endpoint,
+    String tenantId,
+    bool useBuffer,
+  })? _initializerFn;
+
+  /// Register the initializer (called once by dart_vault package).
+  static void registerInitializer(
+    Future<void> Function({
+      required String endpoint,
+      String tenantId,
+      bool useBuffer,
+    }) fn,
+  ) {
+    _initializerFn = fn;
+  }
+
+  /// Initialize the data layer with a remote endpoint.
+  ///
+  /// Requires dart_vault package to be imported — it registers the initializer.
+  ///
+  /// ```dart
+  /// import 'package:dart_vault/dart_vault.dart';
+  /// await IDataLayer.initialize(endpoint: 'http://localhost:8765');
+  /// ```
+  static Future<void> initialize({
+    required String endpoint,
+    String tenantId = 'system',
+    bool useBuffer = true,
+  }) {
+    final fn = _initializerFn;
+    if (fn == null) {
+      throw DataLayerException(
+        'IDataLayer initializer not registered. '
+        'Import package:dart_vault/dart_vault.dart before calling initialize().',
+      );
+    }
+    return fn(endpoint: endpoint, tenantId: tenantId, useBuffer: useBuffer);
+  }
+
   // ══════════════════════════════════════════════════════════════════════════
   // Repository Factories
   // ══════════════════════════════════════════════════════════════════════════

@@ -70,6 +70,11 @@ export 'data_layer/storage/vector_storage.dart';
 export 'data_layer/storable/versioned_storable.dart';
 export 'data_layer/aq_domains.dart';
 export 'data_layer/storage/buffered_storage.dart';
+// Transport layer — typed commands and queries
+export 'data_layer/transport/i_vault_command.dart';
+export 'data_layer/transport/i_vault_query.dart';
+export 'data_layer/transport/versioned_commands.dart';
+export 'data_layer/transport/logged_commands.dart';
 
 // Data Layer Client Protocol
 export 'data_layer/i_data_layer.dart';
