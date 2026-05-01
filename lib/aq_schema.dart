@@ -57,6 +57,8 @@ export 'data_layer/models/semver.dart';
 export 'data_layer/models/version_node.dart';
 export 'data_layer/models/version_status.dart';
 export 'data_layer/storable/artifact_entry.dart';
+export 'data_layer/storable/stored_artifact.dart';
+export 'data_layer/storable/document_annotation.dart';
 export 'data_layer/storage/artifact_storage.dart';
 export 'data_layer/storable/direct_storable.dart';
 export 'data_layer/storable/logged_storable.dart';
@@ -98,3 +100,24 @@ export 'security/interfaces/clients_protocols/i_auth_context.dart';
 // Test domains (for migration testing)
 export 'test/test_document.dart';
 export 'sandbox/interfaces/i_fs_context.dart';
+
+// ── Vector layer models ───────────────────────────────────────
+export 'data_layer/vector/chunk_span.dart';
+export 'data_layer/vector/pipeline_stamp.dart';
+export 'data_layer/vector/extracted_content.dart';
+export 'data_layer/vector/content_chunk.dart';
+export 'data_layer/vector/vector_point_payload.dart';
+export 'data_layer/vector/indexing_result.dart';
+
+// ── Pipeline interfaces ───────────────────────────────────────
+export 'data_layer/pipeline/i_content_extractor.dart';
+export 'data_layer/pipeline/i_modality_transformer.dart';
+export 'data_layer/pipeline/i_chunker.dart';
+export 'data_layer/pipeline/i_embeddings_client.dart';
+export 'data_layer/pipeline/i_reranker.dart';
+export 'data_layer/pipeline/i_vector_store_registry.dart';
+export 'data_layer/pipeline/indexing_pipeline.dart';
+
+// ── Vector storable records ───────────────────────────────────
+export 'data_layer/storable/indexing_pipeline_record.dart';
+export 'data_layer/storable/vector_store_record.dart';

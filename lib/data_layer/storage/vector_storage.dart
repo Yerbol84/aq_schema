@@ -91,15 +91,23 @@ abstract interface class VectorStorage {
   // ── Search ─────────────────────────────────────────────────────────────────
 
   /// ANN search: find the [limit] entries most similar to [queryVector].
+  /// [tenantId] is required — enforces tenant isolation at the interface level.
   ///
-  /// [filter] optionally restricts the search to entries whose payload
-  /// satisfies the filter predicates (payload pushdown when supported).
+  /// Hybrid search: set [sparseQuery] to enable BM25 keyword scoring combined
+  /// with dense vector scoring. [alpha] controls the blend:
+  ///   alpha=1.0 → pure dense (default)
+  ///   alpha=0.0 → pure sparse (BM25 only)
+  ///   alpha=0.5 → equal blend
   Future<List<VectorSearchResult>> search(
     String collection,
     List<double> queryVector, {
+    required String tenantId,
     int limit = 10,
     double scoreThreshold = 0.0,
     VaultQuery? filter,
+    String metric = 'cosine',
+    String? sparseQuery,
+    double alpha = 1.0,
   });
 
   // ── Read ───────────────────────────────────────────────────────────────────

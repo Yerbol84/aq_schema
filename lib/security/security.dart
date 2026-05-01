@@ -65,3 +65,6 @@ export 'storable/security_domains.dart';
 
 // ── Mock implementations (ТОЛЬКО для тестов!) ─────────────────────────────────
 export 'mock/mock.dart';
+export 'interfaces/clients_protocols/mocks/mock_vault_security_protocol.dart';
+export 'interfaces/clients_protocols/mocks/test_tokens.dart';
+export 'interfaces/clients_protocols/noop_vault_security_protocol.dart';

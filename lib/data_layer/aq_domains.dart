@@ -1,5 +1,9 @@
 import 'package:aq_schema/aq_schema.dart';
 import '../test/test_document.dart';
+import 'storable/stored_artifact.dart';
+import 'storable/document_annotation.dart';
+import 'storable/indexing_pipeline_record.dart';
+import 'storable/vector_store_record.dart';
 
 /// Describes how a single domain should be stored.
 enum StorageKind { direct, versioned, logged }
@@ -133,6 +137,47 @@ class AqDomains {
       fromMap: TestDocumentV1.fromMap,
       indexes: [
         VaultIndex(name: 'idx_doc_title', field: 'title'),
+      ],
+    ),
+
+    // ── Artifacts (file metadata) ─────────────────────────────────────────────
+    DomainDescriptor.direct(
+      collection: StoredArtifact.kCollection,
+      fromMap: StoredArtifact.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_artifact_owner', field: 'ownerId'),
+        VaultIndex(name: 'idx_artifact_type', field: 'contentType'),
+        VaultIndex(name: 'idx_artifact_name', field: 'fileName'),
+      ],
+    ),
+
+    // ── Document Annotations (user + LLM marks) ───────────────────────────────
+    DomainDescriptor.logged(
+      collection: DocumentAnnotation.kCollection,
+      fromMap: DocumentAnnotation.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_annot_artifact', field: 'artifactId'),
+        VaultIndex(name: 'idx_annot_actor', field: 'actorId'),
+        VaultIndex(name: 'idx_annot_type', field: 'type'),
+      ],
+    ),
+
+    // ── Vector pipeline registry ──────────────────────────────────────────────
+    DomainDescriptor.direct(
+      collection: IndexingPipelineRecord.kCollection,
+      fromMap: IndexingPipelineRecord.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_pipeline_name', field: 'name'),
+        VaultIndex(name: 'idx_pipeline_embedder', field: 'embedderId'),
+      ],
+    ),
+
+    DomainDescriptor.direct(
+      collection: VectorStoreRecord.kCollection,
+      fromMap: VectorStoreRecord.fromMap,
+      indexes: [
+        VaultIndex(name: 'idx_store_type', field: 'type'),
+        VaultIndex(name: 'idx_store_active', field: 'isActive'),
       ],
     ),
   ];

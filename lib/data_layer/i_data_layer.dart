@@ -106,15 +106,9 @@ abstract interface class IDataLayer {
   // ══════════════════════════════════════════════════════════════════════════
 
   static IDataLayer? _instance;
+  static final Map<String, IDataLayer> _named = {};
 
-  /// Global singleton instance.
-  ///
-  /// Available after [initialize] is called.
-  /// Throws assertion error if accessed before initialization.
-  ///
-  /// ```dart
-  /// final workflows = IDataLayer.instance.versioned<WorkflowGraph>(...);
-  /// ```
+  /// Global default instance.
   static IDataLayer get instance {
     assert(
       _instance != null,
@@ -123,8 +117,24 @@ abstract interface class IDataLayer {
     return _instance!;
   }
 
+  /// Named instance — for multi-database or multi-tenant scenarios.
+  ///
+  /// ```dart
+  /// IDataLayer.register(impl, key: 'analytics');
+  /// final repo = IDataLayer.named('analytics').direct<Event>(...);
+  /// ```
+  static IDataLayer named(String key) {
+    final inst = _named[key];
+    assert(inst != null, '[IDataLayer] No instance registered for key "$key"');
+    return inst!;
+  }
+
   /// Check if data layer is initialized.
   static bool get isInitialized => _instance != null;
+
+  /// Check if a named instance is registered.
+  static bool isRegistered([String? key]) =>
+      key == null ? _instance != null : _named.containsKey(key);
 
   /// Initialize the data layer with remote endpoint.
   ///
@@ -175,13 +185,37 @@ abstract interface class IDataLayer {
   /// // Use protocol everywhere
   /// final repo = IDataLayer.instance.direct<Project>(...);
   /// ```
-  static void register(IDataLayer implementation) {
+  static void register(IDataLayer implementation, {String? key}) {
+    if (key != null) {
+      _named[key] = implementation;
+      return;
+    }
     if (_instance != null) {
       throw DataLayerException(
         'IDataLayer already registered. Call disconnect() first.',
       );
     }
     _instance = implementation;
+  }
+
+  /// Disconnect and dispose the default or named instance.
+  static Future<void> disconnect([String? key]) async {
+    if (key != null) {
+      await _named.remove(key)?.dispose();
+      return;
+    }
+    await _instance?.dispose();
+    _instance = null;
+  }
+
+  /// Disconnect and dispose all instances.
+  static Future<void> disconnectAll() async {
+    await _instance?.dispose();
+    _instance = null;
+    for (final inst in _named.values) {
+      await inst.dispose();
+    }
+    _named.clear();
   }
 
   /// Initializer function — registered by dart_vault package at startup.
