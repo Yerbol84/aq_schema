@@ -10,16 +10,17 @@
 import '../models/sandbox_runtime_type.dart';
 import '../models/sandbox_spec.dart';
 import 'i_sandbox_handle.dart';
+import '../../core/aq_platform_context.dart';
 
 /// Провайдер Sandbox.
 abstract interface class ISandboxProvider {
   static ISandboxProvider? _instance;
 
-  static ISandboxProvider get instance {
-    assert(_instance != null, 'ISandboxProvider not initialized. '
-        'Call ISandboxProvider.initialize() in main().');
-    return _instance!;
-  }
+  static ISandboxProvider get instance =>
+      AQPlatformContext.current?.sandboxProvider ??
+      _instance ??
+      (throw AssertionError('ISandboxProvider not initialized. '
+          'Call ISandboxProvider.initialize() or use AQPlatformContext.run().'));
 
   static void initialize(ISandboxProvider impl) => _instance = impl;
   static void reset() => _instance = null;
@@ -29,6 +30,9 @@ abstract interface class ISandboxProvider {
 
   /// Получить существующий Sandbox.
   Future<ISandboxHandle?> get(String sandboxId);
+
+  /// P-03 fix: освободить disposed sandbox из карты (предотвращает memory leak).
+  Future<void> release(String sandboxId);
 
   /// Список доступных runtime типов.
   Future<List<SandboxRuntimeType>> availableRuntimes();

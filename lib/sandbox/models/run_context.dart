@@ -4,15 +4,11 @@
 //
 // Содержит только granted capabilities.
 // Tool не может сделать то, чего нет в контексте.
-//
-// Принцип Dependency Inversion:
-// • RunContext зависит от интерфейсов (IFsContext, INetContext, etc)
-// • Sandbox предоставляет реализации этих интерфейсов
-// • Tool использует только интерфейсы
 
 import '../interfaces/i_fs_context.dart';
 import '../interfaces/i_net_context.dart';
 import '../interfaces/i_proc_context.dart';
+import '../models/sandbox_policy.dart';
 
 /// Контекст выполнения Tool/Subject.
 ///
@@ -23,15 +19,20 @@ final class RunContext {
   final String sandboxId;
   final String sessionId;
 
-  // Capability contexts (nullable!)
-  final IFsContext? fs; // null если FsReadCap/FsWriteCap не granted
-  final INetContext? net; // null если NetOutCap не granted
-  final IProcContext? proc; // null если ProcSpawnCap не granted
+  // S-05: разделённые fs контексты.
+  // fsRead  — FsReadCap или FsWriteCap granted
+  // fsWrite — только FsWriteCap granted
+  final IReadableFsContext? fsRead;
+  final IWritableFsContext? fsWrite;
 
-  // Всегда доступно (через интерфейсы, не прямые зависимости!)
-  // TODO: Добавить после создания интерфейсов
-  // final IAQVaultClient vault;
-  // final IAQToolRuntime tools;
+  /// Обратная совместимость: fs → fsWrite (полный доступ).
+  IWritableFsContext? get fs => fsWrite;
+
+  final INetContext? net;
+  final IProcContext? proc;
+
+  /// Политика sandbox сессии — для chain-of-trust при Subject-as-Tool (S-03).
+  final SandboxPolicy? policy;
 
   final Map<String, String> env;
 
@@ -39,9 +40,11 @@ final class RunContext {
     required this.runId,
     required this.sandboxId,
     required this.sessionId,
-    this.fs,
+    this.fsRead,
+    this.fsWrite,
     this.net,
     this.proc,
+    this.policy,
     this.env = const {},
   });
 

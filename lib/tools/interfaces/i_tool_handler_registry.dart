@@ -10,11 +10,12 @@
 //   aq_tool_runtime — ToolRuntime
 //
 // Инициализация (в приложении):
-//   IToolHandlerRegistry.initialize(ToolRuntime(sandboxProvider));
+//   IToolHandlerRegistry.initialize(ToolRuntime());
 
 import '../models/tool_contract.dart';
 import '../models/tool_input.dart';
 import '../models/tool_output.dart';
+import '../../sandbox/models/run_context.dart';
 import 'i_tool_handler.dart';
 
 /// Порт регистрации и выполнения Tool handlers.
@@ -33,6 +34,12 @@ abstract interface class IToolHandlerRegistry {
   /// Зарегистрировать handler для tool.
   void registerHandler(String toolName, IToolHandler handler);
 
-  /// Выполнить tool по контракту.
-  Future<ToolOutput> execute(ToolContract contract, ToolInput input);
+  /// Выполнить tool в контексте сессии агента.
+  ///
+  /// [sessionContext] — контекст сессии. Tools используют его напрямую.
+  Future<ToolOutput> execute(
+    ToolContract contract,
+    ToolInput input,
+    RunContext sessionContext,
+  );
 }

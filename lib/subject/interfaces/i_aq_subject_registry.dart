@@ -11,26 +11,16 @@ import '../../sandbox/models/sandbox_policy.dart';
 import '../models/subject_descriptor.dart';
 import '../models/subject_record.dart';
 import 'i_subject_session.dart';
+import '../../core/aq_platform_context.dart';
 
 /// Реестр Subject — регистрация и управление.
-///
-/// Singleton через static instance (dependency injection).
-///
-/// ```dart
-/// // Инициализация (в main)
-/// IAQSubjectRegistry.initialize(SubjectRegistryClient(...));
-///
-/// // Использование
-/// final registry = IAQSubjectRegistry.instance;
-/// await registry.register(descriptor);
-/// ```
 abstract interface class IAQSubjectRegistry {
   static IAQSubjectRegistry? _instance;
 
-  static IAQSubjectRegistry get instance {
-    assert(_instance != null, 'IAQSubjectRegistry not initialized');
-    return _instance!;
-  }
+  static IAQSubjectRegistry get instance =>
+      AQPlatformContext.current?.subjectRegistry ??
+      _instance ??
+      (throw AssertionError('IAQSubjectRegistry not initialized.'));
 
   static void initialize(IAQSubjectRegistry impl) => _instance = impl;
   static void reset() => _instance = null;

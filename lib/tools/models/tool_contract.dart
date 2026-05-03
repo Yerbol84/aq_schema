@@ -45,6 +45,10 @@ final class ToolContract {
   /// SubjectToolSource — Tool является оберткой над Subject (exposeAsTool: true).
   final ToolSource? source;
 
+  /// Максимальный размер выходных данных в байтах. Default: 8192.
+  /// ToolRuntime обрезает data до этого лимита перед возвратом агенту.
+  final int maxOutputBytes;
+
   const ToolContract({
     required this.ref,
     required this.description,
@@ -55,15 +59,52 @@ final class ToolContract {
     this.deprecatedSince,
     this.replacedBy,
     this.source,
+    this.maxOutputBytes = 8192,
   });
 
   bool get isDeprecated => deprecatedSince != null;
-  factory ToolContract.fromJson(Map<String, dynamic> json) => ToolContract(
-        ref: json[ToolContract.keys.ref],
-        description: json[ToolContract.keys.description],
-        inputSchema: json[ToolContract.keys.inputSchema],
-        //TODO add all
-      );
+
+  factory ToolContract.fromJson(Map<String, dynamic> json) {
+    // Десериализация capabilities из строк вида "FS_WRITE:/tmp/**"
+    List<ToolCapability> _parseCaps(List<dynamic>? raw) {
+      if (raw == null) return const [];
+      return raw.map((s) => _parseCapability(s as String)).whereType<ToolCapability>().toList();
+    }
+
+    return ToolContract(
+      ref: ToolRef.fromJson(json[ToolContract.keys.ref] as Map<String, dynamic>),
+      description: json[ToolContract.keys.description] as String,
+      inputSchema: (json[ToolContract.keys.inputSchema] as Map<String, dynamic>?) ?? {},
+      outputSchema: (json[ToolContract.keys.outputSchema] as Map<String, dynamic>?) ?? {},
+      requiredCaps: _parseCaps(json[ToolContract.keys.requiredCaps] as List?),
+      optionalCaps: _parseCaps(json[ToolContract.keys.optionalCaps] as List?),
+      deprecatedSince: json[ToolContract.keys.deprecatedSince] as String?,
+      replacedBy: json[ToolContract.keys.replacedBy] != null
+          ? ToolRef.fromJson(json[ToolContract.keys.replacedBy] as Map<String, dynamic>)
+          : null,
+      maxOutputBytes: (json[ToolContract.keys.maxOutputBytes] as int?) ?? 8192,
+    );
+  }
+
+  /// Парсинг capability из строки (формат из toString()).
+  static ToolCapability? _parseCapability(String s) {
+    if (s.startsWith('FS_READ:')) return FsReadCap(s.substring(8));
+    if (s.startsWith('FS_WRITE:')) return FsWriteCap(s.substring(9));
+    if (s.startsWith('NET_OUT:')) {
+      final rest = s.substring(8);
+      final colonIdx = rest.lastIndexOf(':');
+      if (colonIdx > 0) {
+        final port = int.tryParse(rest.substring(colonIdx + 1));
+        if (port != null) return NetOutCap(rest.substring(0, colonIdx), port: port);
+      }
+      return NetOutCap(rest);
+    }
+    if (s.startsWith('PROC_SPAWN:')) {
+      final binaries = s.substring(11).split(',').where((b) => b.isNotEmpty).toList();
+      return ProcSpawnCap(binaries);
+    }
+    return null;
+  }
 
   Map<String, dynamic> toJson() => {
         ToolContract.keys.ref: ref.toJson(),
@@ -78,6 +119,7 @@ final class ToolContract {
           ToolContract.keys.deprecatedSince: deprecatedSince,
         if (replacedBy != null)
           ToolContract.keys.replacedBy: replacedBy!.toJson(),
+        ToolContract.keys.maxOutputBytes: maxOutputBytes,
       };
 
   @override
@@ -95,6 +137,7 @@ class _ToolContractKeys {
   final String optionalCaps = 'optional_caps';
   final String deprecatedSince = 'deprecated_since';
   final String replacedBy = 'replaced_by';
+  final String maxOutputBytes = 'max_output_bytes';
 
   List<String> get all => [
         ref,
@@ -105,6 +148,7 @@ class _ToolContractKeys {
         optionalCaps,
         deprecatedSince,
         replacedBy,
+        maxOutputBytes,
       ];
   Set<String> get required => {ref, description, inputSchema};
 }

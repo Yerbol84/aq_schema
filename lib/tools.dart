@@ -53,6 +53,7 @@ export 'tools/interfaces/i_tool_runtime_executor.dart';
 export 'tools/interfaces/i_tool_handler_registry.dart';
 export 'tools/interfaces/i_tool_executor_factory.dart';
 export 'tools/constants/llm_tool_keys.dart';
+export 'tools/interfaces/i_tool_repository.dart';
 
 // ── Порты для потребителей ────────────────────────────────────────────────────
 export 'tools/interfaces/clients_protocols/i_tool_engine_protocol.dart';

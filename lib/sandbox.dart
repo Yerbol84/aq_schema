@@ -33,3 +33,6 @@ export 'sandbox/interfaces/i_net_context.dart';
 export 'sandbox/interfaces/i_proc_context.dart';
 export 'sandbox/interfaces/i_sandbox_provider.dart';
 export 'sandbox/interfaces/i_sandbox_handle.dart';
+
+// ── Capability matching ───────────────────────────────────────────────────────
+export 'sandbox/capability_matcher.dart';

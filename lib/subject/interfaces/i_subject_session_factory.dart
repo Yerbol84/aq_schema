@@ -9,16 +9,16 @@ import '../../sandbox/models/run_context.dart';
 import '../models/subject_descriptor.dart';
 import 'i_subject_session.dart';
 import 'i_tool_executor.dart';
+import '../../core/aq_platform_context.dart';
 
 /// Порт создания сессий Subject.
 abstract interface class ISubjectSessionFactory {
   static ISubjectSessionFactory? _instance;
 
-  static ISubjectSessionFactory get instance {
-    assert(_instance != null, 'ISubjectSessionFactory not initialized. '
-        'Call ISubjectSessionFactory.initialize() in main().');
-    return _instance!;
-  }
+  static ISubjectSessionFactory get instance =>
+      AQPlatformContext.current?.subjectSessionFactory ??
+      _instance ??
+      (throw AssertionError('ISubjectSessionFactory not initialized.'));
 
   static void initialize(ISubjectSessionFactory impl) => _instance = impl;
   static void reset() => _instance = null;

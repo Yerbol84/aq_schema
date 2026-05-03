@@ -36,3 +36,5 @@ export 'subject/interfaces/i_subject_session.dart';
 export 'subject/interfaces/i_aq_subject_registry.dart';
 export 'subject/interfaces/i_tool_executor.dart';
 export 'subject/interfaces/i_subject_session_factory.dart';
+export 'subject/interfaces/i_subject_repository.dart';
+export 'subject/interfaces/i_subject_session_repository.dart';

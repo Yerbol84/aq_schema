@@ -13,6 +13,7 @@
 
 import '../models/tool_ref.dart';
 import '../../subject/interfaces/i_tool_executor.dart';
+import '../../sandbox/models/run_context.dart';
 
 /// Порт создания IToolExecutor для Subject.
 abstract interface class IToolExecutorFactory {
@@ -28,6 +29,12 @@ abstract interface class IToolExecutorFactory {
   static void reset() => _instance = null;
 
   /// Создать executor с whitelist разрешённых tools.
-  /// [subjectId] — для логирования и сообщений об ошибках.
-  IToolExecutor create(List<ToolRef> allowedTools, String subjectId);
+  ///
+  /// [sessionContext] — контекст сессии агента. Передаётся в каждый tool call
+  /// чтобы tools работали в sandbox сессии (S-02 fix).
+  IToolExecutor create(
+    List<ToolRef> allowedTools,
+    String subjectId,
+    RunContext sessionContext,
+  );
 }
