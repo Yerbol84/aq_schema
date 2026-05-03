@@ -8,7 +8,9 @@ export 'core/graph_def.dart';
 export 'graphs/workflow_graph.dart';
 export 'graphs/typed_workflow_graph.dart';
 export 'graphs/instruction_graph.dart';
+export 'graphs/typed_instruction_graph.dart';
 export 'graphs/prompt_graph.dart';
+export 'graphs/typed_prompt_graph.dart';
 export 'graphs/contract_schema.dart';
 
 // Engine primitives (pure Dart, no Flutter)
@@ -16,6 +18,14 @@ export 'engine/run_context.dart';
 export 'engine/i_hand.dart';
 export 'engine/tool_registry.dart';
 export 'engine/i_graph_engine_client.dart';
+export 'engine/i_run_state_manager.dart';
+export 'engine/i_run_repository.dart';
+export 'engine/i_graph_repository.dart';
+export 'engine/condition_evaluator.dart';
+export 'engine/state_strategies/state_strategies.dart';
+
+// Node state capability interfaces
+export 'nodes/state/state.dart';
 
 // Logging
 export 'logging/workflow_event_logger.dart';

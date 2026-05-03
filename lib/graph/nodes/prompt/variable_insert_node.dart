@@ -6,7 +6,7 @@ import 'package:aq_schema/graph/engine/run_context.dart';
 /// Узел для вставки переменной в промпт
 ///
 /// Получает значение переменной из контекста и возвращает как строку
-class VariableInsertNode implements IPromptNode {
+class VariableInsertNode extends IPromptNode {
   @override
   final String id;
 

@@ -6,7 +6,7 @@ import 'package:aq_schema/graph/engine/run_context.dart';
 /// Узел для преобразования данных
 ///
 /// Применяет трансформацию к данным из переменной
-class TransformNode implements IInstructionNode {
+class TransformNode extends IInstructionNode {
   @override
   final String id;
 

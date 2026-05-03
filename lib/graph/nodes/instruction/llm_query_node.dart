@@ -6,7 +6,7 @@ import 'package:aq_schema/graph/engine/run_context.dart';
 /// Узел для запроса к LLM
 ///
 /// Компилирует промпт и вызывает LLM
-class LlmQueryNode implements IInstructionNode {
+class LlmQueryNode extends IInstructionNode {
   @override
   final String id;
 

@@ -6,7 +6,7 @@ import 'package:aq_schema/graph/engine/run_context.dart';
 /// Узел для вызова инструмента (Tool)
 ///
 /// Вызывает любой зарегистрированный Tool с параметрами
-class ToolCallNode implements IInstructionNode {
+class ToolCallNode extends IInstructionNode {
   @override
   final String id;
 

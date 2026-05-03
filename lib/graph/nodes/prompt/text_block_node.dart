@@ -6,7 +6,7 @@ import 'package:aq_schema/graph/engine/run_context.dart';
 /// Узел для статического текстового блока
 ///
 /// Возвращает текст с подстановкой переменных
-class TextBlockNode implements IPromptNode {
+class TextBlockNode extends IPromptNode {
   @override
   final String id;
 

@@ -6,7 +6,7 @@ import 'package:aq_schema/graph/engine/run_context.dart';
 /// Узел для условного блока текста
 ///
 /// Возвращает текст только если условие выполнено
-class ConditionalBlockNode implements IPromptNode {
+class ConditionalBlockNode extends IPromptNode {
   @override
   final String id;
 

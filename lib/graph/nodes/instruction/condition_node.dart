@@ -6,7 +6,7 @@ import 'package:aq_schema/graph/engine/run_context.dart';
 /// Узел для условного ветвления
 ///
 /// Вычисляет условие и определяет следующий узел
-class ConditionNode implements IInstructionNode {
+class ConditionNode extends IInstructionNode {
   @override
   final String id;
 

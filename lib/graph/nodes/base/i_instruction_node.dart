@@ -1,6 +1,7 @@
 // Базовый интерфейс для узлов InstructionGraph
 
 import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/core/graph_def.dart';
 
 /// Базовый интерфейс для узлов InstructionGraph
 ///
@@ -11,7 +12,8 @@ import 'package:aq_schema/graph/engine/run_context.dart';
 /// - Возвращает результат через output mapping
 ///
 /// Узлы инструкций НЕ могут быть интерактивными
-abstract class IInstructionNode {
+abstract class IInstructionNode extends $Node {
+  const IInstructionNode();
   /// Уникальный ID узла
   String get id;
 
@@ -32,5 +34,6 @@ abstract class IInstructionNode {
   Map<String, dynamic> toJson();
 
   /// Создать копию узла с изменёнными полями
+  @override
   IInstructionNode copyWith();
 }

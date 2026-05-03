@@ -1,6 +1,7 @@
 // Базовый интерфейс для узлов PromptGraph
 
 import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/graph/core/graph_def.dart';
 
 /// Базовый интерфейс для узлов PromptGraph
 ///
@@ -10,7 +11,8 @@ import 'package:aq_schema/graph/engine/run_context.dart';
 /// - Возвращает готовый текст промпта
 ///
 /// Узлы промптов НЕ вызывают LLM, только строят текст
-abstract class IPromptNode {
+abstract class IPromptNode extends $Node {
+  const IPromptNode();
   /// Уникальный ID узла
   String get id;
 
@@ -28,5 +30,6 @@ abstract class IPromptNode {
   Map<String, dynamic> toJson();
 
   /// Создать копию узла с изменёнными полями
+  @override
   IPromptNode copyWith();
 }
