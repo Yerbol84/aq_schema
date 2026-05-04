@@ -251,7 +251,7 @@ void main() {
       final futures = <Future>[];
       for (int i = 0; i < 100; i++) {
         futures.add(Future(() {
-          final list = context.getVar('list') as List<int>;
+          final list = (context.getVar('list') as List).cast<int>();
           list.add(i);
           context.setVar('list', list);
         }));
@@ -259,7 +259,7 @@ void main() {
 
       await Future.wait(futures);
 
-      final finalList = context.getVar('list') as List<int>;
+      final finalList = (context.getVar('list') as List).cast<int>();
 
       // ОЖИДАНИЕ: должно быть 100 элементов, но из-за race condition может быть меньше
       expect(finalList.length, lessThanOrEqualTo(100),
