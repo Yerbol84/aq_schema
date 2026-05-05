@@ -9,8 +9,7 @@
 // aq_schema → aq_graph_engine.
 
 import 'package:aq_schema/graph/core/graph_def.dart';
-import 'package:aq_schema/graph/graphs/workflow_graph.dart'
-    show WorkflowEdge, WorkflowEdgeType;
+import 'workflow_edge.dart';
 import 'package:aq_schema/graph/nodes/base/i_workflow_node.dart';
 import 'package:aq_schema/data_layer/storable/versioned_storable.dart';
 
@@ -141,6 +140,21 @@ class TypedWorkflowGraph extends $Graph<IWorkflowNode, WorkflowEdge>
   ///
   /// Требует [serializer] для создания конкретных IWorkflowNode из JSON.
   /// В приложении передаётся NodeTypeRegistry из aq_graph_engine.
+  /// Десериализация без узлов — только метаданные графа.
+  /// Используется в DomainDescriptor (data layer) где serializer недоступен.
+  static TypedWorkflowGraph fromMapRaw(Map<String, dynamic> m) {
+    final eList = ((m['edges'] as List?) ?? [])
+        .map((e) => WorkflowEdge.fromJson(e as Map<String, dynamic>));
+    return TypedWorkflowGraph(
+      id: m['id'] as String,
+      tenantId: m['tenantId'] as String? ?? 'system',
+      ownerId: m['ownerId'] as String? ?? '',
+      name: m['name'] as String? ?? '',
+      nodes: const {},
+      edges: {for (final e in eList) e.id: e},
+    );
+  }
+
   static TypedWorkflowGraph fromMap(
     Map<String, dynamic> m,
     IWorkflowNodeSerializer serializer,

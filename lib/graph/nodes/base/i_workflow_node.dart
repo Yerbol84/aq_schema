@@ -6,7 +6,7 @@ import 'package:aq_schema/graph/engine/run_context.dart';
 
 /// Базовый интерфейс для всех узлов Workflow графа
 ///
-/// Все конкретные узлы (LlmActionNode, FileReadNode, etc.) реализуют этот интерфейс.
+/// Все конкретные узлы (AutomaticWorkflowNode, UserInputNode, etc.) реализуют этот интерфейс.
 /// Это позволяет:
 /// - Типобезопасность (вместо Map<String, dynamic> config)
 /// - Расширяемость (добавить новый узел без изменения WorkflowRunner)

@@ -2,6 +2,7 @@
 
 import 'package:aq_schema/graph/nodes/base/i_instruction_node.dart';
 import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/tools.dart';
 
 /// Узел для вызова инструмента (Tool)
 ///
@@ -30,28 +31,22 @@ class ToolCallNode extends IInstructionNode {
   });
 
   @override
-  Future<dynamic> execute(
-    RunContext context,
-  ) async {
+  Future<dynamic> execute(RunContext context) async {
     if (toolName.isEmpty) {
       throw Exception('ToolCallNode: toolName is required');
     }
 
-    // // Подставить переменные в параметры
-    // final resolvedParams = _resolveParams(params, context);
+    final resolvedParams = _resolveParams(params, context);
+    final result = await IToolEngineProtocol.instance.callTool(
+      toolName,
+      resolvedParams,
+      context,
+    );
 
-    // // Вызвать Tool через AQToolService
-    // final result = await tools.callTool(toolName, resolvedParams, context);
-
-    // // Сохранить результат
-    // context.setVar(outputVar, result);
-
-    // context.log(
-    //   'Tool "$toolName" executed',
-    //   branch: context.currentBranch,
-    // );
-
-    // return result;
+    final output = result.success ? result.output : null;
+    context.setVar(outputVar, output);
+    context.log('Tool "$toolName" executed', branch: context.currentBranch);
+    return output;
   }
 
   Map<String, dynamic> _resolveParams(

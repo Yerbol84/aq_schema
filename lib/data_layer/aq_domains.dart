@@ -81,8 +81,8 @@ class AqDomains {
 
     // ── Graphs ────────────────────────────────────────────────────────────────
     DomainDescriptor.versioned(
-      collection: WorkflowGraph.kCollection,
-      fromMap: WorkflowGraph.fromMap,
+      collection: TypedWorkflowGraph.kCollection,
+      fromMap: TypedWorkflowGraph.fromMapRaw,
       indexes: [
         VaultIndex(name: 'idx_wf_owner', field: 'ownerId'),
         VaultIndex(name: 'idx_wf_name', field: 'name'),

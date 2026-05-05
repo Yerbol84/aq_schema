@@ -2,6 +2,8 @@
 
 import 'package:aq_schema/graph/nodes/base/i_instruction_node.dart';
 import 'package:aq_schema/graph/engine/run_context.dart';
+import 'package:aq_schema/tools.dart';
+import 'package:aq_schema/tools.dart';
 
 /// Узел для запроса к LLM
 ///
@@ -34,41 +36,37 @@ class LlmQueryNode extends IInstructionNode {
   });
 
   @override
-  Future<dynamic> execute(
-    RunContext context,
-  ) async {
-    // Получить промпт
-    String prompt;
+  Future<dynamic> execute(RunContext context) async {
+    final String prompt;
     if (promptBlueprintId != null && promptBlueprintId!.isNotEmpty) {
-      // Промпт будет скомпилирован через PromptRunner
-      final compiledPrompt = context.getVar('_compiled_prompt_$id');
-      if (compiledPrompt == null) {
+      final compiled = context.getVar('_compiled_prompt_$id');
+      if (compiled == null) {
         throw Exception('LlmQueryNode: compiled prompt not found in context');
       }
-      prompt = compiledPrompt.toString();
+      prompt = compiled.toString();
     } else if (directPrompt != null && directPrompt!.isNotEmpty) {
-      // Использовать прямой промпт с подстановкой переменных
       prompt = _substituteVariables(directPrompt!, context);
     } else {
       throw Exception(
           'LlmQueryNode: either promptBlueprintId or directPrompt is required');
     }
-    //TODO: retirn a tool but as interface protocol
-    // // Вызвать LLM через AQToolService
-    // final result = await tools.callTool('llm_ask', {
-    //   'prompt': prompt,
-    //   if (modelName != null) 'model_name': modelName,
-    // }, context);
 
-    // // Сохранить результат
-    // context.setVar(outputVar, result);
+    final result = await IToolEngineProtocol.instance.callTool(
+      'llm_ask',
+      {
+        'prompt': prompt,
+        if (modelName != null) 'model_name': modelName,
+      },
+      context,
+    );
 
-    // context.log(
-    //   'LLM query executed (${result.toString().length} chars)',
-    //   branch: context.currentBranch,
-    // );
-
-    // return result;
+    final output = result.success ? result.output : null;
+    context.setVar(outputVar, output);
+    context.log(
+      'LLM query executed (${output?.toString().length ?? 0} chars)',
+      branch: context.currentBranch,
+    );
+    return output;
   }
 
   String _substituteVariables(String template, RunContext context) {

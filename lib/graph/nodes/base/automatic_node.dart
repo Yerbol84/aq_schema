@@ -6,7 +6,7 @@ import 'package:aq_schema/graph/core/graph_def.dart';
 
 /// Автоматический узел - выполняется без участия пользователя
 ///
-/// Примеры: LlmActionNode, FileReadNode, FileWriteNode, GitCommitNode
+/// Пример: AutomaticWorkflowNode(toolName: 'llm_ask', ...)
 ///
 /// Автоматические узлы:
 /// - Выполняются сразу без ожидания UI

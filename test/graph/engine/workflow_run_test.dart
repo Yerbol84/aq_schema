@@ -9,6 +9,7 @@ void main() {
       final run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {'nodes': [], 'edges': []},
         status: WorkflowRunStatus.running,
@@ -28,6 +29,7 @@ void main() {
       final run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {},
         status: WorkflowRunStatus.suspended,
@@ -69,6 +71,7 @@ void main() {
       final run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {'nodes': [], 'edges': []},
         status: WorkflowRunStatus.running,
@@ -119,6 +122,7 @@ void main() {
       final original = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {'test': 'data'},
         status: WorkflowRunStatus.suspended,
@@ -146,6 +150,7 @@ void main() {
       final run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {},
         status: WorkflowRunStatus.running,
@@ -164,6 +169,7 @@ void main() {
       final run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {},
         status: WorkflowRunStatus.running,
@@ -180,6 +186,7 @@ void main() {
       final run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {},
         status: WorkflowRunStatus.running,
@@ -204,6 +211,7 @@ void main() {
       final run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {},
         status: WorkflowRunStatus.running,
@@ -218,6 +226,7 @@ void main() {
       final run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {},
         status: WorkflowRunStatus.completed,
@@ -237,6 +246,7 @@ void main() {
       final run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {},
         status: WorkflowRunStatus.running,
@@ -259,6 +269,7 @@ void main() {
       final run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {},
         status: WorkflowRunStatus.running,
@@ -281,6 +292,7 @@ void main() {
       var run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {'nodes': [], 'edges': []},
         status: WorkflowRunStatus.running,
@@ -321,6 +333,7 @@ void main() {
       var run = WorkflowRun(
         id: 'run1',
         projectId: 'project1',
+        projectPath: '/tmp',
         blueprintId: 'blueprint1',
         graphSnapshot: {},
         status: WorkflowRunStatus.running,

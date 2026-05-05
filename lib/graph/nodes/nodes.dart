@@ -34,3 +34,4 @@ export 'instruction/transform_node.dart';
 export 'prompt/text_block_node.dart';
 export 'prompt/variable_insert_node.dart';
 export 'prompt/conditional_block_node.dart';
+export 'prompt/file_context_node.dart';

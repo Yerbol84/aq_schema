@@ -5,7 +5,7 @@
 export 'core/graph_def.dart';
 
 // Graph models
-export 'graphs/workflow_graph.dart';
+export 'graphs/workflow_edge.dart';
 export 'graphs/typed_workflow_graph.dart';
 export 'graphs/instruction_graph.dart';
 export 'graphs/typed_instruction_graph.dart';
@@ -32,6 +32,7 @@ export 'logging/workflow_event_logger.dart';
 
 // Validation
 export 'validation/graph_contract_validator.dart';
+export 'validation/graph_validator.dart';
 // Transport
 export 'transport/messages/run_event.dart';
 export 'transport/messages/run_request.dart';

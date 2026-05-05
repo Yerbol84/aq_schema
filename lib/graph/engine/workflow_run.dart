@@ -48,6 +48,9 @@ final class WorkflowRun implements LoggedStorable {
   /// ID проекта, в котором выполняется граф
   final String projectId;
 
+  /// Путь к проекту на файловой системе (нужен для resume)
+  final String projectPath;
+
   /// ID blueprint графа (WorkflowGraph.id)
   final String blueprintId;
 
@@ -75,6 +78,7 @@ final class WorkflowRun implements LoggedStorable {
   const WorkflowRun({
     required this.id,
     required this.projectId,
+    required this.projectPath,
     required this.blueprintId,
     required this.graphSnapshot,
     required this.status,
@@ -97,6 +101,7 @@ final class WorkflowRun implements LoggedStorable {
   Map<String, dynamic> toMap() => {
         'id': id,
         'projectId': projectId,
+        'projectPath': projectPath,
         'blueprintId': blueprintId,
         'graphSnapshot': graphSnapshot,
         'status': status.value,
@@ -135,6 +140,7 @@ final class WorkflowRun implements LoggedStorable {
     return WorkflowRun(
       id: m['id'] as String,
       projectId: m['projectId'] as String,
+      projectPath: m['projectPath'] as String? ?? '',
       blueprintId: m['blueprintId'] as String,
       graphSnapshot: (m['graphSnapshot'] as Map<String, dynamic>?) ?? const {},
       status: WorkflowRunStatus.fromString(m['status'] as String? ?? 'running'),
@@ -153,6 +159,7 @@ final class WorkflowRun implements LoggedStorable {
   WorkflowRun copyWith({
     String? id,
     String? projectId,
+    String? projectPath,
     String? blueprintId,
     Map<String, dynamic>? graphSnapshot,
     WorkflowRunStatus? status,
@@ -165,6 +172,7 @@ final class WorkflowRun implements LoggedStorable {
     return WorkflowRun(
       id: id ?? this.id,
       projectId: projectId ?? this.projectId,
+      projectPath: projectPath ?? this.projectPath,
       blueprintId: blueprintId ?? this.blueprintId,
       graphSnapshot: graphSnapshot ?? this.graphSnapshot,
       status: status ?? this.status,
