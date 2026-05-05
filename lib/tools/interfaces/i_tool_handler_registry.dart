@@ -16,27 +16,23 @@ import '../models/tool_contract.dart';
 import '../models/tool_input.dart';
 import '../models/tool_output.dart';
 import '../../sandbox/models/run_context.dart';
+import '../../core/aq_platform_context.dart';
 import 'i_tool_handler.dart';
 
 /// Порт регистрации и выполнения Tool handlers.
 abstract interface class IToolHandlerRegistry {
   static IToolHandlerRegistry? _instance;
 
-  static IToolHandlerRegistry get instance {
-    assert(_instance != null, 'IToolHandlerRegistry not initialized. '
-        'Call IToolHandlerRegistry.initialize() in main().');
-    return _instance!;
-  }
+  static IToolHandlerRegistry get instance =>
+      AQPlatformContext.current?.toolHandlerRegistry ??
+      _instance ??
+      (throw AssertionError('IToolHandlerRegistry not initialized.'));
 
   static void initialize(IToolHandlerRegistry impl) => _instance = impl;
   static void reset() => _instance = null;
 
-  /// Зарегистрировать handler для tool.
   void registerHandler(String toolName, IToolHandler handler);
 
-  /// Выполнить tool в контексте сессии агента.
-  ///
-  /// [sessionContext] — контекст сессии. Tools используют его напрямую.
   Future<ToolOutput> execute(
     ToolContract contract,
     ToolInput input,

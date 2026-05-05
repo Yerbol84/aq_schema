@@ -14,24 +14,20 @@
 import '../models/tool_ref.dart';
 import '../../subject/interfaces/i_tool_executor.dart';
 import '../../sandbox/models/run_context.dart';
+import '../../core/aq_platform_context.dart';
 
 /// Порт создания IToolExecutor для Subject.
 abstract interface class IToolExecutorFactory {
   static IToolExecutorFactory? _instance;
 
-  static IToolExecutorFactory get instance {
-    assert(_instance != null, 'IToolExecutorFactory not initialized. '
-        'Call IToolExecutorFactory.initialize() in main().');
-    return _instance!;
-  }
+  static IToolExecutorFactory get instance =>
+      AQPlatformContext.current?.toolExecutorFactory ??
+      _instance ??
+      (throw AssertionError('IToolExecutorFactory not initialized.'));
 
   static void initialize(IToolExecutorFactory impl) => _instance = impl;
   static void reset() => _instance = null;
 
-  /// Создать executor с whitelist разрешённых tools.
-  ///
-  /// [sessionContext] — контекст сессии агента. Передаётся в каждый tool call
-  /// чтобы tools работали в sandbox сессии (S-02 fix).
   IToolExecutor create(
     List<ToolRef> allowedTools,
     String subjectId,

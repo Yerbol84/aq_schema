@@ -1,7 +1,9 @@
 // aq_schema/lib/sandbox/interfaces/i_proc_context.dart
 
+import 'i_disposable.dart';
+
 /// Запуск процессов (ограниченный).
-abstract interface class IProcContext {
+abstract interface class IProcContext implements IDisposable {
   Future<ProcResult> run(
     String binary,
     List<String> args, {

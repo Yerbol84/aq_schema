@@ -2,51 +2,51 @@
 //
 // Контекст выполнения Tool/Subject.
 //
-// Содержит только granted capabilities.
-// Tool не может сделать то, чего нет в контексте.
+// TD-12: RunContext содержит SandboxResources как поле.
+// Сигнатуры IToolHandler.execute(input, context) не меняются.
+// Handler обращается к ресурсам через context.sandboxResources.fsWrite и т.д.
 
 import '../interfaces/i_fs_context.dart';
 import '../interfaces/i_net_context.dart';
 import '../interfaces/i_proc_context.dart';
 import '../models/sandbox_policy.dart';
+import '../models/sandbox_resources.dart';
 
 /// Контекст выполнения Tool/Subject.
 ///
-/// Содержит только granted capabilities.
-/// Nullable поля — capability не granted.
+/// Содержит метаданные сессии + доступ к ресурсам sandbox.
+/// Передаётся в каждый IToolHandler.execute() — единственный параметр контекста.
 final class RunContext {
   final String runId;
   final String sandboxId;
   final String sessionId;
 
-  // S-05: разделённые fs контексты.
-  // fsRead  — FsReadCap или FsWriteCap granted
-  // fsWrite — только FsWriteCap granted
-  final IReadableFsContext? fsRead;
-  final IWritableFsContext? fsWrite;
-
-  /// Обратная совместимость: fs → fsWrite (полный доступ).
-  IWritableFsContext? get fs => fsWrite;
-
-  final INetContext? net;
-  final IProcContext? proc;
-
-  /// Политика sandbox сессии — для chain-of-trust при Subject-as-Tool (S-03).
+  /// Политика sandbox сессии — для chain-of-trust при Subject-as-Tool.
   final SandboxPolicy? policy;
 
   final Map<String, String> env;
 
-  const RunContext({
+  /// Доступ к физическим ресурсам sandbox (fs, net, proc).
+  /// Capability-gated: null если capability не выдана.
+  final SandboxResources sandboxResources;
+
+  RunContext({
     required this.runId,
     required this.sandboxId,
     required this.sessionId,
-    this.fsRead,
-    this.fsWrite,
-    this.net,
-    this.proc,
     this.policy,
     this.env = const {},
-  });
+    SandboxResources? sandboxResources,
+  }) : sandboxResources = sandboxResources ?? SandboxResources();
+
+  // ── Удобные геттеры (делегируют к resources) ──────────────────────────────
+
+  /// Обратная совместимость.
+  IWritableFsContext? get fs => sandboxResources.fsWrite;
+  IReadableFsContext? get fsRead => sandboxResources.fsRead;
+  IWritableFsContext? get fsWrite => sandboxResources.fsWrite;
+  INetContext? get net => sandboxResources.net;
+  IProcContext? get proc => sandboxResources.proc;
 
   /// Минимальный контекст (без capabilities).
   factory RunContext.minimal({

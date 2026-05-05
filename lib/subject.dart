@@ -30,6 +30,7 @@ export 'subject/models/subject_capabilities.dart';
 export 'subject/models/subject_input.dart';
 export 'subject/models/subject_output.dart';
 export 'subject/models/subject_dependency_graph.dart';
+export 'subject/models/subject_health.dart';
 
 // ── Интерфейсы ────────────────────────────────────────────────────────────────
 export 'subject/interfaces/i_subject_session.dart';
@@ -38,3 +39,7 @@ export 'subject/interfaces/i_tool_executor.dart';
 export 'subject/interfaces/i_subject_session_factory.dart';
 export 'subject/interfaces/i_subject_repository.dart';
 export 'subject/interfaces/i_subject_session_repository.dart';
+export 'subject/interfaces/i_subject_executor.dart';
+export 'subject/interfaces/i_llm_response_adapter.dart';
+export 'subject/interfaces/i_quota_service.dart';
+export 'subject/interfaces/i_subject_tool_pool_manager.dart';

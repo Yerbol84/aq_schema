@@ -14,6 +14,16 @@ enum ToolDenyReason {
 final class ToolOutput {
   final bool success;
   final Map<String, Object?>? data;
+
+  /// Текстовое представление результата для LLM.
+  ///
+  /// Если задан — LlmAgentExecutor передаёт именно его в role=tool message.
+  /// Если null — LlmAgentExecutor использует jsonEncode(data) как fallback.
+  ///
+  /// Handlers должны задавать textContent когда результат — человекочитаемый текст
+  /// (содержимое файла, список файлов, тело HTTP ответа).
+  final String? textContent;
+
   final String? error;
 
   /// Если success=false — причина отказа (структурированная).
@@ -22,6 +32,7 @@ final class ToolOutput {
   const ToolOutput({
     required this.success,
     this.data,
+    this.textContent,
     this.error,
     this.denyReason,
   });
@@ -29,6 +40,7 @@ final class ToolOutput {
   Map<String, dynamic> toJson() => {
         'success': success,
         if (data != null) 'data': data,
+        if (textContent != null) 'text_content': textContent,
         if (error != null) 'error': error,
         if (denyReason != null) 'deny_reason': denyReason!.name,
       };

@@ -23,11 +23,6 @@ abstract interface class ISubjectSessionFactory {
   static void initialize(ISubjectSessionFactory impl) => _instance = impl;
   static void reset() => _instance = null;
 
-  /// Создать сессию для Subject.
-  ///
-  /// [toolExecutor] — опциональный executor для вызова tools.
-  /// Создаётся вызывающим кодом (SubjectRegistryClient) — фабрика не знает
-  /// о конкретной реализации (RestrictedToolExecutor).
   ISubjectSession createSession({
     required String sessionId,
     required SubjectDescriptor descriptor,

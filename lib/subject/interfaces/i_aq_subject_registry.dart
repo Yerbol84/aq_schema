@@ -10,6 +10,7 @@
 import '../../sandbox/models/sandbox_policy.dart';
 import '../models/subject_descriptor.dart';
 import '../models/subject_record.dart';
+import '../models/subject_health.dart';
 import 'i_subject_session.dart';
 import '../../core/aq_platform_context.dart';
 
@@ -79,6 +80,13 @@ abstract interface class IAQSubjectRegistry {
 
   /// Удалить Subject (все версии).
   Future<void> delete(String subjectId);
+
+  /// P-14: Проверить health субъекта.
+  ///
+  /// llmAgent: тестовый вызов LLM API.
+  /// gitRepo: проверка что entrypoint доступен.
+  /// Возвращает [SubjectHealthStatus.unknown] если субъект не зарегистрирован.
+  Future<SubjectHealthStatus> checkHealth(String subjectId);
 }
 
 /// Конфигурация сессии.

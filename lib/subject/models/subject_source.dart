@@ -96,7 +96,15 @@ final class LlmAgentSource extends SubjectSource {
 final class GitRepoSource extends SubjectSource {
   final String url;
   final String branch;
-  final String entrypoint;
+
+  /// Команда запуска агента — список аргументов (как Docker CMD).
+  ///
+  /// Пример: ['python3', 'agent.py']
+  /// Пример: ['python3', '-c', 'import sys; print("hello")']
+  ///
+  /// Не используйте shell-синтаксис — передаётся напрямую в Process.start().
+  final List<String> entrypoint;
+
   final List<String>? buildSteps;
   final String? cacheKey;
 
@@ -120,7 +128,7 @@ final class GitRepoSource extends SubjectSource {
   factory GitRepoSource.fromJson(Map<String, dynamic> json) => GitRepoSource(
         url: json['url'] as String,
         branch: json['branch'] as String,
-        entrypoint: json['entrypoint'] as String,
+        entrypoint: List<String>.from(json['entrypoint'] as List),
         buildSteps: json['build_steps'] != null
             ? List<String>.from(json['build_steps'] as List)
             : null,

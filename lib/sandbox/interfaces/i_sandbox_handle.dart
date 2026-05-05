@@ -3,6 +3,7 @@
 import '../../tools/models/tool_capability.dart';
 import '../models/run_context.dart';
 import '../models/sandbox_policy.dart';
+import '../models/sandbox_resources.dart';
 import '../models/sandbox_runtime_type.dart';
 
 /// Handle Sandbox — управление жизненным циклом.
@@ -11,8 +12,11 @@ abstract interface class ISandboxHandle {
   SandboxRuntimeType get sbRuntimeType;
   SandboxStatus get status;
 
-  /// Создать RunContext с granted capabilities.
-  Future<RunContext> createContext({
+  /// Создать RunContext + SandboxResources с granted capabilities.
+  ///
+  /// RunContext — value object с метаданными (передаётся в tools).
+  /// SandboxResources — живые ресурсы (fs/net/proc), требует явного dispose().
+  Future<(RunContext, SandboxResources)> createContext({
     required List<ToolCapability> requestedCaps,
     required SandboxPolicy policy,
     required String runId,

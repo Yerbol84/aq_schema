@@ -9,10 +9,12 @@
 //   fsRead  — если выдан FsReadCap или FsWriteCap
 //   fsWrite — только если выдан FsWriteCap
 
+import 'i_disposable.dart';
+
 /// Контекст файловой системы — только чтение.
 ///
 /// Выдаётся при наличии FsReadCap или FsWriteCap.
-abstract interface class IReadableFsContext {
+abstract interface class IReadableFsContext implements IDisposable {
   Future<String> read(String relativePath);
   Future<List<String>> list({String? subDir});
   Future<bool> exists(String relativePath);

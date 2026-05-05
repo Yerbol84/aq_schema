@@ -26,8 +26,11 @@ export 'sandbox/models/sandbox_resource_budget.dart';
 export 'sandbox/models/sandbox_network_policy.dart';
 export 'sandbox/models/sandbox_disposal_spec.dart';
 export 'sandbox/models/run_context.dart';
+export 'sandbox/models/sandbox_resources.dart';
+export 'sandbox/models/sandbox_resources.dart';
 
 // ── Интерфейсы ────────────────────────────────────────────────────────────────
+export 'sandbox/interfaces/i_disposable.dart';
 export 'sandbox/interfaces/i_fs_context.dart';
 export 'sandbox/interfaces/i_net_context.dart';
 export 'sandbox/interfaces/i_proc_context.dart';

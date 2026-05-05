@@ -29,22 +29,33 @@ import '../subject/interfaces/i_aq_subject_registry.dart';
 import '../subject/interfaces/i_subject_session_factory.dart';
 import '../subject/interfaces/i_subject_repository.dart';
 import '../subject/interfaces/i_subject_session_repository.dart';
+import '../subject/interfaces/i_subject_executor.dart';
 import '../tools/interfaces/i_aq_tool_registry_simple.dart';
 import '../tools/interfaces/i_tool_runtime_executor.dart';
 import '../tools/interfaces/i_tool_repository.dart';
+import '../tools/interfaces/i_tool_handler_registry.dart';
+import '../tools/interfaces/i_tool_executor_factory.dart';
 
 /// Zone-local DI контейнер платформы.
 final class AQPlatformContext {
   static final Object _zoneKey = Object();
 
+  // ── Sandbox Plane ─────────────────────────────────────────────────────────
   final ISandboxProvider sandboxProvider;
-  final IAQSubjectRegistry subjectRegistry;
+
+  // ── Tool Plane ────────────────────────────────────────────────────────────
   final IAQToolRegistrySimple toolRegistry;
   final IToolRuntimeExecutor toolRuntimeExecutor;
+  final IToolRepository toolRepository;
+  final IToolHandlerRegistry toolHandlerRegistry;
+  final IToolExecutorFactory toolExecutorFactory;
+
+  // ── Subject Plane ─────────────────────────────────────────────────────────
+  final IAQSubjectRegistry subjectRegistry;
   final ISubjectSessionFactory subjectSessionFactory;
   final ISubjectRepository subjectRepository;
-  final IToolRepository toolRepository;
   final ISubjectSessionRepository subjectSessionRepository;
+  final ISubjectExecutorRegistry subjectExecutorRegistry;
 
   const AQPlatformContext({
     required this.sandboxProvider,
@@ -55,6 +66,9 @@ final class AQPlatformContext {
     required this.subjectRepository,
     required this.toolRepository,
     required this.subjectSessionRepository,
+    required this.toolHandlerRegistry,
+    required this.toolExecutorFactory,
+    required this.subjectExecutorRegistry,
   });
 
   /// Текущий контекст из zone. Null если не установлен.
@@ -80,9 +94,11 @@ final class AQPlatformContext {
     ISubjectRepository.initialize(subjectRepository);
     IToolRepository.initialize(toolRepository);
     ISubjectSessionRepository.initialize(subjectSessionRepository);
+    IToolHandlerRegistry.initialize(toolHandlerRegistry);
+    IToolExecutorFactory.initialize(toolExecutorFactory);
+    ISubjectExecutorRegistry.initialize(subjectExecutorRegistry);
   }
 
-  /// Сбросить все статические синглтоны (для тестов).
   static void resetAll() {
     ISandboxProvider.reset();
     IAQSubjectRegistry.reset();
@@ -92,5 +108,8 @@ final class AQPlatformContext {
     ISubjectRepository.reset();
     IToolRepository.reset();
     ISubjectSessionRepository.reset();
+    IToolHandlerRegistry.reset();
+    IToolExecutorFactory.reset();
+    ISubjectExecutorRegistry.reset();
   }
 }
