@@ -5,9 +5,9 @@
 // Гарантии реализации (aq_security обязан соблюдать):
 //   logAccess(...)                      → запись в accessLogs
 //   logAudit(...)                       → запись в auditTrail
-//   getAccessLogs(userId)               → логи только этого пользователя
-//   getAuditTrail(entityId)             → trail только этой сущности
-//   clearOldLogs(before)                → удаляет записи старше before
+//   getAccessLogs(filter)               → логи по фильтру
+//   getAuditTrail(filter)               → trail по фильтру
+//   cleanupAccessLogs(olderThan)        → удаляет старые записи
 
 import '../interfaces/i_audit_service.dart';
 import '../models/aq_access_log.dart';
@@ -29,6 +29,7 @@ final class MockAuditService implements IAuditService {
     required bool allowed,
     String? reason,
     String? ipAddress,
+    String? userAgent,
     Map<String, dynamic>? metadata,
   }) async {
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
@@ -48,15 +49,15 @@ final class MockAuditService implements IAuditService {
 
   @override
   Future<void> logAudit({
-    required String userId,
-    required String userEmail,
-    required String tenantId,
+    required AuditActionType action,
     required AuditEntityType entityType,
     required String entityId,
     required String entityName,
-    required AuditAction action,
-    Map<String, dynamic>? before,
-    Map<String, dynamic>? after,
+    required String userId,
+    required String userEmail,
+    required String tenantId,
+    Map<String, dynamic>? changes,
+    String? reason,
     String? ipAddress,
     Map<String, dynamic>? metadata,
   }) async {
@@ -70,65 +71,95 @@ final class MockAuditService implements IAuditService {
       entityId: entityId,
       entityName: entityName,
       action: action,
-      before: before,
-      after: after,
+      changes: changes,
+      reason: reason,
       ipAddress: ipAddress,
       timestamp: now,
     ));
   }
 
   @override
-  Future<List<AqAccessLog>> getAccessLogs({
-    String? userId,
-    String? resource,
-    String? action,
-    bool? allowed,
-    DateTime? from,
-    DateTime? to,
-    int limit = 50,
-    int offset = 0,
-  }) async {
+  Future<List<AqAccessLog>> getAccessLogs(AccessLogFilter filter) async {
     var logs = _backend.accessLogs.toList();
-    if (userId != null) logs = logs.where((l) => l.userId == userId).toList();
-    if (resource != null) logs = logs.where((l) => l.resource == resource).toList();
-    if (action != null) logs = logs.where((l) => l.action == action).toList();
-    if (allowed != null) logs = logs.where((l) => l.allowed == allowed).toList();
-    if (from != null) {
-      final fromTs = from.millisecondsSinceEpoch ~/ 1000;
-      logs = logs.where((l) => l.timestamp >= fromTs).toList();
+    if (filter.userId != null) {
+      logs = logs.where((l) => l.userId == filter.userId).toList();
     }
-    if (to != null) {
-      final toTs = to.millisecondsSinceEpoch ~/ 1000;
-      logs = logs.where((l) => l.timestamp <= toTs).toList();
+    if (filter.resource != null) {
+      logs = logs.where((l) => l.resource == filter.resource).toList();
     }
-    return logs.skip(offset).take(limit).toList();
+    if (filter.action != null) {
+      logs = logs.where((l) => l.action == filter.action).toList();
+    }
+    if (filter.allowed != null) {
+      logs = logs.where((l) => l.allowed == filter.allowed).toList();
+    }
+    return logs
+        .skip(filter.offset)
+        .take(filter.limit)
+        .toList();
   }
 
   @override
-  Future<List<AqAuditTrail>> getAuditTrail({
-    String? entityId,
-    AuditEntityType? entityType,
-    String? userId,
-    DateTime? from,
-    DateTime? to,
-    int limit = 50,
-    int offset = 0,
-  }) async {
+  Future<List<AqAuditTrail>> getAuditTrail(AuditTrailFilter filter) async {
     var trail = _backend.auditTrail.toList();
-    if (entityId != null) trail = trail.where((t) => t.entityId == entityId).toList();
-    if (entityType != null) trail = trail.where((t) => t.entityType == entityType).toList();
-    if (userId != null) trail = trail.where((t) => t.userId == userId).toList();
-    return trail.skip(offset).take(limit).toList();
+    if (filter.entityId != null) {
+      trail = trail.where((t) => t.entityId == filter.entityId).toList();
+    }
+    if (filter.entityType != null) {
+      trail = trail.where((t) => t.entityType == filter.entityType).toList();
+    }
+    if (filter.userId != null) {
+      trail = trail.where((t) => t.userId == filter.userId).toList();
+    }
+    return trail
+        .skip(filter.offset)
+        .take(filter.limit)
+        .toList();
   }
 
   @override
-  Future<int> clearOldLogs(DateTime before) async {
-    final beforeTs = before.millisecondsSinceEpoch ~/ 1000;
-    final removedLogs = _backend.accessLogs
-        .where((l) => l.timestamp < beforeTs)
+  Future<Map<String, dynamic>> getAccessLogStats({
+    String? tenantId,
+    required int startTime,
+    required int endTime,
+  }) async {
+    final logs = _backend.accessLogs
+        .where((l) => l.timestamp >= startTime && l.timestamp <= endTime)
+        .toList();
+    return {
+      'total': logs.length,
+      'allowed': logs.where((l) => l.allowed).length,
+      'denied': logs.where((l) => !l.allowed).length,
+    };
+  }
+
+  @override
+  Future<Map<String, dynamic>> getAuditTrailStats({
+    String? tenantId,
+    required int startTime,
+    required int endTime,
+  }) async {
+    final trail = _backend.auditTrail
+        .where((t) => t.timestamp >= startTime && t.timestamp <= endTime)
+        .toList();
+    return {'total': trail.length};
+  }
+
+  @override
+  Future<int> cleanupAccessLogs({required int olderThan}) async {
+    final before = _backend.accessLogs
+        .where((l) => l.timestamp < olderThan)
         .length;
-    _backend.accessLogs.removeWhere((l) => l.timestamp < beforeTs);
-    _backend.auditTrail.removeWhere((t) => t.timestamp < beforeTs);
-    return removedLogs;
+    _backend.accessLogs.removeWhere((l) => l.timestamp < olderThan);
+    return before;
+  }
+
+  @override
+  Future<int> cleanupAuditTrail({required int olderThan}) async {
+    final before = _backend.auditTrail
+        .where((t) => t.timestamp < olderThan)
+        .length;
+    _backend.auditTrail.removeWhere((t) => t.timestamp < olderThan);
+    return before;
   }
 }

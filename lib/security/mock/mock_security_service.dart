@@ -173,11 +173,11 @@ final class MockSecurityService implements ISecurityService {
   @override
   Future<AqTokenPair> refreshTokens() async {
     if (!isAuthenticated) throw Exception('not_authenticated');
-    return const TokenPair(
+    return TokenPair(
       accessToken: MockSecuritySeed.adminToken,
       refreshToken: 'mock-refresh-token',
-      accessExpiresAt: MockSecuritySeed.adminClaims.exp,
-      refreshExpiresAt: MockSecuritySeed.adminClaims.exp,
+      accessExpiresAt: MockSecuritySeed.future,
+      refreshExpiresAt: MockSecuritySeed.future,
     );
   }
 
@@ -360,7 +360,6 @@ final class MockSecurityService implements ISecurityService {
       authProvider: user.authProvider, userType: user.userType,
       isActive: user.isActive, createdAt: user.createdAt,
       displayName: displayName ?? user.displayName,
-      avatarUrl: avatarUrl ?? user.avatarUrl,
     );
     _backend.users[user.id] = updated;
     return updated;

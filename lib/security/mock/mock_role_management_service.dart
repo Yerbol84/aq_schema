@@ -3,10 +3,10 @@
 // Mock IRoleManagementService — использует MockSecurityBackend.
 //
 // Гарантии реализации (aq_security обязан соблюдать):
-//   getRoles()                          → все роли tenant'а
-//   getRoleById(существующий id)        → AqRole
-//   getRoleById(несуществующий id)      → null
-//   createRole(новая роль)              → AqRole сохранена в backend
+//   getRoles()                          → все роли
+//   getRole(существующий id)            → AqRole
+//   getRole(несуществующий id)          → null
+//   createRole(новая роль)              → сохранена в backend
 //   createRole(дублирующее имя)         → throws Exception('role_already_exists')
 //   deleteRole(системная роль)          → throws Exception('cannot_delete_system_role')
 //   assignRole(userId, roleId)          → роль назначена, видна в getUserRoles
@@ -27,21 +27,14 @@ final class MockRoleManagementService implements IRoleManagementService {
       _backend.roles.values.toList();
 
   @override
-  Future<AqRole?> getRoleById(String roleId) async =>
+  Future<AqRole?> getRole(String roleId) async =>
       _backend.roles[roleId];
-
-  @override
-  Future<AqRole?> getRoleByName(String name) async =>
-      _backend.roles.values.where((r) => r.name == name).firstOrNull;
 
   @override
   Future<AqRole> createRole({
     required String name,
     String? description,
     required List<String> permissions,
-    List<String> inheritsFrom = const [],
-    String? tenantId,
-    Map<String, dynamic> metadata = const {},
   }) async {
     if (_backend.roles.values.any((r) => r.name == name)) {
       throw Exception('role_already_exists');
@@ -52,8 +45,6 @@ final class MockRoleManagementService implements IRoleManagementService {
       name: name,
       description: description,
       permissions: permissions,
-      inheritsFrom: inheritsFrom,
-      tenantId: tenantId,
       isSystem: false,
       createdAt: now,
     );
@@ -67,8 +58,6 @@ final class MockRoleManagementService implements IRoleManagementService {
     String? name,
     String? description,
     List<String>? permissions,
-    List<String>? inheritsFrom,
-    Map<String, dynamic>? metadata,
   }) async {
     final role = _backend.roles[roleId];
     if (role == null) throw Exception('role_not_found');
@@ -80,7 +69,7 @@ final class MockRoleManagementService implements IRoleManagementService {
       name: name ?? role.name,
       description: description ?? role.description,
       permissions: permissions ?? role.permissions,
-      inheritsFrom: inheritsFrom ?? role.inheritsFrom,
+      inheritsFrom: role.inheritsFrom,
       tenantId: role.tenantId,
       isSystem: role.isSystem,
       createdAt: role.createdAt,
@@ -96,36 +85,27 @@ final class MockRoleManagementService implements IRoleManagementService {
     if (role == null) throw Exception('role_not_found');
     if (role.isSystem) throw Exception('cannot_delete_system_role');
     _backend.roles.remove(roleId);
-    // Отозвать у всех пользователей
     for (final assignments in _backend.userRoles.values) {
       assignments.removeWhere((ur) => ur.roleId == roleId);
     }
   }
 
   @override
-  Future<List<AqUserRole>> getUserRoles(String userId) async =>
-      _backend.userRoles[userId] ?? [];
-
-  @override
-  Future<void> assignRole(
-    String userId,
-    String roleId, {
-    String? tenantId,
-    DateTime? expiresAt,
-    String? reason,
+  Future<void> assignRole({
+    required String userId,
+    required String roleId,
+    int? expiresAt,
   }) async {
     if (!_backend.roles.containsKey(roleId)) throw Exception('role_not_found');
     if (!_backend.users.containsKey(userId)) throw Exception('user_not_found');
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    final tid = tenantId ?? _backend.users[userId]!.tenantId;
+    final tenantId = _backend.users[userId]!.tenantId;
     final assignment = AqUserRole(
       userId: userId,
       roleId: roleId,
-      tenantId: tid,
+      tenantId: tenantId,
       grantedAt: now,
-      expiresAt: expiresAt != null
-          ? expiresAt.millisecondsSinceEpoch ~/ 1000
-          : null,
+      expiresAt: expiresAt,
     );
     _backend.userRoles.putIfAbsent(userId, () => []);
     _backend.userRoles[userId]!.removeWhere((ur) => ur.roleId == roleId);
@@ -133,16 +113,19 @@ final class MockRoleManagementService implements IRoleManagementService {
   }
 
   @override
-  Future<void> revokeRole(String userId, String roleId) async {
+  Future<void> revokeRole({
+    required String userId,
+    required String roleId,
+  }) async {
     _backend.userRoles[userId]?.removeWhere((ur) => ur.roleId == roleId);
   }
 
   @override
-  Future<List<AqRole>> getEffectiveRoles(String userId) async =>
+  Future<List<AqRole>> getUserRoles(String userId) async =>
       _backend.getRolesForUser(userId);
 
   @override
-  Future<List<AqUser>> getUsersWithRole(String roleId) async {
+  Future<List<AqUser>> getUsersByRole(String roleId) async {
     final userIds = _backend.userRoles.entries
         .where((e) => e.value.any((ur) => ur.roleId == roleId))
         .map((e) => e.key)
@@ -152,4 +135,15 @@ final class MockRoleManagementService implements IRoleManagementService {
         .whereType<AqUser>()
         .toList();
   }
+
+  @override
+  Future<List<String>> getAllPermissions() async => [
+        'projects:read', 'projects:write', 'projects:delete',
+        'graphs:read', 'graphs:write', 'graphs:execute', 'graphs:delete',
+        'users:read', 'users:write', 'users:delete',
+        'roles:read', 'roles:write', 'roles:delete', 'roles:assign', 'roles:revoke',
+        'policies:read', 'policies:write', 'policies:delete',
+        'audit:read', 'audit:delete',
+        'admin:*', '*:*',
+      ];
 }

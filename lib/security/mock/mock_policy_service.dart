@@ -4,11 +4,13 @@
 //
 // Гарантии реализации (aq_security обязан соблюдать):
 //   getPolicies()                       → все активные политики
+//   getPolicy(существующий id)          → AqPolicy
+//   getPolicy(несуществующий id)        → null
 //   createPolicy(новая)                 → сохранена в backend
 //   createPolicy(дублирующее имя)       → throws Exception('policy_already_exists')
 //   deletePolicy(несуществующая)        → throws Exception('policy_not_found')
 //   evaluatePolicy(IP в blacklist)      → deny
-//   evaluatePolicy(IP не в blacklist)   → allow
+//   evaluatePolicy(IP не в blacklist)   → allow (если нет других deny политик)
 
 import '../interfaces/i_policy_service.dart';
 import '../models/aq_policy.dart';
@@ -28,7 +30,7 @@ final class MockPolicyService implements IPolicyService {
           .toList();
 
   @override
-  Future<AqPolicy?> getPolicyById(String policyId) async =>
+  Future<AqPolicy?> getPolicy(String policyId) async =>
       _backend.policies.where((p) => p.id == policyId).firstOrNull;
 
   @override
@@ -36,8 +38,8 @@ final class MockPolicyService implements IPolicyService {
     required String name,
     String? description,
     required List<PolicyStatement> statements,
+    bool isActive = true,
     int priority = 0,
-    String? tenantId,
   }) async {
     if (_backend.policies.any((p) => p.name == name)) {
       throw Exception('policy_already_exists');
@@ -47,9 +49,9 @@ final class MockPolicyService implements IPolicyService {
       id: 'policy-${_backend.policies.length + 1}',
       name: name,
       description: description,
-      tenantId: tenantId ?? 'default',
+      tenantId: 'default',
       priority: priority,
-      isActive: true,
+      isActive: isActive,
       statements: statements,
       createdAt: now,
       createdBy: 'mock',
@@ -64,8 +66,8 @@ final class MockPolicyService implements IPolicyService {
     String? name,
     String? description,
     List<PolicyStatement>? statements,
-    int? priority,
     bool? isActive,
+    int? priority,
   }) async {
     final idx = _backend.policies.indexWhere((p) => p.id == policyId);
     if (idx == -1) throw Exception('policy_not_found');
@@ -80,7 +82,6 @@ final class MockPolicyService implements IPolicyService {
       statements: statements ?? old.statements,
       createdAt: old.createdAt,
       createdBy: old.createdBy,
-      updatedAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
     );
     _backend.policies[idx] = updated;
     return updated;
@@ -88,31 +89,52 @@ final class MockPolicyService implements IPolicyService {
 
   @override
   Future<void> deletePolicy(String policyId) async {
-    final removed = _backend.policies.removeWhere((p) => p.id == policyId);
-    if (removed == 0) throw Exception('policy_not_found');
+    final before = _backend.policies.length;
+    _backend.policies.removeWhere((p) => p.id == policyId);
+    if (_backend.policies.length == before) throw Exception('policy_not_found');
   }
 
   @override
-  Future<PolicyEvaluationResult> evaluatePolicy(
-    PolicyContext context,
-  ) async {
-    for (final policy in _backend.policies
+  Future<PolicyEvaluationResult> evaluatePolicy(PolicyContext context) async {
+    final active = _backend.policies
         .where((p) => p.isActive)
         .toList()
-      ..sort((a, b) => b.priority.compareTo(a.priority))) {
+      ..sort((a, b) => b.priority.compareTo(a.priority));
+
+    for (final policy in active) {
       for (final statement in policy.statements) {
         if (_matchesConditions(statement.conditions, context)) {
           if (statement.effect == PolicyEffect.deny) {
             return PolicyEvaluationResult(
               allowed: false,
               reason: 'Denied by policy: ${policy.name}',
-              appliedPolicyId: policy.id,
             );
           }
         }
       }
     }
-    return const PolicyEvaluationResult(allowed: true, reason: 'No policy denied');
+    return const PolicyEvaluationResult(
+      allowed: true,
+      reason: 'No policy denied',
+    );
+  }
+
+  @override
+  Future<PolicyEvaluationResult> testPolicy({
+    required String userId,
+    required String resource,
+    required String action,
+    Map<String, dynamic>? additionalContext,
+  }) async {
+    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final context = PolicyContext(
+      userId: userId,
+      tenantId: _backend.users[userId]?.tenantId ?? 'default',
+      roles: _backend.getRolesForUser(userId).map((r) => r.name).toList(),
+      ipAddress: additionalContext?['ipAddress'] as String?,
+      timestamp: now,
+    );
+    return evaluatePolicy(context);
   }
 
   bool _matchesConditions(
