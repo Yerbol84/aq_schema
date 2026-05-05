@@ -9,10 +9,7 @@ export 'base/interactive_node.dart';
 export 'base/composite_node.dart';
 
 // WorkflowGraph узлы - Automatic
-export 'workflow/automatic/llm_action_node.dart';
-export 'workflow/automatic/file_read_node.dart';
-export 'workflow/automatic/file_write_node.dart';
-export 'workflow/automatic/git_commit_node.dart';
+export 'workflow/automatic/automatic_workflow_node.dart';
 
 // WorkflowGraph узлы - Interactive
 export 'workflow/interactive/user_input_node.dart';
