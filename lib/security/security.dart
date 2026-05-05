@@ -7,6 +7,7 @@ export 'models/aq_user.dart';
 export 'models/aq_profile.dart';
 export 'models/aq_role.dart';
 export 'models/aq_session.dart';
+export 'models/security_mode.dart';
 export 'models/aq_token_claims.dart';
 export 'models/credentials.dart'
     show
@@ -51,7 +52,8 @@ export 'interfaces/i_audit_service.dart';
 export 'interfaces/i_resource_permission_service.dart';
 
 // ── Data Layer Security Protocol ──────────────────────────────────────────────
-export 'interfaces/clients_protocols/i_data_layer_as_clietn_secure_protocol.dart';
+export 'interfaces/clients_protocols/i_vault_security_protocol.dart';
+export 'interfaces/clients_protocols/i_auth_context.dart';
 
 // ── Shared token logic (pure Dart) ────────────────────────────────────────────
 export 'token/token_codec.dart';

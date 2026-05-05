@@ -92,16 +92,6 @@ class AqSecurityDomains {
     // RBAC Collections
     // ══════════════════════════════════════════════════════════════════════════
 
-    // ── RBAC Roles (Direct) ──────────────────────────────────────────────────
-    DomainDescriptor.direct(
-      collection: AqRole.kCollection,
-      fromMap: StorableRole.fromMap,
-      indexes: [
-        VaultIndex(name: 'idx_rbac_roles_name', field: 'name'),
-        VaultIndex(name: 'idx_rbac_roles_tenant', field: 'tenantId'),
-      ],
-    ),
-
     // ── RBAC User Roles (Direct) ─────────────────────────────────────────────
     DomainDescriptor.direct(
       collection: AqUserRole.kCollection,

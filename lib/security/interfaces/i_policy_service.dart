@@ -1,7 +1,14 @@
 // pkgs/aq_schema/lib/security/interfaces/i_policy_service.dart
 //
-// Интерфейс для управления политиками доступа (ABAC/PBAC).
-// Реализуется в aq_security, используется в aq_security_ui.
+// Порт управления политиками доступа (ABAC/PBAC).
+// Доступен через ISecurityService.instance.policies
+//
+// 🔑 Только для admin UI — создание/редактирование политик.
+// Политики применяются автоматически в AccessControlEngine при каждой проверке прав.
+//
+// Пример:
+//   final policies = await ISecurityService.instance.policies.getPolicies();
+//   await ISecurityService.instance.policies.createPolicy(policy);
 
 import '../models/aq_policy.dart';
 

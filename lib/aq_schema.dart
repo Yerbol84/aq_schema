@@ -97,6 +97,9 @@ export 'security/security.dart';
 export 'security/models/api_key_claims.dart';
 export 'security/interfaces/clients_protocols/i_auth_context.dart';
 
+// Cache domain
+export 'cache/cache.dart';
+
 // Test domains (for migration testing)
 export 'test/test_document.dart';
 export 'sandbox/interfaces/i_fs_context.dart';

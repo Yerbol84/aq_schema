@@ -284,6 +284,10 @@ abstract interface class IPolicyRepository {
   Future<AqPolicy?> findById(String id);
   Future<List<AqPolicy>> findByTenant(String tenantId);
   Future<List<AqPolicy>> findActive(String tenantId);
+  Future<List<AqPolicy>> getEnabledPolicies();
+  Future<List<AqPolicy>> getAllPolicies();
+  Future<void> savePolicy(AqPolicy policy);
+  Future<void> deletePolicy(String policyId);
 }
 
 /// Алиас для обратной совместимости

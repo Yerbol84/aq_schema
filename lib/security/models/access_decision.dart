@@ -3,11 +3,22 @@
 // Результат проверки доступа в RBAC системе.
 // Используется AccessControlEngine для возврата решения о доступе.
 
+import '../../cache/interfaces/i_aq_cacheable.dart';
+
 /// Результат проверки доступа
 ///
 /// Содержит решение (разрешено/запрещено) и причину.
 /// Используется как возвращаемый тип для методов проверки доступа.
-final class AccessDecision {
+///
+/// Для кэширования используй [AccessDecision.withCacheKey]:
+/// ```dart
+/// final decision = AccessDecision.withCacheKey(
+///   userId: claims.sub,
+///   permission: 'projects:read',
+///   allowed: true,
+/// );
+/// ```
+final class AccessDecision implements IAQCacheable {
   const AccessDecision({
     required this.allowed,
     this.reason,
@@ -15,7 +26,8 @@ final class AccessDecision {
     this.matchedPermissions = const [],
     this.appliedPolicies = const [],
     this.evaluationTimeMs,
-  });
+    String? cacheKey,
+  }) : _cacheKey = cacheKey;
 
   /// Разрешён ли доступ
   final bool allowed;
@@ -40,6 +52,43 @@ final class AccessDecision {
 
   /// Время оценки в миллисекундах (для метрик)
   final int? evaluationTimeMs;
+
+  final String? _cacheKey;
+
+  // ── IAQCacheable ──────────────────────────────────────────────────────────
+
+  /// Ключ кэша. Устанавливается через [AccessDecision.withCacheKey].
+  /// Если не установлен — решение не будет кэшировано через IAQCache.
+  @override
+  String get cacheKey => _cacheKey ?? '';
+
+  /// Решения кэшируются на уровне кэша (TTL из CacheConfig).
+  @override
+  Duration? get cacheTtl => null;
+
+  @override
+  bool get cacheStaleOnError => false;
+
+  /// Создать решение с ключом кэша: 'decision:$userId:$permission'.
+  static AccessDecision withCacheKey({
+    required String userId,
+    required String permission,
+    required bool allowed,
+    String? reason,
+    List<String>? matchedRoles,
+    List<String>? matchedPermissions,
+    List<String>? appliedPolicies,
+    int? evaluationTimeMs,
+  }) =>
+      AccessDecision(
+        allowed: allowed,
+        reason: reason,
+        matchedRoles: matchedRoles ?? [],
+        matchedPermissions: matchedPermissions ?? [],
+        appliedPolicies: appliedPolicies ?? [],
+        evaluationTimeMs: evaluationTimeMs,
+        cacheKey: 'decision:$userId:$permission',
+      );
 
   /// Фабрика для создания положительного решения
   factory AccessDecision.allow({

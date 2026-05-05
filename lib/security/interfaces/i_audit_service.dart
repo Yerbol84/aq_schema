@@ -1,7 +1,14 @@
 // pkgs/aq_schema/lib/security/interfaces/i_audit_service.dart
 //
-// Интерфейс для аудита и логирования действий в системе безопасности.
-// Реализуется в aq_security, используется в aq_security_ui.
+// Порт аудита и логирования событий безопасности.
+// Доступен через ISecurityService.instance.audit
+//
+// 🔑 Для admin/compliance UI — просмотр логов доступа и аудит-трейла.
+// Запись логов происходит автоматически внутри aq_security — вручную не нужно.
+//
+// Пример:
+//   final logs = await ISecurityService.instance.audit.getAccessLogs(userId: userId);
+//   final trail = await ISecurityService.instance.audit.getAuditTrail(entityId: roleId);
 
 import '../models/aq_access_log.dart';
 import '../models/aq_audit_trail.dart';

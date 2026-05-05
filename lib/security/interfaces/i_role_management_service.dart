@@ -1,7 +1,14 @@
 // pkgs/aq_schema/lib/security/interfaces/i_role_management_service.dart
 //
-// Интерфейс для управления ролями и назначениями ролей пользователям.
-// Реализуется в aq_security, используется в aq_security_ui.
+// Порт управления ролями (RBAC).
+// Доступен через ISecurityService.instance.roleManagement
+//
+// 🔑 Только для admin UI — создание/редактирование ролей и назначений.
+// Обычный пользователь не должен вызывать эти методы напрямую.
+//
+// Пример:
+//   final roles = await ISecurityService.instance.roleManagement.getRoles();
+//   await ISecurityService.instance.roleManagement.assignRole(userId, roleId);
 
 import '../models/aq_role.dart';
 import '../models/aq_user.dart';

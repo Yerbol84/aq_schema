@@ -1,113 +1,39 @@
-// pkgs/aq_schema/lib/security/interfaces/clients_protocols/mocks/mock_vault_security_protocol.dart
+// aq_schema/lib/security/interfaces/clients_protocols/mocks/mock_vault_security_protocol.dart
 //
-// Mock реализация IVaultSecurityProtocol для тестирования.
+// Mock IVaultSecurityProtocol — использует MockSecurityBackend.
 //
-// Поддерживает захардкоженные токены и API ключи.
+// Гарантии реализации (aq_security обязан соблюдать):
+//   extractClaims(admin token)          → adminClaims
+//   extractClaims(revoked token)        → null
+//   extractClaims(no header)            → null
+//   canRead(admin)                      → AccessDecision.allow
+//   canRead(viewer, 'projects')         → AccessDecision.allow (есть scope)
+//   canRead(viewer, 'users')            → AccessDecision.deny (нет scope)
+//   canWrite(viewer)                    → AccessDecision.deny
+//   canDelete(non-admin)                → AccessDecision.deny
+//   canRead(null claims)                → AccessDecision.deny
+//   validateData(без id)                → [ValidationFieldError('id')]
+//   encryptSensitiveFields              → данные без изменений (mock не шифрует)
 
 import 'package:aq_schema/aq_schema.dart';
+import '../../../mock/backend/mock_security_backend.dart';
+import '../../../mock/backend/mock_security_seed.dart';
+import '../i_vault_security_protocol.dart';
+import '../../../interfaces/i_resource_permission_service.dart';
 
-/// Mock реализация IVaultSecurityProtocol для тестирования.
-///
-/// **Захардкоженные токены:**
-/// - `test-admin-token` — админ (все права)
-/// - `test-user-token` — обычный пользователь (read/write)
-/// - `test-readonly-token` — только чтение
-/// - `test-blocked-token` — заблокирован (всё запрещено)
-///
-/// **Использование в тестах:**
-/// ```dart
-/// void main() {
-///   setUp(() {
-///     IVaultSecurityProtocol.initialize(MockVaultSecurityProtocol());
-///   });
-///
-///   tearDown(() {
-///     IVaultSecurityProtocol.reset();
-///   });
-///
-///   test('admin can delete', () async {
-///     final storage = PostgresVaultStorage(
-///       headers: {'Authorization': 'Bearer test-admin-token'},
-///     );
-///     await storage.delete('projects', 'project-1'); // OK
-///   });
-/// }
-/// ```
 final class MockVaultSecurityProtocol implements IVaultSecurityProtocol {
-  MockVaultSecurityProtocol({
-    this.defaultBehavior = MockBehavior.allowAll,
-  });
+  MockVaultSecurityProtocol(this._backend);
 
-  final MockBehavior defaultBehavior;
-
-  // Захардкоженные токены для тестирования
-  static const Map<String, AqTokenClaims> _testTokens = {
-    'test-admin-token': AqTokenClaims(
-      sub: 'admin-user-id',
-      email: 'admin@test.com',
-      tid: 'test-tenant',
-      roles: ['admin', 'user'],
-      scopes: ['*'],
-      iat: 1700000000,
-      exp: 2000000000,
-      type: TokenType.access,
-      jti: '',
-      sid: '',
-    ),
-    'test-user-token': AqTokenClaims(
-      sub: 'user-id',
-      email: 'user@test.com',
-      tid: 'test-tenant',
-      roles: ['user'],
-      scopes: [
-        'projects:read',
-        'projects:write',
-        'graphs:read',
-        'graphs:write'
-      ],
-      iat: 1700000000,
-      exp: 2000000000,
-      type: TokenType.access,
-      jti: '',
-      sid: '',
-    ),
-    'test-readonly-token': AqTokenClaims(
-      sub: 'readonly-user-id',
-      email: 'readonly@test.com',
-      tid: 'test-tenant',
-      roles: ['viewer'],
-      scopes: ['projects:read', 'graphs:read'],
-      iat: 1700000000,
-      exp: 2000000000,
-      type: TokenType.access,
-      jti: '',
-      sid: '',
-    ),
-    'test-blocked-token': AqTokenClaims(
-      sub: 'blocked-user-id',
-      email: 'blocked@test.com',
-      tid: 'test-tenant',
-      type: TokenType.access,
-      jti: '',
-      sid: '',
-      roles: [],
-      scopes: [],
-      iat: 1700000000,
-      exp: 2000000000,
-    ),
-  };
+  final MockSecurityBackend _backend;
 
   @override
   Future<AqTokenClaims?> extractClaims(Map<String, String> headers) async {
-    final authHeader = headers['Authorization'] ?? headers['authorization'];
-    if (authHeader == null) return null;
-
-    // Извлечь токен
-    final token =
-        authHeader.startsWith('Bearer ') ? authHeader.substring(7) : authHeader;
-
-    // Вернуть захардкоженный claims
-    return _testTokens[token];
+    final claims = _backend.claimsFromHeaders(headers);
+    if (claims == null) return null;
+    // Проверить не истёк ли токен
+    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    if (claims.exp < now) return null;
+    return claims;
   }
 
   @override
@@ -116,29 +42,14 @@ final class MockVaultSecurityProtocol implements IVaultSecurityProtocol {
     required String collection,
     String? entityId,
   }) async {
-    if (claims == null) {
-      return defaultBehavior == MockBehavior.allowAll
-          ? AccessDecision.allow(reason: 'Mock: allow all')
-          : AccessDecision.deny(reason: 'Anonymous access denied');
-    }
-
-    // Админ может всё
-    if (claims.roles.contains('admin')) {
-      return AccessDecision.allow(reason: 'Admin access');
-    }
-
-    // Заблокированный пользователь
-    if (claims.scopes.isEmpty) {
-      return AccessDecision.deny(reason: 'User blocked');
-    }
-
-    // Проверить scope
-    if (claims.scopes.contains('*') ||
+    if (claims == null) return AccessDecision.deny(reason: 'Authentication required');
+    if (!_isUserActive(claims.sub)) return AccessDecision.deny(reason: 'User disabled');
+    if (_backend.hasPermission(claims.sub, collection, 'read') ||
+        claims.scopes.contains('*:*') ||
         claims.scopes.contains('$collection:read') ||
         claims.scopes.contains('$collection:*')) {
-      return AccessDecision.allow(reason: 'Scope granted');
+      return AccessDecision.allow(reason: 'Access granted');
     }
-
     return AccessDecision.deny(reason: 'No read permission for $collection');
   }
 
@@ -149,27 +60,14 @@ final class MockVaultSecurityProtocol implements IVaultSecurityProtocol {
     String? entityId,
     required Map<String, dynamic> data,
   }) async {
-    if (claims == null) {
-      return AccessDecision.deny(reason: 'Authentication required');
-    }
-
-    // Админ может всё
-    if (claims.roles.contains('admin')) {
-      return AccessDecision.allow(reason: 'Admin access');
-    }
-
-    // Заблокированный пользователь
-    if (claims.scopes.isEmpty) {
-      return AccessDecision.deny(reason: 'User blocked');
-    }
-
-    // Проверить scope
-    if (claims.scopes.contains('*') ||
+    if (claims == null) return AccessDecision.deny(reason: 'Authentication required');
+    if (!_isUserActive(claims.sub)) return AccessDecision.deny(reason: 'User disabled');
+    if (_backend.hasPermission(claims.sub, collection, 'write') ||
+        claims.scopes.contains('*:*') ||
         claims.scopes.contains('$collection:write') ||
         claims.scopes.contains('$collection:*')) {
-      return AccessDecision.allow(reason: 'Scope granted');
+      return AccessDecision.allow(reason: 'Access granted');
     }
-
     return AccessDecision.deny(reason: 'No write permission for $collection');
   }
 
@@ -179,15 +77,11 @@ final class MockVaultSecurityProtocol implements IVaultSecurityProtocol {
     required String collection,
     required String entityId,
   }) async {
-    if (claims == null) {
-      return AccessDecision.deny(reason: 'Authentication required');
+    if (claims == null) return AccessDecision.deny(reason: 'Authentication required');
+    if (!_isUserActive(claims.sub)) return AccessDecision.deny(reason: 'User disabled');
+    if (claims.roles.contains('admin') || claims.scopes.contains('*:*')) {
+      return AccessDecision.allow(reason: 'Access granted');
     }
-
-    // Только админ может удалять
-    if (claims.roles.contains('admin')) {
-      return AccessDecision.allow(reason: 'Admin access');
-    }
-
     return AccessDecision.deny(reason: 'Only admin can delete');
   }
 
@@ -197,16 +91,12 @@ final class MockVaultSecurityProtocol implements IVaultSecurityProtocol {
     required String collection,
     required String entityId,
   }) async {
-    if (claims == null) {
-      return AccessDecision.deny(reason: 'Authentication required');
-    }
-
-    // Админ или пользователь с write правами
+    if (claims == null) return AccessDecision.deny(reason: 'Authentication required');
     if (claims.roles.contains('admin') ||
-        claims.scopes.contains('$collection:write')) {
-      return AccessDecision.allow(reason: 'Publish permission granted');
+        claims.scopes.contains('$collection:write') ||
+        claims.scopes.contains('*:*')) {
+      return AccessDecision.allow(reason: 'Access granted');
     }
-
     return AccessDecision.deny(reason: 'No publish permission');
   }
 
@@ -218,15 +108,10 @@ final class MockVaultSecurityProtocol implements IVaultSecurityProtocol {
     required String targetUserId,
     required AccessLevel level,
   }) async {
-    if (claims == null) {
-      return AccessDecision.deny(reason: 'Authentication required');
+    if (claims == null) return AccessDecision.deny(reason: 'Authentication required');
+    if (claims.roles.contains('admin') || claims.scopes.contains('*:*')) {
+      return AccessDecision.allow(reason: 'Access granted');
     }
-
-    // Только админ может выдавать права
-    if (claims.roles.contains('admin')) {
-      return AccessDecision.allow(reason: 'Admin access');
-    }
-
     return AccessDecision.deny(reason: 'Only admin can grant access');
   }
 
@@ -235,44 +120,19 @@ final class MockVaultSecurityProtocol implements IVaultSecurityProtocol {
     required AqTokenClaims? claims,
     required String operation,
     String? ip,
-  }) async {
-    // В тестах лимитов нет
-    return true;
-  }
+  }) async => true; // Mock: лимитов нет
 
   @override
   Future<List<ValidationFieldError>> validateData({
     required String collection,
     required Map<String, dynamic> data,
   }) async {
-    // Простая валидация для тестов
     final errors = <ValidationFieldError>[];
-
-    // Проверить наличие обязательных полей
     if (!data.containsKey('id')) {
-      errors.add(ValidationFieldError(
-        field: 'id',
-        message: 'Field "id" is required',
-        code: 'REQUIRED',
+      errors.add(const ValidationFieldError(
+        field: 'id', message: 'Field "id" is required', code: 'REQUIRED',
       ));
     }
-
-    // Проверить на SQL injection (простая проверка)
-    for (final entry in data.entries) {
-      if (entry.value is String) {
-        final value = entry.value as String;
-        if (value.contains('DROP TABLE') ||
-            value.contains('DELETE FROM') ||
-            value.contains('--')) {
-          errors.add(ValidationFieldError(
-            field: entry.key,
-            message: 'Potential SQL injection detected',
-            code: 'SQL_INJECTION',
-          ));
-        }
-      }
-    }
-
     return errors;
   }
 
@@ -281,20 +141,14 @@ final class MockVaultSecurityProtocol implements IVaultSecurityProtocol {
     required AqTokenClaims? claims,
     required String collection,
     required Map<String, dynamic> data,
-  }) async {
-    // В тестах не шифруем
-    return data;
-  }
+  }) async => data; // Mock: не шифруем
 
   @override
   Future<Map<String, dynamic>> decryptSensitiveFields({
     required AqTokenClaims? claims,
     required String collection,
     required Map<String, dynamic> data,
-  }) async {
-    // В тестах не расшифровываем
-    return data;
-  }
+  }) async => data; // Mock: не расшифровываем
 
   @override
   Future<void> logOperation({
@@ -305,25 +159,30 @@ final class MockVaultSecurityProtocol implements IVaultSecurityProtocol {
     required bool success,
     String? errorMessage,
   }) async {
-    // В тестах можно логировать в память для проверки
-    print(
-        '[AUDIT] $operation on $collection/$entityId by ${claims?.sub ?? "anonymous"}: ${success ? "SUCCESS" : "FAILED"}');
+    // Mock: записываем в backend для проверки в тестах
+    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    _backend.accessLogs.add(AqAccessLog(
+      id: 'log-${_backend.accessLogs.length}',
+      userId: claims?.sub ?? 'anonymous',
+      userEmail: claims?.email ?? 'anonymous',
+      tenantId: claims?.tid ?? 'unknown',
+      resource: collection,
+      action: operation,
+      allowed: success,
+      reason: errorMessage,
+      timestamp: now,
+    ));
   }
 
   @override
-  // TODO: implement resourcePermissions
   IResourcePermissionService get resourcePermissions =>
-      throw UnimplementedError();
+      throw UnimplementedError('MockResourcePermissionService not yet implemented');
+
+  bool _isUserActive(String userId) {
+    final user = _backend.users[userId];
+    return user == null || user.isActive; // если нет в backend — разрешаем
+  }
 }
 
-/// Поведение mock по умолчанию
-enum MockBehavior {
-  /// Всё разрешено (как NoOp)
-  allowAll,
-
-  /// Требуется аутентификация
-  requireAuth,
-
-  /// Всё запрещено
-  denyAll,
-}
+/// Поведение mock по умолчанию (для обратной совместимости)
+enum MockBehavior { allowAll, requireAuth, denyAll }

@@ -16,6 +16,8 @@ import '../models/aq_role.dart';
 import '../models/aq_policy.dart';
 import '../models/aq_access_log.dart';
 import '../models/aq_audit_trail.dart';
+import '../models/access_alert.dart';
+import '../models/rbac_metrics.dart';
 
 // ═══════════════════════════════════════════
 //  DirectStorable — RBAC entities
@@ -259,4 +261,94 @@ final class StorableAqAuditTrail implements LoggedStorable {
 
   @override
   bool get softDelete => true;
+}
+
+/// Storable обёртка для AccessAlert
+final class StorableAccessAlert implements DirectStorable {
+  StorableAccessAlert(this._alert);
+  final AccessAlert _alert;
+  AccessAlert get domain => _alert;
+
+  @override
+  String get id => _alert.id;
+
+  @override
+  Map<String, dynamic> toMap() => _alert.toJson();
+
+  @override
+  Map<String, dynamic> get indexFields => {
+        'userId': _alert.userId,
+        'tenantId': _alert.tenantId,
+        'type': _alert.type.value,
+        'severity': _alert.severity.value,
+        'resolved': _alert.resolved,
+        'timestamp': _alert.timestamp,
+      };
+
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'properties': {
+          'id': {'type': 'string'},
+          'type': {'type': 'string'},
+          'severity': {'type': 'string'},
+          'userId': {'type': 'string'},
+          'tenantId': {'type': 'string'},
+          'resolved': {'type': 'boolean'},
+          'timestamp': {'type': 'integer'},
+        },
+        'required': ['id', 'type', 'severity', 'userId', 'tenantId', 'timestamp'],
+      };
+
+  static StorableAccessAlert fromMap(Map<String, dynamic> m) =>
+      StorableAccessAlert(AccessAlert.fromJson(m));
+
+  @override
+  String get collectionName => AccessAlert.kCollection;
+
+  @override
+  bool get softDelete => false;
+}
+
+/// Storable обёртка для RBACMetrics (снапшот метрик)
+final class StorableRBACMetrics implements DirectStorable {
+  StorableRBACMetrics(this._metrics, {required this.id});
+  final RBACMetrics _metrics;
+  RBACMetrics get domain => _metrics;
+
+  @override
+  final String id;
+
+  @override
+  Map<String, dynamic> toMap() => _metrics.toJson();
+
+  @override
+  Map<String, dynamic> get indexFields => {
+        'timestamp': _metrics.timestamp,
+        'totalChecks': _metrics.totalChecks,
+      };
+
+  @override
+  Map<String, dynamic> get jsonSchema => {
+        'type': 'object',
+        'properties': {
+          'timestamp': {'type': 'integer'},
+          'totalChecks': {'type': 'integer'},
+        },
+        'required': ['timestamp', 'totalChecks'],
+      };
+
+  static StorableRBACMetrics fromMap(Map<String, dynamic> m) =>
+      StorableRBACMetrics(
+        RBACMetrics.fromJson(m),
+        id: 'metrics_${m['timestamp']}',
+      );
+
+  static const String kCollection = 'rbac_metrics';
+
+  @override
+  String get collectionName => kCollection;
+
+  @override
+  bool get softDelete => false;
 }

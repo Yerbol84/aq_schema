@@ -5,6 +5,21 @@
 
 import 'aq_user.dart';
 
+/// Тип субъекта сессии.
+enum SessionKind {
+  /// Пользователь вошёл через UI (email, Google, etc.)
+  human,
+
+  /// Service account / API key auth
+  service,
+
+  /// Выполняется граф (workflow run session)
+  workflow,
+
+  /// Зарегистрированный worker process
+  worker,
+}
+
 enum SessionStatus {
   active('active'),
   expired('expired'),
@@ -28,6 +43,7 @@ final class AqSession {
     required this.createdAt,
     required this.expiresAt,
     required this.lastSeenAt,
+    this.kind = SessionKind.human,
     this.ipAddress,
     this.userAgent,
     this.deviceHint,
@@ -41,6 +57,10 @@ final class AqSession {
   final String tenantId;
   final SessionStatus status;
   final IdentityProvider authProvider;
+
+  /// Тип субъекта сессии.
+  final SessionKind kind;
+
   final String? ipAddress;
   final String? userAgent;
 
@@ -61,6 +81,7 @@ final class AqSession {
 
   AqSession copyWith({
     SessionStatus? status,
+    SessionKind? kind,
     int? lastSeenAt,
     int? revokedAt,
     String? revokedReason,
@@ -71,6 +92,7 @@ final class AqSession {
         tenantId: tenantId,
         status: status ?? this.status,
         authProvider: authProvider,
+        kind: kind ?? this.kind,
         ipAddress: ipAddress,
         userAgent: userAgent,
         deviceHint: deviceHint,
@@ -88,6 +110,10 @@ final class AqSession {
         status: SessionStatus.fromString(json['status'] as String? ?? 'active'),
         authProvider: IdentityProvider.fromString(
             json['authProvider'] as String? ?? 'mock'),
+        kind: SessionKind.values.firstWhere(
+          (k) => k.name == (json['kind'] as String? ?? 'human'),
+          orElse: () => SessionKind.human,
+        ),
         ipAddress: json['ipAddress'] as String?,
         userAgent: json['userAgent'] as String?,
         deviceHint: json['deviceHint'] as String?,
@@ -105,6 +131,7 @@ final class AqSession {
       'tenantId': tenantId,
       'status': status.value,
       'authProvider': authProvider.value,
+      'kind': kind.name,
       'createdAt': createdAt,
       'expiresAt': expiresAt,
       'lastSeenAt': lastSeenAt,

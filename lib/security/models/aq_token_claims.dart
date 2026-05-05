@@ -8,6 +8,7 @@
 
 import 'aq_user.dart';
 import 'aq_scope.dart';
+import '../../cache/interfaces/i_aq_cacheable.dart';
 
 enum TokenType {
   access('access'),
@@ -23,7 +24,7 @@ enum TokenType {
 }
 
 /// JWT payload. Shared between all nodes — client, server, worker.
-final class AqTokenClaims {
+final class AqTokenClaims implements IAQCacheable {
   const AqTokenClaims({
     required this.sub,
     required this.tid,
@@ -73,6 +74,22 @@ final class AqTokenClaims {
 
   /// Session ID — matches AqSession.id
   final String sid;
+
+  // ── IAQCacheable ──────────────────────────────────────────────────────────
+
+  @override
+  String get cacheKey => 'token:$jti';
+
+  /// TTL = оставшееся время жизни токена.
+  @override
+  Duration? get cacheTtl {
+    final remaining = exp - DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    if (remaining <= 0) return Duration.zero;
+    return Duration(seconds: remaining);
+  }
+
+  @override
+  bool get cacheStaleOnError => false;
 
   bool get isExpired {
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;

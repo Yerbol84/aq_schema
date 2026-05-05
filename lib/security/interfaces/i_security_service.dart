@@ -1,7 +1,7 @@
 // pkgs/aq_schema/lib/security/interfaces/i_security_service.dart
 //
-// Интерфейс для сервиса безопасности.
-// Реализуется в aq_security, используется в aq_security_ui.
+// Главный порт слоя безопасности.
+// Реализация: aq_security/lib/src/client/aq_security_service.dart
 
 import 'dart:async';
 import '../models/aq_user.dart';
@@ -81,60 +81,108 @@ final class AuthResponse {
       };
 }
 
-/// Главный интерфейс сервиса безопасности
+/// # ISecurityService — точка входа в систему безопасности
 ///
-/// ВАЖНО ДЛЯ BACKEND РАЗРАБОТЧИКА:
+/// Фасад над всеми операциями безопасности: аутентификация, проверка прав,
+/// управление сессиями и API ключами.
 ///
-/// Этот интерфейс является точкой входа для всей системы безопасности.
-/// Backend пакет (aq_security) должен:
+/// ---
 ///
-/// 1. Создать класс, реализующий ISecurityService:
-///    ```dart
-///    class AQSecurityService implements ISecurityService {
-///      // Реализация всех методов
-///    }
-///    ```
+/// ## 🖥️ Flutter / Web приложение
 ///
-/// 2. При инициализации приложения вызвать setSecurityServiceInstance:
-///    ```dart
-///    void main() {
-///      final securityService = AQSecurityService(
-///        authTransport: ...,
-///        sessionStore: ...,
-///      );
+/// Типичный сценарий: пользователь логинится, UI адаптируется под его права.
 ///
-///      // Регистрация singleton instance
-///      setSecurityServiceInstance(securityService);
+/// ```dart
+/// // main.dart — инициализация один раз
+/// final service = await AQSecurityClient.init('https://auth.example.com');
 ///
-///      runApp(MyApp());
-///    }
-///    ```
+/// // Логин
+/// final response = await service.loginWithEmail(
+///   email: 'alice@example.com',
+///   password: 'secret',
+/// );
 ///
-/// 3. После этого UI пакеты могут получить instance через:
-///    ```dart
-///    final service = ISecurityService.instance;
-///    // или
-///    final service = securityService; // глобальный геттер
-///    ```
+/// // Реактивное состояние — слушать изменения
+/// service.stream.listen((state) {
+///   if (state is SecurityStateAuthenticated) {
+///     // Обновить UI
+///   }
+/// });
 ///
-/// АРХИТЕКТУРА:
-/// - ISecurityService - главный интерфейс (точка входа)
-/// - IRoleManagementService - подсервис управления ролями (RBAC)
-/// - IPolicyService - подсервис управления политиками (ABAC/PBAC)
-/// - IAuditService - подсервис аудита и логирования
+/// // Проверить право перед показом кнопки (локально, из токена)
+/// // ⚠️ Только для UI — не для защиты данных. Сервер проверяет независимо.
+/// if (await service.hasPermission('projects:write')) {
+///   showEditButton();
+/// }
 ///
-/// Все подсервисы доступны через геттеры главного интерфейса.
+/// // Получить что можно делать с конкретным ресурсом
+/// final perms = await service.getResourcePermissions('project/123');
+/// // → ['project:read', 'project:write']
+/// ```
+///
+/// ---
+///
+/// ## ⚙️ Worker / Dart CLI
+///
+/// Типичный сценарий: сервис логинится через API Key, выполняет задачи.
+///
+/// ```dart
+/// // Инициализация с jwtSecret для локальной валидации токенов (без сети)
+/// final service = await AQSecurityClient.init(
+///   Platform.environment['AUTH_ENDPOINT']!,
+///   jwtSecret: Platform.environment['JWT_SECRET']!,
+/// );
+///
+/// // Логин через API Key
+/// await service.loginWithApiKey(Platform.environment['API_KEY']!);
+///
+/// // Проверить право (локально, без HTTP запроса)
+/// if (await service.hasPermission('graphs:execute')) {
+///   await runGraph();
+/// }
+/// ```
+///
+/// ---
+///
+/// ## 🔧 Backend сервис (другой сервис платформы)
+///
+/// Типичный сценарий: сервис проверяет токен входящего запроса.
+///
+/// ```dart
+/// // Инициализация с jwtSecret — валидация токенов локально
+/// final service = await AQSecurityClient.init(
+///   authEndpoint,
+///   jwtSecret: jwtSecret,
+/// );
+///
+/// // Валидация входящего токена из HTTP заголовка
+/// final isValid = await service.validateToken(request.headers['authorization']!);
+///
+/// // Получить claims из токена (без сети)
+/// final claims = service.currentClaims;
+/// final userId = claims?.sub;
+/// final tenantId = claims?.tid;
+/// ```
+///
+/// ---
+///
+/// ## 🔑 Подсервисы (admin операции)
+///
+/// Доступны через геттеры. Используются только в admin UI или backend сервисах
+/// с соответствующими правами.
+///
+/// ```dart
+/// // Управление ролями — только для admin
+/// final roles = await service.roleManagement.getRoles();
+///
+/// // Управление политиками — только для admin
+/// final policies = await service.policies.getPolicies();
+///
+/// // Аудит — только для admin/compliance
+/// final logs = await service.audit.getAccessLogs(userId: userId);
+/// ```
 abstract interface class ISecurityService {
-  /// Singleton instance геттер
-  ///
-  /// Используется UI пакетами для получения сервиса безопасности.
-  /// Выбрасывает StateError если instance не инициализирован.
-  ///
-  /// Пример использования:
-  /// ```dart
-  /// final service = ISecurityService.instance;
-  /// final roles = await service.roleManagement.getRoles();
-  /// ```
+  /// Singleton — доступен после инициализации через AQSecurityClient.init().
   static ISecurityService get instance {
     if (_instance == null) {
       throw StateError(
@@ -170,18 +218,15 @@ abstract interface class ISecurityService {
   /// Текущий access token (может триггерить silent refresh)
   Future<String?> get accessToken;
 
-  // ── Подсервисы ─────────────────────────────────────────────────────────────
+  // ── Подсервисы (admin операции) ───────────────────────────────────────────
 
-  /// Сервис управления ролями (RBAC)
-  /// Используется для работы с ролями, назначениями и правами доступа
+  /// Управление ролями и назначениями. Только для admin UI.
   IRoleManagementService get roleManagement;
 
-  /// Сервис управления политиками (ABAC/PBAC)
-  /// Используется для работы с политиками доступа и их оценкой
+  /// Управление политиками доступа. Только для admin UI.
   IPolicyService get policies;
 
-  /// Сервис аудита и логирования
-  /// Используется для записи и получения логов доступа и аудит-трейла
+  /// Аудит и логи доступа. Только для admin/compliance.
   IAuditService get audit;
 
   // ── Методы авторизации ────────────────────────────────────────────────────
@@ -217,209 +262,33 @@ abstract interface class ISecurityService {
   /// Восстановление сессии из хранилища
   Future<void> restoreSession();
 
-  // ── Проверка прав ─────────────────────────────────────────────────────────
+  // ── Проверка прав (локально, из токена) ──────────────────────────────────
+  //
+  // ⚠️ Эти методы читают claims из JWT токена — быстро, без сети.
+  // Используются ТОЛЬКО для адаптации UI (скрыть кнопку, показать раздел).
+  // Для защиты данных сервер проверяет права независимо через AccessControlEngine.
 
-  /// Проверка наличия права
+  /// Есть ли право в токене текущего пользователя.
   Future<bool> hasPermission(String permission);
 
-  /// Проверка наличия роли
+  /// Есть ли роль в токене текущего пользователя.
   Future<bool> hasRole(String role);
 
-  /// Проверка нескольких прав (requireAll: true = все, false = хотя бы одно)
+  /// Все/любое из прав присутствуют в токене.
   Future<bool> hasPermissions(List<String> permissions,
       {bool requireAll = true});
 
-  /// Проверка нескольких ролей
+  /// Все/любая из ролей присутствуют в токене.
   Future<bool> hasRoles(List<String> roles, {bool requireAll = true});
 
-  /// Получить список разрешённых действий для конкретного ресурса
+  /// Какие действия разрешены на конкретном ресурсе.
   ///
-  /// **Назначение:**
-  /// Этот метод определяет, какие действия (permissions) текущий пользователь
-  /// может выполнить над конкретным ресурсом, учитывая как RBAC (роли),
-  /// так и PBAC (политики с контекстом).
-  ///
-  /// **Философия платформы:**
-  /// В AQ Studio права доступа определяются двумя механизмами:
-  /// 1. RBAC (Role-Based Access Control) - статические роли с permissions
-  /// 2. PBAC (Policy-Based Access Control) - динамические политики с условиями
-  ///
-  /// Этот метод объединяет оба механизма, предоставляя единую точку входа
-  /// для проверки прав на ресурс. Это соответствует принципу "чистой архитектуры":
-  /// UI не должен знать о деталях реализации проверки прав.
-  ///
-  /// **Параметры:**
-  /// - [resourceId] - Идентификатор ресурса в формате "type/id"
-  ///   Примеры: "project/123", "workflow/456", "user/789"
-  ///
-  /// - [actions] - Список действий для проверки (опционально)
-  ///   По умолчанию: ['read', 'write', 'delete', 'admin']
-  ///   Можно передать кастомный список: ['execute', 'publish', 'share']
-  ///
-  /// **Возвращает:**
-  /// Список разрешённых permissions в формате "resource_type:action"
-  /// Примеры: ["project:read", "project:write"]
-  ///
-  /// **Алгоритм реализации (рекомендация для backend):**
+  /// Объединяет RBAC + политики. Результат — список разрешённых permissions.
   ///
   /// ```dart
-  /// Future<List<String>> getResourcePermissions(
-  ///   String resourceId, {
-  ///   List<String>? actions,
-  /// }) async {
-  ///   // 1. Проверить авторизацию
-  ///   final user = currentUser;
-  ///   if (user == null) return [];
-  ///
-  ///   // 2. Извлечь тип ресурса из resourceId
-  ///   final resourceType = resourceId.split('/').first; // "project/123" -> "project"
-  ///
-  ///   // 3. Определить список действий для проверки
-  ///   final checkActions = actions ?? ['read', 'write', 'delete', 'admin'];
-  ///
-  ///   // 4. Проверить каждое действие
-  ///   final allowed = <String>[];
-  ///   for (final action in checkActions) {
-  ///     final permission = '$resourceType:$action';
-  ///
-  ///     // 4.1. Проверка через RBAC (быстрая проверка по ролям)
-  ///     final hasRbacPermission = await hasPermission(permission);
-  ///     if (!hasRbacPermission) continue; // Нет права в ролях -> skip
-  ///
-  ///     // 4.2. Проверка через PBAC (политики с контекстом)
-  ///     // Политики могут ограничить доступ даже если есть роль
-  ///     // Например: "можно редактировать только свои проекты"
-  ///     final context = PolicyContext(
-  ///       userId: user.id,
-  ///       resource: resourceId,
-  ///       action: action,
-  ///       ipAddress: currentIpAddress,
-  ///       timestamp: DateTime.now(),
-  ///       userAttributes: {
-  ///         'email': user.email,
-  ///         'userType': user.userType.value,
-  ///       },
-  ///       resourceAttributes: await _getResourceAttributes(resourceId),
-  ///       userRoles: (await roleManagement.getUserRoles(user.id))
-  ///           .map((r) => r.name)
-  ///           .toList(),
-  ///       userScopes: currentClaims?.scopes ?? [],
-  ///     );
-  ///
-  ///     final policyResult = await policies.evaluatePolicy(context);
-  ///     if (policyResult.allowed) {
-  ///       allowed.add(permission);
-  ///
-  ///       // Логировать проверку (опционально, для аудита)
-  ///       await audit.logAccess(
-  ///         userId: user.id,
-  ///         userEmail: user.email,
-  ///         tenantId: currentTenant!.id,
-  ///         resource: resourceId,
-  ///         action: action,
-  ///         allowed: true,
-  ///         reason: 'Permission check via getResourcePermissions',
-  ///       );
-  ///     }
-  ///   }
-  ///
-  ///   return allowed;
-  /// }
-  ///
-  /// // Вспомогательный метод для получения атрибутов ресурса
-  /// Future<Map<String, dynamic>> _getResourceAttributes(String resourceId) async {
-  ///   // Загрузить ресурс из БД и извлечь атрибуты
-  ///   // Например, для проекта: ownerId, visibility, status
-  ///   final parts = resourceId.split('/');
-  ///   final type = parts[0];
-  ///   final id = parts.length > 1 ? parts[1] : null;
-  ///
-  ///   switch (type) {
-  ///     case 'project':
-  ///       final project = await projectRepository.get(id!);
-  ///       return {
-  ///         'ownerId': project.ownerId,
-  ///         'visibility': project.visibility,
-  ///         'status': project.status,
-  ///       };
-  ///     case 'workflow':
-  ///       final workflow = await workflowRepository.get(id!);
-  ///       return {
-  ///         'ownerId': workflow.ownerId,
-  ///         'projectId': workflow.projectId,
-  ///       };
-  ///     default:
-  ///       return {};
-  ///   }
-  /// }
+  /// final perms = await service.getResourcePermissions('project/123');
+  /// final canWrite = perms.contains('project:write');
   /// ```
-  ///
-  /// **Почему такая реализация?**
-  ///
-  /// 1. **Производительность:**
-  ///    - Сначала проверяем RBAC (быстро, по кэшу ролей)
-  ///    - Только если есть право в роли -> проверяем политики
-  ///    - Избегаем лишних вызовов evaluatePolicy
-  ///
-  /// 2. **Безопасность:**
-  ///    - Политики могут ограничить доступ даже при наличии роли
-  ///    - Учитывается контекст: время, IP, атрибуты ресурса
-  ///    - Принцип "deny wins" соблюдается
-  ///
-  /// 3. **Чистая архитектура:**
-  ///    - UI вызывает один метод, не зная о RBAC/PBAC
-  ///    - Backend инкапсулирует логику проверки
-  ///    - Легко добавить новые механизмы проверки (ABAC, etc.)
-  ///
-  /// 4. **Аудит:**
-  ///    - Каждая проверка логируется
-  ///    - Можно отследить кто и когда проверял права
-  ///    - Compliance требования выполняются
-  ///
-  /// **Кэширование (рекомендация):**
-  ///
-  /// Результат можно кэшировать на короткое время (30-60 секунд):
-  /// ```dart
-  /// final cacheKey = 'resource_permissions:${user.id}:$resourceId';
-  /// final cached = await cache.get(cacheKey);
-  /// if (cached != null) return cached;
-  ///
-  /// final result = await _computePermissions(...);
-  /// await cache.set(cacheKey, result, ttl: Duration(seconds: 30));
-  /// return result;
-  /// ```
-  ///
-  /// **Использование в UI:**
-  ///
-  /// ```dart
-  /// // В провайдере
-  /// final resourcePermissionsProvider = FutureProvider.family<List<String>, String>(
-  ///   (ref, resourceId) async {
-  ///     final service = ref.watch(securityServiceProvider);
-  ///     return await service.getResourcePermissions(resourceId);
-  ///   },
-  /// );
-  ///
-  /// // В виджете
-  /// final permissions = ref.watch(resourcePermissionsProvider('project/123'));
-  /// permissions.when(
-  ///   data: (perms) {
-  ///     final canRead = perms.contains('project:read');
-  ///     final canWrite = perms.contains('project:write');
-  ///     // Показать UI в зависимости от прав
-  ///   },
-  /// );
-  /// ```
-  ///
-  /// **Требования к производительности:**
-  /// - Должен выполняться < 200ms без кэша
-  /// - Должен выполняться < 10ms с кэшем
-  /// - Не должен блокировать UI
-  ///
-  /// **Аудит:**
-  /// - Логировать только разрешённые проверки (allowed: true)
-  /// - Или логировать все проверки для compliance
-  /// - Решение зависит от требований безопасности
   Future<List<String>> getResourcePermissions(
     String resourceId, {
     List<String>? actions,
@@ -503,41 +372,17 @@ abstract interface class ISecurityService {
   Future<void> dispose();
 }
 
-/// Установка singleton instance (вызывается из backend пакета)
+/// Регистрирует реализацию ISecurityService как singleton.
+/// Вызывается один раз при старте приложения из aq_security пакета.
 ///
-/// ВАЖНО ДЛЯ BACKEND РАЗРАБОТЧИКА:
-/// Этот метод должен быть вызван при инициализации приложения,
-/// до того как UI начнёт использовать сервис безопасности.
-///
-/// Пример:
 /// ```dart
-/// void main() async {
-///   WidgetsFlutterBinding.ensureInitialized();
-///
-///   // Создание и инициализация сервиса
-///   final securityService = AQSecurityService(
-///     authTransport: HttpAuthTransport(baseUrl: 'http://localhost:8080'),
-///     sessionStore: SecureSessionStore(),
-///   );
-///
-///   // Регистрация singleton instance
-///   setSecurityServiceInstance(securityService);
-///
-///   runApp(MyApp());
-/// }
+/// // main.dart
+/// final service = await AQSecurityClient.init('https://auth.example.com');
+/// // AQSecurityClient.init() вызывает setSecurityServiceInstance() внутри
 /// ```
 void setSecurityServiceInstance(ISecurityService instance) {
   ISecurityService._instance = instance;
 }
 
-/// Глобальный геттер для ISecurityService (для удобства)
-///
-/// Альтернативный способ получения instance:
-/// ```dart
-/// final service = securityService;
-/// // вместо
-/// final service = ISecurityService.instance;
-/// ```
-///
-/// Выбрасывает StateError если instance не инициализирован.
+/// Глобальный геттер — синоним для ISecurityService.instance.
 ISecurityService get securityService => ISecurityService.instance;
