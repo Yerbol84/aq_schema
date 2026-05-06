@@ -67,7 +67,6 @@ final class AccessDecision implements IAQCacheable {
   Duration? get cacheTtl => null;
 
   @override
-  bool get cacheStaleOnError => false;
 
   /// Создать решение с ключом кэша: 'decision:$userId:$permission'.
   static AccessDecision withCacheKey({

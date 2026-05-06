@@ -10,4 +10,8 @@ abstract interface class IAQCacheStorage {
   Future<void> delete(String key);
   Future<void> clear();
   Future<List<String>> keys();
+
+  /// true = хранилище само управляет истечением записей (Redis EXPIRE, Hive TTL и т.д.)
+  /// false = AQCacheImpl запустит eviction timer.
+  bool get supportsNativeTtl => false;
 }

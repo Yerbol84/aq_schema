@@ -49,6 +49,7 @@ final class AqSession {
     this.deviceHint,
     this.revokedAt,
     this.revokedReason,
+    this.mfaVerified = false,
   });
 
   /// Session ID — matches `sid` JWT claim.
@@ -73,6 +74,9 @@ final class AqSession {
   final int? revokedAt;
   final String? revokedReason;
 
+  /// MFA был пройден в этой сессии.
+  final bool mfaVerified;
+
   bool get isActive {
     if (status != SessionStatus.active) return false;
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
@@ -85,6 +89,7 @@ final class AqSession {
     int? lastSeenAt,
     int? revokedAt,
     String? revokedReason,
+    bool? mfaVerified,
   }) =>
       AqSession(
         id: id,
@@ -101,6 +106,7 @@ final class AqSession {
         lastSeenAt: lastSeenAt ?? this.lastSeenAt,
         revokedAt: revokedAt ?? this.revokedAt,
         revokedReason: revokedReason ?? this.revokedReason,
+        mfaVerified: mfaVerified ?? this.mfaVerified,
       );
 
   factory AqSession.fromJson(Map<String, dynamic> json) => AqSession(
@@ -122,6 +128,7 @@ final class AqSession {
         lastSeenAt: json['lastSeenAt'] as int,
         revokedAt: json['revokedAt'] as int?,
         revokedReason: json['revokedReason'] as String?,
+        mfaVerified: json['mfaVerified'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() {
@@ -141,6 +148,7 @@ final class AqSession {
     if (deviceHint != null) m['deviceHint'] = deviceHint;
     if (revokedAt != null) m['revokedAt'] = revokedAt;
     if (revokedReason != null) m['revokedReason'] = revokedReason;
+    if (mfaVerified) m['mfaVerified'] = mfaVerified;
     return m;
   }
 

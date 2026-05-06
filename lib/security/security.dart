@@ -44,6 +44,7 @@ export 'interfaces/i_session_repository.dart';
 
 // ── Service interfaces (для UI пакетов) ───────────────────────────────────────
 export 'interfaces/i_security_service.dart';
+export 'interfaces/i_mfa_service.dart';
 export 'interfaces/i_auth_transport.dart';
 export 'interfaces/i_session_store.dart';
 export 'interfaces/i_role_management_service.dart';

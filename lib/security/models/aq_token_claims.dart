@@ -39,6 +39,7 @@ final class AqTokenClaims implements IAQCacheable {
     this.perms = const [],
     this.scopes = const [],
     this.utype = UserType.endUser,
+    this.mfaVerified = false,
   });
 
   /// Subject — AqUser.id
@@ -62,6 +63,9 @@ final class AqTokenClaims implements IAQCacheable {
 
   /// UserType shortcut — avoids role lookup on every request
   final UserType utype;
+
+  /// MFA был пройден при выдаче этого токена.
+  final bool mfaVerified;
 
   /// Issued at (Unix seconds)
   final int iat;
@@ -89,7 +93,6 @@ final class AqTokenClaims implements IAQCacheable {
   }
 
   @override
-  bool get cacheStaleOnError => false;
 
   bool get isExpired {
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
@@ -141,6 +144,7 @@ final class AqTokenClaims implements IAQCacheable {
         exp: json['exp'] as int,
         jti: json['jti'] as String,
         sid: json['sid'] as String,
+        mfaVerified: json['mfaVerified'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() {
@@ -159,6 +163,7 @@ final class AqTokenClaims implements IAQCacheable {
     if (roles.isNotEmpty) m['roles'] = roles;
     if (perms.isNotEmpty) m['perms'] = perms;
     if (scopes.isNotEmpty) m['scopes'] = scopes;
+    if (mfaVerified) m['mfaVerified'] = mfaVerified;
     return m;
   }
 
