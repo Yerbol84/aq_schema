@@ -370,6 +370,22 @@ abstract interface class IDataLayer {
     bool captureFullSnapshot = false,
   });
 
+  /// Create an Artifact repository for binary file storage with metadata.
+  IArtifactRepository<T> artifacts<T extends ArtifactEntry>({
+    required String collection,
+    required T Function(Map<String, dynamic>) fromMap,
+  });
+
+  /// Create a Vector repository for ANN search.
+  IVectorRepository vectors({required String collection});
+
+  /// Create a Knowledge repository for RAG pipelines (file + vector index).
+  IKnowledgeRepository<T> knowledge<T extends KnowledgeDocument>({
+    required String collection,
+    required T Function(Map<String, dynamic>) fromMap,
+    required EmbedFn embed,
+  });
+
   // ══════════════════════════════════════════════════════════════════════════
   // Buffer Management (Offline-First)
   // ══════════════════════════════════════════════════════════════════════════

@@ -85,6 +85,13 @@ export 'data_layer/i_data_layer.dart';
 export 'data_layer/repositories/direct_repository.dart';
 export 'data_layer/repositories/versioned_repository.dart';
 export 'data_layer/repositories/logged_repository.dart';
+export 'data_layer/repositories/i_artifact_repository.dart';
+export 'data_layer/repositories/i_vector_repository.dart';
+export 'data_layer/repositories/i_knowledge_repository.dart';
+
+// Storable — extended
+export 'data_layer/storable/vector_storable.dart';
+export 'data_layer/storable/knowledge_document.dart';
 
 // API Contracts (Single Source of Truth for HTTP routes)
 export 'core/interfaces/i_aq_api_contract.dart';
